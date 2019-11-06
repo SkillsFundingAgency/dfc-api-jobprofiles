@@ -54,7 +54,7 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
                 EnableCrossPartitionQuery = true,
                 MaxDegreeOfParallelism = -1,
             };
-            const string query = @"select c.id, c._etag, c.CanonicalName, c.BreadcrumbTitle, c.AlternativeNames "
+            const string query = @"select c.CanonicalName, c.BreadcrumbTitle, c.LastReviewed "
                                  + " from c ";
 
             var queryable = documentClient.CreateDocumentQuery<Document>(DocumentCollectionUri, query, feedOptions).AsDocumentQuery();

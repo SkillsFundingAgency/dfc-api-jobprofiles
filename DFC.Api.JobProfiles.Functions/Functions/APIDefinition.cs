@@ -49,7 +49,8 @@ namespace DFC.Api.JobProfiles.Functions.Functions
                 ApiVersion,
                 Assembly.GetExecutingAssembly(),
                 false,
-                false));
+                false))
+                .ConfigureAwait(false);
 
             return new OkObjectResult(swaggerDoc);
         }
