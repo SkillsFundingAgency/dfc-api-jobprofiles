@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AzureFunctions.Extensions.Swashbuckle;
-using DFC.Api.JobProfiles.Functions;
+using DFC.Api.JobProfiles;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Functions.DI.Standard;
@@ -17,7 +17,7 @@ using System.Reflection;
 
 [assembly: WebJobsStartup(typeof(WebJobsExtensionStartup), "Web Jobs Extension Startup")]
 
-namespace DFC.Api.JobProfiles.Functions
+namespace DFC.Api.JobProfiles
 {
     public class WebJobsExtensionStartup : IWebJobsStartup
     {

@@ -1,4 +1,4 @@
-using DFC.Api.JobProfiles.Functions.ApiModels;
+using DFC.Api.JobProfiles.ApiModels;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
@@ -13,7 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace DFC.Api.JobProfiles.Functions.Functions
+namespace DFC.Api.JobProfiles.Functions
 {
     public static class JobProfileFunctions
     {
