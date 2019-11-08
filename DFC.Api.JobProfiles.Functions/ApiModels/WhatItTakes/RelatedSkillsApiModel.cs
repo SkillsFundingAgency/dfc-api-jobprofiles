@@ -8,8 +8,6 @@
 
         public string ONetRank { get; set; }
 
-        public string Rank { get; set; }
-
         public string ONetElementId { get; set; }
     }
 }
