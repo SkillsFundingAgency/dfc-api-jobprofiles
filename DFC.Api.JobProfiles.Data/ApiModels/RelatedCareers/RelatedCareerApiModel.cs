@@ -1,4 +1,4 @@
-﻿namespace DFC.Api.JobProfiles.Functions.ApiModels.RelatedCareers
+﻿namespace DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers
 {
     public class RelatedCareerApiModel
     {

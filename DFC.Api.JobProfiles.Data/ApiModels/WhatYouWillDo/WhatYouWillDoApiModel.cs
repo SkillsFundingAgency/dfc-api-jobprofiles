@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DFC.Api.JobProfiles.Functions.ApiModels.WhatYouWillDo
+namespace DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo
 {
     public class WhatYouWillDoApiModel
     {

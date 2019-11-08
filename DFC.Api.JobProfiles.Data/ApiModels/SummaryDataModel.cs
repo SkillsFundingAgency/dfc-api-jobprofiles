@@ -1,4 +1,6 @@
-﻿namespace DFC.Api.JobProfiles.Data.Models
+﻿using System;
+
+namespace DFC.Api.JobProfiles.Data.ApiModels
 {
     public class SummaryDataModel
     {
@@ -6,6 +8,6 @@
 
         public string BreadcrumbTitle { get; set; }
 
-        public string LastReviewed { get; set; }
+        public DateTime LastReviewed { get; set; }
     }
 }
