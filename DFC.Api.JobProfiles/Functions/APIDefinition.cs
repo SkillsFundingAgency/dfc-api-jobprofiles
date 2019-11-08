@@ -10,7 +10,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using SwaggerIgnoreAttribute = DFC.Swagger.Standard.Annotations.SwaggerIgnoreAttribute;
 
-namespace DFC.Api.JobProfiles.Functions.Functions
+namespace DFC.Api.JobProfiles.Functions
 {
     public class APIDefinition
     {
