@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.29409.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{9FBDDB71-653E-4D9E-9EC7-0B6201C15813}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Functions", "DFC.Api.JobProfiles.Functions\DFC.Api.JobProfiles.Functions.csproj", "{7D4C1166-1F1D-4468-8630-8972412789C7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles", "DFC.Api.JobProfiles\DFC.Api.JobProfiles.csproj", "{7D4C1166-1F1D-4468-8630-8972412789C7}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6A118A2C-35C6-49BF-A889-892EB0C6CCBF}"
 EndProject
