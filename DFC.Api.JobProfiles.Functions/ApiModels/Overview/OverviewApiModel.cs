@@ -1,10 +1,12 @@
-﻿namespace DFC.Api.JobProfiles.Functions.ApiModels.Overview
+﻿using System;
+
+namespace DFC.Api.JobProfiles.Functions.ApiModels.Overview
 {
     public class OverviewApiModel
     {
         public string Title { get; set; }
 
-        public string LastUpdatedDate { get; set; }
+        public DateTime LastUpdatedDate { get; set; }
 
         public string Url { get; set; }
 
@@ -16,9 +18,9 @@
 
         public string Overview { get; set; }
 
-        public decimal SalaryStarter { get; set; }
+        public string SalaryStarter { get; set; }
 
-        public decimal SalaryExperienced { get; set; }
+        public string SalaryExperienced { get; set; }
 
         public decimal MinimumHours { get; set; }
 
