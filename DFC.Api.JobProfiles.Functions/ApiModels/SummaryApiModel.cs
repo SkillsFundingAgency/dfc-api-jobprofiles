@@ -1,4 +1,6 @@
-﻿namespace DFC.Api.JobProfiles.Functions.ApiModels
+﻿using System;
+
+namespace DFC.Api.JobProfiles.Functions.ApiModels
 {
     public class SummaryApiModel
     {
@@ -6,6 +8,6 @@
 
         public string Title { get; set; }
 
-        public string LastUpdated { get; set; }
+        public DateTime LastUpdated { get; set; }
     }
 }

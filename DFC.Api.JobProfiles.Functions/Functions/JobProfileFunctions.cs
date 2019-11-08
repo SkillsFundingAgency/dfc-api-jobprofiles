@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Functions.Functions
 {
-    public static class GetSummaryListHttpTrigger
+    public static class JobProfileFunctions
     {
         [Display(Name = "Get Summary List of Job Profiles", Description = "Retrieves a summary list of all Job Profiles")]
         [FunctionName("job-profiles")]

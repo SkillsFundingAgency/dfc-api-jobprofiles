@@ -1,4 +1,4 @@
-﻿namespace DFC.Api.JobProfiles.Functions.ApiModels.WhatItTakes
+﻿namespace DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes
 {
     public class RelatedSkillsApiModel
     {

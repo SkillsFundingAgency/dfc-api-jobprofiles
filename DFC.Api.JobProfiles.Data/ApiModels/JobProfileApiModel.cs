@@ -1,12 +1,12 @@
-﻿using DFC.Api.JobProfiles.Functions.ApiModels.CareerPathAndProgression;
-using DFC.Api.JobProfiles.Functions.ApiModels.HowToBecome;
-using DFC.Api.JobProfiles.Functions.ApiModels.Overview;
-using DFC.Api.JobProfiles.Functions.ApiModels.RelatedCareers;
-using DFC.Api.JobProfiles.Functions.ApiModels.WhatItTakes;
-using DFC.Api.JobProfiles.Functions.ApiModels.WhatYouWillDo;
+﻿using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
+using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
+using DFC.Api.JobProfiles.Data.ApiModels.Overview;
+using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
+using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
+using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
 using System.Collections.Generic;
 
-namespace DFC.Api.JobProfiles.Functions.ApiModels
+namespace DFC.Api.JobProfiles.Data.ApiModels
 {
     public class JobProfileApiModel : OverviewApiModel
     {

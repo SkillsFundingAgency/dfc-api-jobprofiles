@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace DFC.Api.JobProfiles.Functions.ApiModels.CareerPathAndProgression
+namespace DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression
 {
     public class CareerPathAndProgressionApiModel
     {

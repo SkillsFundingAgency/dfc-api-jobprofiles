@@ -1,4 +1,4 @@
-﻿using DFC.Api.JobProfiles.Data.Models;
+﻿using DFC.Api.JobProfiles.Data.ApiModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
