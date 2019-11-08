@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace DFC.Api.JobProfiles.Data.ApiModels
+namespace DFC.Api.JobProfiles.Data.DataModels
 {
     public class SummaryDataModel
     {

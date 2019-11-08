@@ -1,6 +1,7 @@
 ﻿using DFC.Api.JobProfiles.Data.ApiModels;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using DFC.Api.JobProfiles.Data.DataModels;
 
 namespace DFC.Api.JobProfiles.Repository.CosmosDb
 {
@@ -9,5 +10,7 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
         Task<bool> PingAsync();
 
         Task<IEnumerable<SummaryDataModel>> GetSummaryListAsync();
+
+        Task<JobProfileApiModel>
     }
 }

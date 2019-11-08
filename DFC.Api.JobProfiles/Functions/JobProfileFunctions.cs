@@ -46,5 +46,23 @@ namespace DFC.Api.JobProfiles.Functions
                 return new StatusCodeResult((int)HttpStatusCode.UnprocessableEntity);
             }
         }
+
+        [Display(Name = "Get Summary List of Job Profiles", Description = "Retrieves a summary list of all Job Profiles")]
+        [FunctionName("job-profiles")]
+        [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Summary list of Job Profiles found.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Summary list of Job Profiles  does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.UnprocessableEntity, Description = "Job Profile validation error(s).", ShowSchema = false)]
+        public static async Task<IActionResult> GetJobProfileDetail(
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "job-profiles/{canonicalName}")] HttpRequest request,
+            string canonicalName,
+            [Inject] IProfileService service,
+            [Inject] AutoMapper.IMapper mapper)
+        {
+
+            var jobProfile = await service.
+            return new OkObjectResult();
+        }
+
     }
 }

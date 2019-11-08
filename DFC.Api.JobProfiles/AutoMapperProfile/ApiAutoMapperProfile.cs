@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
-using DFC.Api.JobProfiles.ApiModels;
-using DFC.Api.JobProfiles.Data.ApiModels;
+using DFC.Api.JobProfiles.Data.DataModels;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile
 {
