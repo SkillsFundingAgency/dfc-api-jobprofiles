@@ -3,6 +3,7 @@
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AzureFunctionsVersion>v2</AzureFunctionsVersion>
     <LangVersion>latest</LangVersion>
+    <ProjectGuid>{7D4C1166-1F1D-4468-8630-8972412789C7}s</ProjectGuid>
   </PropertyGroup>
 
   <ItemGroup>
