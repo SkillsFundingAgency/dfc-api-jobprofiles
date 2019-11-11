@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace DFC.Api.JobProfiles.ApiModels
+namespace DFC.Api.JobProfiles.Data.ApiModels
 {
     public class SummaryApiModel
     {
-        public string FullUrl { get; set; }
+        public string Url { get; set; }
 
         public string Title { get; set; }
 

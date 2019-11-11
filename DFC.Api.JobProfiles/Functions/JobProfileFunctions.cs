@@ -1,4 +1,5 @@
-using DFC.Api.JobProfiles.ApiModels;
+using DFC.Api.JobProfiles.Data.ApiModels;
+using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
@@ -7,9 +8,8 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using System;
+using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -22,47 +22,42 @@ namespace DFC.Api.JobProfiles.Functions
         [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Summary list of Job Profiles found.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Summary list of Job Profiles  does not exist", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.UnprocessableEntity, Description = "Job Profile validation error(s).", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "job-profiles")] HttpRequest request,
-            [Inject] IProfileService service,
-            [Inject] AutoMapper.IMapper mapper)
+            [Inject] ISummaryService summaryService)
         {
-            var dataModels = await service.GetSummaryList().ConfigureAwait(false);
-            if (dataModels is null)
+            var viewModels = await summaryService.GetSummaryList(request.HttpContext.Request.GetEncodedUrl()).ConfigureAwait(false);
+            if (viewModels is null)
             {
                 return new NoContentResult();
             }
 
-            try
-            {
-                var viewModels = dataModels.Select(mapper.Map<SummaryApiModel>).ToList();
-                viewModels.ForEach(v => v.FullUrl = $"{request.HttpContext.Request.GetEncodedUrl()}/{v.FullUrl}");
-
-                return new OkObjectResult(viewModels);
-            }
-            catch (Exception)
-            {
-                return new StatusCodeResult((int)HttpStatusCode.UnprocessableEntity);
-            }
+            return new OkObjectResult(viewModels);
         }
 
-        [Display(Name = "Get Summary List of Job Profiles", Description = "Retrieves a summary list of all Job Profiles")]
-        [FunctionName("job-profiles")]
-        [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Summary list of Job Profiles found.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Summary list of Job Profiles  does not exist", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.UnprocessableEntity, Description = "Job Profile validation error(s).", ShowSchema = false)]
+        [Display(Name = "Get Job Profile Detail", Description = "Retrieves details of a specific Job Profile")]
+        [FunctionName("job-profiles-detail")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job Profile found.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job Profile does not exist", ShowSchema = false)]
         public static async Task<IActionResult> GetJobProfileDetail(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "job-profiles/{canonicalName}")] HttpRequest request,
             string canonicalName,
-            [Inject] IProfileService service,
-            [Inject] AutoMapper.IMapper mapper)
+            [Inject] IProfileDataService dataService,
+            [Inject] ILogger log)
         {
+            // Retrieve version off headers in request via APIM?
+            var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
+            if (jobProfile is null)
+            {
+                log.LogWarning($"Job Profile with name {canonicalName} does not exist");
+                return new NoContentResult();
+            }
 
-            var jobProfile = await service.
-            return new OkObjectResult();
+            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url);
+
+            return new OkObjectResult(jobProfile);
         }
-
     }
 }

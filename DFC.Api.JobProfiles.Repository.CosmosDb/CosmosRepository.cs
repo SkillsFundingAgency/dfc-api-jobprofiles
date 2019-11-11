@@ -1,4 +1,4 @@
-﻿using DFC.Api.JobProfiles.Data.ApiModels;
+﻿using DFC.Api.JobProfiles.Data.DataModels;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -7,13 +7,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading.Tasks;
-using DFC.Api.JobProfiles.Data.DataModels;
 
 namespace DFC.Api.JobProfiles.Repository.CosmosDb
 {
-    public class CosmosRepository : ICosmosRepository
+    public class CosmosRepository<T> : ICosmosRepository<T>
+        where T : BaseDataModel
     {
         private readonly CosmosDbConnection cosmosDbConnection;
         private readonly IDocumentClient documentClient;
@@ -34,7 +35,7 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
 
         public async Task<bool> PingAsync()
         {
-            var query = documentClient.CreateDocumentQuery<SummaryDataModel>(DocumentCollectionUri, new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true })
+            var query = documentClient.CreateDocumentQuery<T>(DocumentCollectionUri, new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true })
                                        .AsDocumentQuery();
 
             if (query == null)
@@ -42,33 +43,33 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
                 return false;
             }
 
-            var models = await query.ExecuteNextAsync<SummaryDataModel>().ConfigureAwait(false);
+            var models = await query.ExecuteNextAsync<T>().ConfigureAwait(false);
             var firstModel = models.FirstOrDefault();
 
             return firstModel != null;
         }
 
-        public async Task<IEnumerable<SummaryDataModel>> GetSummaryListAsync()
+        public async Task<IList<T>> GetData(Expression<Func<T, T>> selector, Expression<Func<T, bool>> filter)
         {
             var feedOptions = new FeedOptions
             {
                 EnableCrossPartitionQuery = true,
                 MaxDegreeOfParallelism = -1,
             };
-            const string query = @"select c.CanonicalName, c.BreadcrumbTitle, c.LastReviewed "
-                                 + " from c ";
 
-            var queryable = documentClient.CreateDocumentQuery<Document>(DocumentCollectionUri, query, feedOptions).AsDocumentQuery();
+            var baseQuery = documentClient.CreateDocumentQuery<T>(DocumentCollectionUri, feedOptions);
 
-            var dataModels = new List<SummaryDataModel>();
-            while (queryable.HasMoreResults)
+            var query = filter != null ? baseQuery.Where(filter).Select(selector).AsDocumentQuery() : baseQuery.Select(selector).AsDocumentQuery();
+
+            var dataModels = new List<T>();
+            while (query.HasMoreResults)
             {
-                var response = await queryable.ExecuteNextAsync<SummaryDataModel>().ConfigureAwait(false);
+                var response = await query.ExecuteNextAsync<T>().ConfigureAwait(false);
 
                 dataModels.AddRange(response);
             }
 
-            return dataModels.ToArray();
+            return dataModels;
         }
 
         private async Task CreateDatabaseIfNotExistsAsync()
@@ -115,11 +116,6 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
                     throw;
                 }
             }
-        }
-
-        private Uri CreateDocumentUri(Guid documentId)
-        {
-            return UriFactory.CreateDocumentUri(cosmosDbConnection.DatabaseId, cosmosDbConnection.CollectionId, documentId.ToString());
         }
     }
 }

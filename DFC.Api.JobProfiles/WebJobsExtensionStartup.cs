@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AzureFunctions.Extensions.Swashbuckle;
 using DFC.Api.JobProfiles;
+using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Functions.DI.Standard;
@@ -36,12 +37,15 @@ namespace DFC.Api.JobProfiles
 
             builder.AddDependencyInjection();
             builder.AddSwashBuckle(Assembly.GetExecutingAssembly());
+            builder?.Services.AddApplicationInsightsTelemetry();
             builder?.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
             builder?.Services.AddSingleton(cosmosDbConnection);
             builder?.Services.AddSingleton<IDocumentClient>(documentClient);
             builder?.Services.AddSingleton<ILogger, Logger<WebJobsExtensionStartup>>();
-            builder?.Services.AddSingleton<IProfileService, ProfileService>();
-            builder?.Services.AddSingleton<ICosmosRepository, CosmosRepository>();
+            builder?.Services.AddSingleton<IProfileDataService, ProfileDataService>();
+            builder?.Services.AddSingleton<ISummaryService, SummaryService>();
+            builder?.Services.AddSingleton<ICosmosRepository<SummaryDataModel>, CosmosRepository<SummaryDataModel>>();
+            builder?.Services.AddSingleton<ICosmosRepository<SegmentDataModel>, CosmosRepository<SegmentDataModel>>();
             builder?.Services.AddTransient<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
         }
     }

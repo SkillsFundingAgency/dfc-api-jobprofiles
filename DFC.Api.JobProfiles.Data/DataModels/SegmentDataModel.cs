@@ -1,6 +1,9 @@
-﻿namespace DFC.Api.JobProfiles.Data.DataModels
+﻿using System.Collections.Generic;
+
+namespace DFC.Api.JobProfiles.Data.DataModels
 {
-    public class SegmentDataModel
+    public class SegmentDataModel : BaseDataModel
     {
+        public IList<SegmentDetailModel> Segments { get; set; }
     }
 }
