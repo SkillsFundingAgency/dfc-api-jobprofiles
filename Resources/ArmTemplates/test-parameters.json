@@ -38,7 +38,7 @@
         "ApiName": {
             "value": "api-name"
         },
-        "ApiVersion": {
+        "ApiVersionNumber": {
             "value": "v15"
         }
     }

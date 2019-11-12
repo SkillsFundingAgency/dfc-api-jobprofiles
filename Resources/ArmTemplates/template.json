@@ -60,7 +60,7 @@
         "ApiName": {
             "type": "string"
         },
-        "ApiVersion": {
+        "ApiVersionNumber": {
             "type": "string"
         }
     },
@@ -127,7 +127,7 @@
                         "value": "[variables('ApiName')]"
                     },
                     "apiVersion": {
-                        "value": "[parameters('ApiVersion')]"
+                        "value": "[parameters('ApiVersionNumber')]"
                     }
                 }
             },
