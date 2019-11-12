@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace DFC.Api.JobProfiles.Data.ApiModels
+namespace DFC.Api.JobProfiles.Data.DataModels
 {
-    public class SummaryDataModel
+    public class SummaryDataModel : BaseDataModel
     {
-        public string CanonicalName { get; set; }
-
         public string BreadcrumbTitle { get; set; }
 
         public DateTime LastReviewed { get; set; }

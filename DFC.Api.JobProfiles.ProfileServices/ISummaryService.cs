@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
-    public interface IProfileService
+    public interface ISummaryService
     {
-        Task<IEnumerable<SummaryDataModel>> GetSummaryList();
+        Task<IEnumerable<SummaryApiModel>> GetSummaryList(string requestUrl);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
-using DFC.Api.JobProfiles.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels;
+using DFC.Api.JobProfiles.Data.ApiModels.Overview;
+using DFC.Api.JobProfiles.Data.DataModels;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile
 {
@@ -11,7 +12,9 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
             CreateMap<SummaryDataModel, SummaryApiModel>()
                 .ForMember(d => d.Title, o => o.MapFrom(s => s.BreadcrumbTitle))
                 .ForMember(d => d.LastUpdated, o => o.MapFrom(s => s.LastReviewed))
-                .ForMember(d => d.FullUrl, o => o.MapFrom(s => s.CanonicalName));
+                .ForMember(d => d.Url, o => o.MapFrom(s => s.CanonicalName));
+
+            CreateMap<OverviewApiModel, JobProfileApiModel>();
         }
     }
 }
