@@ -74,7 +74,7 @@
         "cosmosDbEndpoint": "[concat('https://', parameters('cosmosDbName'), '.documents.azure.com:443/')]",
         "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles'))]",
         "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles-ai'))]",
-        "ApiName": "[concat(parameters('ApimProductInstanceName'), '-', parameters('ApiName'))]",
+        "ApiWithProduct": "[concat(parameters('ApimProductInstanceName'), '-', parameters('ApiName'))]",
         "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
     },
     "resources": [
@@ -94,7 +94,7 @@
                         "value": "[parameters('ApimServiceName')]"
                     },
                     "apiName": {
-                        "value": "[parameters('ApiName')]"
+                        "value": "[variables('ApiWithProduct')]"
                     },
                     "versioningMethod": {
                         "value": "Header"
@@ -106,7 +106,7 @@
             }
         },
         {
-            "name": "[variables('ApiName')]",
+            "name": "[variables('ApiWithProduct')]",
             "type": "Microsoft.Resources/deployments",
             "resourceGroup": "[parameters('ApimResourceGroup')]",
             "apiVersion": "2017-05-10",
@@ -124,7 +124,7 @@
                         "value": "[parameters('ApimServiceName')]"
                     },
                     "apiName": {
-                        "value": "[variables('ApiName')]"
+                        "value": "[variables('ApiWithProduct')]"
                     },
                     "apiVersion": {
                         "value": "[parameters('ApiVersionNumber')]"
