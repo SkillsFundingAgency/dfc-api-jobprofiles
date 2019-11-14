@@ -16,10 +16,10 @@ namespace DFC.Api.JobProfiles.Functions
     [ExcludeFromCodeCoverage]
     public class APIDefinition
     {
-        private const string ApiTitle = "Job Profiles API";
+        private const string ApiTitle = "Job profiles API";
         private const string SwaggerJsonRoute = "swagger/json";
         private const string SwaggerUiRoute = "swagger/ui";
-        private const string ApiDefinitionDescription = "DFC Job Profiles API";
+        private const string ApiDefinitionDescription = "National Careers Service job profiles API is a RESTful API that provides a simple and consistent approach to requesting job profile data.";
         private const string ApiVersion = "0.1.0";
 
         private readonly ISwaggerDocumentGenerator swaggerDocumentGenerator;
