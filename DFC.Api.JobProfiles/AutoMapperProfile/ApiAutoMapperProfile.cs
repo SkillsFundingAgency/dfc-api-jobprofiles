@@ -2,9 +2,11 @@
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.Overview;
 using DFC.Api.JobProfiles.Data.DataModels;
+using System.Diagnostics.CodeAnalysis;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile
 {
+    [ExcludeFromCodeCoverage]
     public class ApiAutoMapperProfile : Profile
     {
         public ApiAutoMapperProfile()

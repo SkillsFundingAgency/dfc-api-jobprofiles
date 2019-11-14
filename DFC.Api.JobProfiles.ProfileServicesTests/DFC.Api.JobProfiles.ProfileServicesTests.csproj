@@ -5,7 +5,6 @@
     <CodeAnalysisRuleSet>../UnitTests.CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <IsPackable>false</IsPackable>
     <LangVersion>latest</LangVersion>
-	<ProjectGuid>{7B356D31-E3E6-4EC3-84BD-66D316D06902}</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
     <AdditionalFiles Include="..\stylecop.json" Link="../stylecop.json" />
@@ -30,10 +29,13 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\DFC.Api.JobProfiles.Data\DFC.Api.JobProfiles.Data.csproj" />
     <ProjectReference Include="..\DFC.Api.JobProfiles.ProfileServices\DFC.Api.JobProfiles.ProfileServices.csproj" />
-    <ProjectReference Include="..\DFC.Api.JobProfiles\DFC.Api.JobProfiles.csproj" />
+    <ProjectReference Include="..\DFC.Api.JobProfiles.Repository.CosmosDb\DFC.Api.JobProfiles.Repository.CosmosDb.csproj" />
   </ItemGroup>
+
 </Project>

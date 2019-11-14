@@ -2,7 +2,6 @@
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
-using DFC.Api.JobProfiles.Data.ApiModels.Overview;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
@@ -35,18 +34,13 @@ namespace DFC.Api.JobProfiles.ProfileServices
             var segmentDetailModels = await repository.GetData(s => new SegmentDataModel { Segments = s.Segments, CanonicalName = s.CanonicalName }, model => model.CanonicalName == profileName.ToLowerInvariant())
                 .ConfigureAwait(false);
 
-            var result = new JobProfileApiModel();
-            foreach (var segmentDetailModel in segmentDetailModels.SingleOrDefault()?.Segments)
+            var overviewDataModel = segmentDetailModels.SingleOrDefault()?.Segments.SingleOrDefault(s => s.Segment == JobProfileSegment.Overview);
+            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewDataModel?.Json);
+
+            foreach (var segmentDetailModel in segmentDetailModels.SingleOrDefault()?.Segments.Where(s => s.Segment != JobProfileSegment.Overview))
             {
                 switch (segmentDetailModel.Segment)
                 {
-                    case JobProfileSegment.Overview:
-                        {
-                            var overviewApiModel = JsonConvert.DeserializeObject<OverviewApiModel>(segmentDetailModel.Json);
-                            result = mapper.Map<JobProfileApiModel>(overviewApiModel);
-                            break;
-                        }
-
                     case JobProfileSegment.HowToBecome:
                         {
                             var howToBecomeApiModel = JsonConvert.DeserializeObject<HowToBecomeApiModel>(segmentDetailModel.Json);
