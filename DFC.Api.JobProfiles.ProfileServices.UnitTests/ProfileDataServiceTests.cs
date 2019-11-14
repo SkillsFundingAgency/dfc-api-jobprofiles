@@ -1,4 +1,3 @@
-using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Api.JobProfiles.Data.ApiModels.Overview;
@@ -30,15 +29,11 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             var dataModels = GetSegmentDataModel();
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(dataModels);
-
-            var mapper = A.Fake<IMapper>();
             var logger = A.Fake<ILogger>();
-
-            var dataService = new ProfileDataService(repository, mapper, logger);
+            var dataService = new ProfileDataService(repository, logger);
+            var expectedOverview = GetOverviewApiModel();
 
             var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
-
-            var expectedOverview = GetOverviewApiModel();
 
             Assert.True(result.Title.Equals(expectedOverview.Title, StringComparison.OrdinalIgnoreCase)
                         && result.Overview.Equals(expectedOverview.Overview, StringComparison.OrdinalIgnoreCase)

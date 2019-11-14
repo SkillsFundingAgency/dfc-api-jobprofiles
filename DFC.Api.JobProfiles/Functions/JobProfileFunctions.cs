@@ -26,7 +26,7 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
-            [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest request,
             [Inject] ISummaryService summaryService)
         {
             var viewModels = await summaryService.GetSummaryList(request.HttpContext.Request.GetEncodedUrl()).ConfigureAwait(false);
@@ -47,7 +47,7 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetJobProfileDetail(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{canonicalName}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName,
             [Inject] IProfileDataService dataService,
             [Inject] ILogger log)
