@@ -17,11 +17,14 @@ namespace DFC.Api.JobProfiles.Functions
 {
     public static class JobProfileFunctions
     {
-        [Display(Name = "Get Summary List of Job Profiles", Description = "Retrieves a summary list of all Job Profiles")]
+        [Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
         [FunctionName("job-profiles")]
         [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Summary list of Job Profiles found.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Summary list of Job Profiles  does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "List of all published job profiles summary data.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No published job profiles available at this time.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest request,
             [Inject] ISummaryService summaryService)
@@ -35,11 +38,14 @@ namespace DFC.Api.JobProfiles.Functions
             return new OkObjectResult(viewModels);
         }
 
-        [Display(Name = "Get Job Profile Detail", Description = "Retrieves details of a specific Job Profile")]
+        [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
         [FunctionName("job-profiles-detail")]
         [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job Profile found.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job Profile does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetJobProfileDetail(
             [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName,
