@@ -1,7 +1,6 @@
 using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.DataModels;
-using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using FakeItEasy;
 using System;
@@ -11,7 +10,7 @@ using System.Linq.Expressions;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace DFC.Api.JobProfiles.ProfileServicesTests
+namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
 {
     public class SummaryServiceTests
     {
