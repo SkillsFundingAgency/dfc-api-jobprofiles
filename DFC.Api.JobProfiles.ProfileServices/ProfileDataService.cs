@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using DFC.Api.JobProfiles.Data.ApiModels;
+﻿using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
@@ -19,13 +18,11 @@ namespace DFC.Api.JobProfiles.ProfileServices
     public class ProfileDataService : IProfileDataService
     {
         private readonly ICosmosRepository<SegmentDataModel> repository;
-        private readonly IMapper mapper;
         private readonly ILogger log;
 
-        public ProfileDataService(ICosmosRepository<SegmentDataModel> repository, IMapper mapper, ILogger log)
+        public ProfileDataService(ICosmosRepository<SegmentDataModel> repository, ILogger log)
         {
             this.repository = repository;
-            this.mapper = mapper;
             this.log = log;
         }
 
