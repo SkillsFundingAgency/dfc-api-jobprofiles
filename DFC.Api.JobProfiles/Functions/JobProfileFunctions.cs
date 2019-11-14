@@ -23,7 +23,7 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Summary list of Job Profiles found.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Summary list of Job Profiles  does not exist", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "job-profiles")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Function, "get")] HttpRequest request,
             [Inject] ISummaryService summaryService)
         {
             var viewModels = await summaryService.GetSummaryList(request.HttpContext.Request.GetEncodedUrl()).ConfigureAwait(false);
@@ -41,7 +41,7 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job Profile found.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job Profile does not exist", ShowSchema = false)]
         public static async Task<IActionResult> GetJobProfileDetail(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "job-profiles/{canonicalName}")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Function, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName,
             [Inject] IProfileDataService dataService,
             [Inject] ILogger log)

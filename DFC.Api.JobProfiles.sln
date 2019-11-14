@@ -39,7 +39,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.UnitTes
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Services", "Services", "{89172FDC-C157-44C9-8920-82F11338FF0E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.Api.JobProfiles.ProfileServicesTests", "DFC.Api.JobProfiles.ProfileServicesTests\DFC.Api.JobProfiles.ProfileServicesTests.csproj", "{8548B6A3-7935-4C39-810B-8BAFCF59C990}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.ProfileServices.UnitTests", "DFC.Api.JobProfiles.ProfileServices.UnitTests\DFC.Api.JobProfiles.ProfileServices.UnitTests.csproj", "{8548B6A3-7935-4C39-810B-8BAFCF59C990}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
