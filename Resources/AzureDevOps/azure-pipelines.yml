@@ -10,15 +10,22 @@ resources:
   - repository: dfc-devops
     type: github
     name: SkillsFundingAgency/dfc-devops
-    ref: refs/tags/v1.6.10
+    ref: refs/tags/v1.6.12
     endpoint: 'GitHub (ESFA)'
+
+trigger:
+  - v1-*
+
+pr: 
+  - v1-dev
+  - v1-master
 
 jobs:
 
 #Build and test resources
-# - template: AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
-#   parameters:
-#     ArmTemplateRoot: $(ArmTemplateRoot)
+- template: AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
+  parameters:
+    ArmTemplateRoot: $(ArmTemplateRoot)
 
 #Build and test application
 - job: BuildDotNetCore
