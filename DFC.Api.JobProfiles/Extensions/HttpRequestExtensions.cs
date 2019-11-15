@@ -7,7 +7,7 @@ namespace DFC.Api.JobProfiles.Extensions
         public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath)
         {
             var contextRequest = request.HttpContext.Request;
-            return $"{contextRequest.Scheme}://{contextRequest.Host}/job-profiles/{relativePath.TrimStart('/')}";
+            return $"{contextRequest.Scheme}://{contextRequest.Host}/{relativePath.TrimStart('/')}";
         }
     }
 }

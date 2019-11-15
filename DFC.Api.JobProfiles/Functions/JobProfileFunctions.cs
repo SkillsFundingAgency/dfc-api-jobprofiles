@@ -26,10 +26,10 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "")] HttpRequest request,
             [Inject] ISummaryService summaryService)
         {
-            var viewModels = await summaryService.GetSummaryList(request.HttpContext.Request.GetEncodedUrl()).ConfigureAwait(false);
+            var viewModels = await summaryService.GetSummaryList($"{request?.Scheme}://{request?.Host}").ConfigureAwait(false);
             if (viewModels is null)
             {
                 return new NoContentResult();
