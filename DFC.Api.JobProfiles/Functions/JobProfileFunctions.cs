@@ -9,6 +9,7 @@ using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -28,13 +29,13 @@ namespace DFC.Api.JobProfiles.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request,
             [Inject] ISummaryService summaryService)
         {
-            var viewModels = await summaryService.GetSummaryList($"{request?.Scheme}://{request?.Host}/job-profiles").ConfigureAwait(false);
+            var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath()).ConfigureAwait(false);
             if (viewModels is null)
             {
                 return new NoContentResult();
             }
 
-            return new OkObjectResult(viewModels);
+            return new OkObjectResult(viewModels.OrderBy(jp => jp.Title));
         }
 
         [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
@@ -51,7 +52,6 @@ namespace DFC.Api.JobProfiles.Functions
             [Inject] IProfileDataService dataService,
             [Inject] ILogger log)
         {
-            // Retrieve version off headers in request via APIM?
             var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
             if (jobProfile is null)
             {
@@ -59,8 +59,8 @@ namespace DFC.Api.JobProfiles.Functions
                 return new NoContentResult();
             }
 
-            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url));
-            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url);
+            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url.TrimStart('/'));
 
             return new OkObjectResult(jobProfile);
         }
