@@ -8,7 +8,7 @@ namespace DFC.Api.JobProfiles.Extensions
         {
             request.HttpContext.Request.Headers.TryGetValue("X-Original-Url", out var apimUrl);
 
-            return string.IsNullOrEmpty(apimUrl) ? $"{request.Scheme}://{request.Host}{request.Path}/{relativePath?.TrimStart('/')}" : $"{apimUrl.ToString().TrimEnd('/')}/{relativePath?.TrimStart('/')}";
+            return string.IsNullOrEmpty(apimUrl) ? $"{request.HttpContext.Request.Scheme}://{request.HttpContext.Request.Host}{request.HttpContext.Request.Path}/{relativePath?.TrimStart('/')}" : $"{apimUrl.ToString().TrimEnd('/')}/{relativePath?.TrimStart('/')}";
         }
     }
 }
