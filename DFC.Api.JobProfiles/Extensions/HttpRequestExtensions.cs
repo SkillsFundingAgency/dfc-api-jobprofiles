@@ -7,6 +7,11 @@ namespace DFC.Api.JobProfiles.Extensions
     {
         public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, ILogger log, string relativePath = null)
         {
+            foreach (var key in request.Headers.Keys.ToList())
+            {
+                log.LogError($"Request Headers Key: '{key}', Value: '{request.Headers[key]}'");
+            }
+            
             request.Headers.TryGetValue("X-Original-Url", out var apimUrl);
 
             log.LogError($"Apim Url set to {apimUrl}");
