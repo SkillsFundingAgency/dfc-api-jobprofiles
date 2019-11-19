@@ -6,9 +6,15 @@ namespace DFC.Api.JobProfiles.Extensions
     {
         public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath = null)
         {
-            request.HttpContext.Request.Headers.TryGetValue("X-Original-Url", out var apimUrl);
+            request.Headers.TryGetValue("X-Original-Url", out var apimUrl);
+            var trimmedRelativePath = relativePath?.TrimStart('/');
 
-            return string.IsNullOrEmpty(apimUrl) ? $"{request.HttpContext.Request.Scheme}://{request.HttpContext.Request.Host}{request.HttpContext.Request.Path}/{relativePath?.TrimStart('/')}" : $"{apimUrl.ToString().TrimEnd('/')}/{relativePath?.TrimStart('/')}";
+            if (string.IsNullOrEmpty(apimUrl))
+            {
+                return $"{request.Scheme}://{request.Host}/job-profiles/{trimmedRelativePath}";
+            }
+
+            return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
         }
     }
 }
