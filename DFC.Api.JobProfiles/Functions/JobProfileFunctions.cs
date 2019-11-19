@@ -27,9 +27,10 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request,
-            [Inject] ISummaryService summaryService)
+            [Inject] ISummaryService summaryService,
+            ILogger log)
         {
-            var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath()).ConfigureAwait(false);
+            var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath(log)).ConfigureAwait(false);
             if (viewModels is null)
             {
                 return new NoContentResult();
@@ -50,7 +51,7 @@ namespace DFC.Api.JobProfiles.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName,
             [Inject] IProfileDataService dataService,
-            [Inject] ILogger log)
+            ILogger log)
         {
             var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
             if (jobProfile is null)
@@ -59,8 +60,8 @@ namespace DFC.Api.JobProfiles.Functions
                 return new NoContentResult();
             }
 
-            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
-            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url.TrimStart('/'));
+            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(log, r.Url.TrimStart('/')));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(log, jobProfile.Url.TrimStart('/'));
 
             return new OkObjectResult(jobProfile);
         }

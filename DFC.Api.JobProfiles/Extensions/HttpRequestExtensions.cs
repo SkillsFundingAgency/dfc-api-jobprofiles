@@ -1,20 +1,28 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace DFC.Api.JobProfiles.Extensions
 {
     public static class HttpRequestExtensions
     {
-        public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath = null)
+        public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, ILogger log, string relativePath = null)
         {
             request.Headers.TryGetValue("X-Original-Url", out var apimUrl);
+
+            log.LogError($"Apim Url set to {apimUrl}");
+
             var trimmedRelativePath = relativePath?.TrimStart('/');
 
             if (string.IsNullOrEmpty(apimUrl))
             {
-                return $"{request.Scheme}://{request.Host}/job-profiles/{trimmedRelativePath}";
+                var fullPath = $"{request.Scheme}://{request.Host}/job-profiles/{trimmedRelativePath}";
+                log.LogError($"Request Scheme: '{request.Scheme}', RequestHost: '{request.Host}', FullPath: '{fullPath}'");
+                return fullPath;
             }
 
-            return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
+            var returnPath = $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
+            log.LogError($"Apim Url returned '{returnPath}'");
+            return returnPath;
         }
     }
 }
