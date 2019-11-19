@@ -7,7 +7,7 @@ namespace DFC.Api.JobProfiles.Extensions
     {
         public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, ILogger log, string relativePath = null)
         {
-            foreach (var key in request.Headers.Keys.ToList())
+            foreach (var key in request.Headers.Keys)
             {
                 log.LogError($"Request Headers Key: '{key}', Value: '{request.Headers[key]}'");
             }
