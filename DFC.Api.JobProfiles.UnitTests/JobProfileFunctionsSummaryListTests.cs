@@ -5,7 +5,6 @@ using FakeItEasy;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -18,13 +17,11 @@ namespace DFC.Api.JobProfiles.UnitTests
     {
         private readonly HttpRequest httpRequest;
         private readonly ISummaryService fakeSummaryService;
-        private readonly ILogger logger;
 
         public JobProfileFunctionsSummaryListTests()
         {
             httpRequest = A.Fake<HttpRequest>();
             fakeSummaryService = A.Fake<ISummaryService>();
-            logger = A.Fake<ILogger>();
         }
 
         [Fact]
@@ -33,7 +30,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             var expectedModels = GetSummaryApiModels();
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns(expectedModels);
 
-            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService, logger).ConfigureAwait(false);
+            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
 
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
@@ -45,7 +42,7 @@ namespace DFC.Api.JobProfiles.UnitTests
         {
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IEnumerable<SummaryApiModel>)null);
 
-            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService, logger).ConfigureAwait(false);
+            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
 
             var noContentResult = Assert.IsType<NoContentResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
