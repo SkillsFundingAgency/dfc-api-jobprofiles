@@ -62,6 +62,9 @@
         },
         "ApiVersionNumber": {
             "type": "string"
+        },
+        "ApimLoggerName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -127,6 +130,9 @@
                     },
                     "apiVersion": {
                         "value": "[parameters('ApiVersionNumber')]"
+                    },
+                    "apimLoggerName": {
+                        "value": "[parameters('ApimLoggerName')]"
                     }
                 }
             },
