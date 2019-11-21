@@ -40,6 +40,9 @@
         },
         "ApiVersionNumber": {
             "value": "v15"
+        },
+        "ApimLoggerName": {
+            "value": "some-apim-logger"
         }
     }
 }

@@ -4,12 +4,12 @@ using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -26,16 +26,16 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get")] HttpRequest request,
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request,
             [Inject] ISummaryService summaryService)
         {
-            var viewModels = await summaryService.GetSummaryList(request.HttpContext.Request.GetEncodedUrl()).ConfigureAwait(false);
+            var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath()).ConfigureAwait(false);
             if (viewModels is null)
             {
                 return new NoContentResult();
             }
 
-            return new OkObjectResult(viewModels);
+            return new OkObjectResult(viewModels.OrderBy(jp => jp.Title));
         }
 
         [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
@@ -50,9 +50,8 @@ namespace DFC.Api.JobProfiles.Functions
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName,
             [Inject] IProfileDataService dataService,
-            [Inject] ILogger log)
+            ILogger log)
         {
-            // Retrieve version off headers in request via APIM?
             var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
             if (jobProfile is null)
             {
@@ -60,8 +59,8 @@ namespace DFC.Api.JobProfiles.Functions
                 return new NoContentResult();
             }
 
-            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url));
-            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url);
+            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url.TrimStart('/'));
 
             return new OkObjectResult(jobProfile);
         }

@@ -37,7 +37,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
             }
 
             var viewModels = mapper.Map<IEnumerable<SummaryApiModel>>(dataModels).ToList();
-            viewModels.ForEach(v => v.Url = $"{requestUrl}/{v.Url}");
+            viewModels.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
 
             return viewModels;
         }

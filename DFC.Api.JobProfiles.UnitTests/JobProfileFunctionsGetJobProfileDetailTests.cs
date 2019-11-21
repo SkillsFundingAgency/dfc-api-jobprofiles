@@ -29,7 +29,7 @@ namespace DFC.Api.JobProfiles.UnitTests
 
             httpRequest = A.Fake<HttpRequest>();
             httpRequest.HttpContext.Request.Scheme = "http";
-            httpRequest.HttpContext.Request.Host = new HostString(fakeHostName); ;
+            httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
 
             profileDataService = A.Fake<IProfileDataService>();
             logger = A.Fake<ILogger>();
