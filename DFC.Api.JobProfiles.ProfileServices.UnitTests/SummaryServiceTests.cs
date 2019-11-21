@@ -14,7 +14,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
 {
     public class SummaryServiceTests
     {
-        private const string RequestUrl = "http://Something.com";
+        private const string RequestUrl = "http://Something.com/";
 
         [Fact]
         public async Task GetSummaryListReturnsApiModelsWithCorrectUrlPrefixWhenDataExists()
@@ -34,7 +34,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
 
             for (var i = 0; i < resultArray.Length; i++)
             {
-                Assert.Equal($"{RequestUrl}/{dataModels[i].CanonicalName}", resultArray[i].Url);
+                Assert.Equal($"{RequestUrl}{dataModels[i].CanonicalName}", resultArray[i].Url);
             }
         }
 

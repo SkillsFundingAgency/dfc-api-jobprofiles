@@ -32,7 +32,7 @@ namespace DFC.Api.JobProfiles.Functions
         [SwaggerIgnore]
         [FunctionName("SwaggerUI")]
         public static Task<HttpResponseMessage> SwaggerUi(
-            [HttpTrigger(AuthorizationLevel.Function, "get", Route = SwaggerUiRoute)]
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerUiRoute)]
             HttpRequestMessage req,
             [SwashBuckleClient] ISwashBuckleClient swashBuckleClient)
         {
@@ -51,7 +51,8 @@ namespace DFC.Api.JobProfiles.Functions
                 ApiVersion,
                 Assembly.GetExecutingAssembly(),
                 false,
-                false))
+                false,
+                "/"))
                 .ConfigureAwait(false);
 
             return new OkObjectResult(swaggerDoc);

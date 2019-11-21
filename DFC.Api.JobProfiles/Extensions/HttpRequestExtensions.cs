@@ -4,10 +4,18 @@ namespace DFC.Api.JobProfiles.Extensions
 {
     public static class HttpRequestExtensions
     {
-        public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath)
+        public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath = null)
         {
-            var contextRequest = request.HttpContext.Request;
-            return $"{contextRequest.Scheme}://{contextRequest.Host}/job-profiles/{relativePath.TrimStart('/')}";
+            request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var apimUrl);
+
+            var trimmedRelativePath = relativePath?.TrimStart('/');
+
+            if (string.IsNullOrEmpty(apimUrl))
+            {
+                return $"{request.Scheme}://{request.Host}{request.Path}/{trimmedRelativePath}";
+            }
+
+            return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
         }
     }
 }
