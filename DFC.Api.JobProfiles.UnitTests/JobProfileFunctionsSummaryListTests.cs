@@ -27,11 +27,14 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetSummaryListReturnsOKAndViewModelsWhenReturnedFromSummaryService()
         {
+            // Arrange
             var expectedModels = GetSummaryApiModels();
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns(expectedModels);
 
+            // Act
             var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
             okResult.Value.Should().BeEquivalentTo(expectedModels);
@@ -40,10 +43,13 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetSummaryListReturnsNoContentResultWhenNullReturnedFromSummaryService()
         {
+            // Arrange
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IList<SummaryApiModel>)null);
 
+            // Act
             var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
 
+            // Assert
             var noContentResult = Assert.IsType<NoContentResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }

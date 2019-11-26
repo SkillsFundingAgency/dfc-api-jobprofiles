@@ -28,13 +28,26 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<JobProfileApiModel> GetJobProfile(string profileName)
         {
-            var segmentDetailModels = await repository.GetData(s => new SegmentDataModel { Segments = s.Segments, CanonicalName = s.CanonicalName }, model => model.CanonicalName == profileName.ToLowerInvariant())
-                .ConfigureAwait(false);
+            var segmentDetailModels = await repository.GetData(
+                    s => new SegmentDataModel { Segments = s.Segments, CanonicalName = s.CanonicalName },
+                    model => model.CanonicalName == profileName.ToLowerInvariant())
+                 .ConfigureAwait(false);
+
+            if (segmentDetailModels is null || !segmentDetailModels.Any())
+            {
+                return null;
+            }
 
             var overviewDataModel = segmentDetailModels.SingleOrDefault()?.Segments.SingleOrDefault(s => s.Segment == JobProfileSegment.Overview);
             var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewDataModel?.Json);
 
-            foreach (var segmentDetailModel in segmentDetailModels.SingleOrDefault()?.Segments.Where(s => s.Segment != JobProfileSegment.Overview))
+            var otherSegmentDataModels = segmentDetailModels.SingleOrDefault()?.Segments.Where(s => s.Segment != JobProfileSegment.Overview).ToList();
+            if (otherSegmentDataModels == null || !otherSegmentDataModels.Any())
+            {
+                return result;
+            }
+
+            foreach (var segmentDetailModel in otherSegmentDataModels)
             {
                 switch (segmentDetailModel.Segment)
                 {
