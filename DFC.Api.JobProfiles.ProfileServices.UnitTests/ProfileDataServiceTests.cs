@@ -22,19 +22,69 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
     public class ProfileDataServiceTests
     {
         private const string JobProfileName = "jobName1";
+        private readonly ILogger defaultLogger;
+
+        public ProfileDataServiceTests()
+        {
+            defaultLogger = A.Fake<ILogger>();
+        }
 
         [Fact]
-        public async Task GetSummaryListReturnsApiModelsWithCorrectUrlPrefixWhenDataExists()
+        public async Task GetJobProfileReturnsNullWhenDataDoesNotExists()
         {
+            // Arrange
+            var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
+            A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns((IList<SegmentDataModel>)null);
+            var dataService = new ProfileDataService(repository, defaultLogger);
+
+            // Act
+            var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
+
+            // Assert
+            Assert.Null(result);
+        }
+
+        [Fact]
+        public async Task GetJobProfileReturnsOverviewOnlyWhenOtherSegmentsDataDoesNotExists()
+        {
+            // Arrange
+            var onlyOverviewSegmentDataModel = GetOnlyOverviewSegmentDataModel();
+            var expectedOverview = GetOverviewApiModel();
+            var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
+            A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(onlyOverviewSegmentDataModel);
+            var dataService = new ProfileDataService(repository, defaultLogger);
+
+            // Act
+            var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
+
+            // Assert
+            Assert.True(result.Title.Equals(expectedOverview.Title, StringComparison.OrdinalIgnoreCase)
+                        && result.Overview.Equals(expectedOverview.Overview, StringComparison.OrdinalIgnoreCase)
+                        && result.Soc.Equals(expectedOverview.Soc, StringComparison.OrdinalIgnoreCase)
+                        && result.Url.Equals(expectedOverview.Url, StringComparison.OrdinalIgnoreCase));
+
+            Assert.True(result.HowToBecome is null &&
+                result.CareerPathAndProgression is null &&
+                result.RelatedCareers is null &&
+                result.WhatItTakes is null &&
+                result.WhatYouWillDo is null);
+        }
+
+        [Fact]
+        public async Task GetJobProfileReturnsApiModelsWithCorrectUrlPrefixWhenDataExists()
+        {
+            // Arrange
             var dataModels = GetSegmentDataModel();
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(dataModels);
-            var logger = A.Fake<ILogger>();
-            var dataService = new ProfileDataService(repository, logger);
+
+            var dataService = new ProfileDataService(repository, defaultLogger);
             var expectedOverview = GetOverviewApiModel();
 
+            // Act
             var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
 
+            // Assert
             Assert.True(result.Title.Equals(expectedOverview.Title, StringComparison.OrdinalIgnoreCase)
                         && result.Overview.Equals(expectedOverview.Overview, StringComparison.OrdinalIgnoreCase)
                         && result.Soc.Equals(expectedOverview.Soc, StringComparison.OrdinalIgnoreCase)
@@ -85,6 +135,25 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
                         {
                             Segment = JobProfileSegment.WhatYouWillDo,
                             Json = JsonConvert.SerializeObject(GetWhatYouWillDoApiModel()),
+                        },
+                    },
+                },
+            };
+        }
+
+        private IList<SegmentDataModel> GetOnlyOverviewSegmentDataModel()
+        {
+            return new List<SegmentDataModel>
+            {
+                new SegmentDataModel
+                {
+                    CanonicalName = "job1",
+                    Segments = new List<SegmentDetailModel>
+                    {
+                        new SegmentDetailModel
+                        {
+                            Segment = JobProfileSegment.Overview,
+                            Json = JsonConvert.SerializeObject(GetOverviewApiModel()),
                         },
                     },
                 },

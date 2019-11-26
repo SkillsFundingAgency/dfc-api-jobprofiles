@@ -15,23 +15,30 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
     public class SummaryServiceTests
     {
         private const string RequestUrl = "http://Something.com/";
+        private readonly IMapper mapper;
+
+        public SummaryServiceTests()
+        {
+            mapper = A.Fake<IMapper>();
+            var apiModels = GetSummaryApiModels();
+            A.CallTo(() => mapper.Map<IEnumerable<SummaryApiModel>>(A<IEnumerable<SummaryDataModel>>.Ignored)).Returns(apiModels);
+        }
 
         [Fact]
         public async Task GetSummaryListReturnsApiModelsWithCorrectUrlPrefixWhenDataExists()
         {
+            // Arrange
             var dataModels = GetSummaryDataModels();
             var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored, null)).Returns(dataModels);
 
-            var apiModels = GetSummaryApiModels();
-            var mapper = A.Fake<IMapper>();
-            A.CallTo(() => mapper.Map<IEnumerable<SummaryApiModel>>(A<IEnumerable<SummaryDataModel>>.Ignored)).Returns(apiModels);
-
             var summaryService = new SummaryService(repository, mapper);
 
+            // Act
             var result = await summaryService.GetSummaryList(RequestUrl).ConfigureAwait(false);
-            var resultArray = result.ToArray();
 
+            // Assert
+            var resultArray = result.ToArray();
             for (var i = 0; i < resultArray.Length; i++)
             {
                 Assert.Equal($"{RequestUrl}{dataModels[i].CanonicalName}", resultArray[i].Url);
@@ -41,13 +48,16 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         [Fact]
         public async Task GetSummaryListReturnsNullWhenDataDoesntExist()
         {
+            // Arrange
             var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored, null)).Returns((IList<SummaryDataModel>)null);
-            var mapper = A.Fake<IMapper>();
+
             var summaryService = new SummaryService(repository, mapper);
 
+            // Act
             var result = await summaryService.GetSummaryList(RequestUrl).ConfigureAwait(false);
 
+            // Assert
             Assert.Null(result);
         }
 

@@ -38,11 +38,14 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetJobProfileDetailTestsReturnsOKAndViewModelWhenReturnedFromProfileDataService()
         {
+            // Arrange
             var expectedModel = GetJobProfileApiModel();
             A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
 
+            // Act
             var result = await JobProfileFunctions.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService, logger).ConfigureAwait(false);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
             okResult.Value.Should().BeEquivalentTo(expectedModel);
@@ -51,10 +54,13 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetJobProfileDetailTestsReturnsNoContentWhenNullReturnedFromProfileDataService()
         {
+            // Arrange
             A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns((JobProfileApiModel)null);
 
+            // Act
             var result = await JobProfileFunctions.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService, logger).ConfigureAwait(false);
 
+            // Assert
             var noContentResult = Assert.IsType<NoContentResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }
