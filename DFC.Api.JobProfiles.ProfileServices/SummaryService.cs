@@ -3,7 +3,6 @@ using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.ProfileServices
@@ -19,7 +18,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
             this.mapper = mapper;
         }
 
-        public async Task<IEnumerable<SummaryApiModel>> GetSummaryList(string requestUrl)
+        public async Task<IList<SummaryApiModel>> GetSummaryList(string requestUrl)
         {
             var dataModels = await repository.GetData(
                     s => new SummaryDataModel
@@ -36,7 +35,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 return null;
             }
 
-            var viewModels = mapper.Map<IEnumerable<SummaryApiModel>>(dataModels).ToList();
+            var viewModels = mapper.Map<List<SummaryApiModel>>(dataModels);
             viewModels.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
 
             return viewModels;

@@ -6,6 +6,6 @@ namespace DFC.Api.JobProfiles.ProfileServices
 {
     public interface ISummaryService
     {
-        Task<IEnumerable<SummaryApiModel>> GetSummaryList(string requestUrl);
+        Task<IList<SummaryApiModel>> GetSummaryList(string requestUrl);
     }
 }

@@ -1,5 +1,8 @@
-﻿namespace DFC.Api.JobProfiles.Repository.CosmosDb
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DFC.Api.JobProfiles.Repository.CosmosDb
 {
+    [ExcludeFromCodeCoverage]
     public class CosmosDbConnection
     {
         public string AccessKey { get; set; }
