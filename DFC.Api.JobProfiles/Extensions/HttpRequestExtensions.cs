@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
+using System.Text;
 
 namespace DFC.Api.JobProfiles.Extensions
 {
@@ -16,6 +18,18 @@ namespace DFC.Api.JobProfiles.Extensions
             }
 
             return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
+        }
+
+        public static void LogRequestHeaders(this HttpRequest request, ILogger log)
+        {
+            var message = new StringBuilder();
+
+            foreach (var key in request.Headers.Keys)
+            {
+                message.AppendLine($"Request Header Key: '{key}', Value: '{request.Headers[key]}'");
+            }
+
+            log.LogError(message.ToString());
         }
     }
 }
