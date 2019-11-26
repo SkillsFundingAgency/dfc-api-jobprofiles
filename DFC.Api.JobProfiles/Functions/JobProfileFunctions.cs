@@ -30,7 +30,7 @@ namespace DFC.Api.JobProfiles.Functions
             [Inject] ISummaryService summaryService)
         {
             var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath()).ConfigureAwait(false);
-            if (viewModels is null)
+            if (viewModels is null || !viewModels.Any())
             {
                 return new NoContentResult();
             }

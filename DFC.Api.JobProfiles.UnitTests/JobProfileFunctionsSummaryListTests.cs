@@ -40,7 +40,7 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetSummaryListReturnsNoContentResultWhenNullReturnedFromSummaryService()
         {
-            A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IEnumerable<SummaryApiModel>)null);
+            A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IList<SummaryApiModel>)null);
 
             var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
 
