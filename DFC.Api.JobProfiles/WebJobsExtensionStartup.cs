@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using AzureFunctions.Extensions.Swashbuckle;
 using DFC.Api.JobProfiles;
+using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
@@ -49,6 +50,9 @@ namespace DFC.Api.JobProfiles
             builder?.Services.AddSingleton<ICosmosRepository<SummaryDataModel>, CosmosRepository<SummaryDataModel>>();
             builder?.Services.AddSingleton<ICosmosRepository<SegmentDataModel>, CosmosRepository<SegmentDataModel>>();
             builder?.Services.AddTransient<ISwaggerDocumentGenerator, SwaggerDocumentGenerator>();
+            builder?.Services.AddScoped<ICorrelationIdProvider, RequestHeaderCorrelationIdProvider>();
+            builder?.Services.AddScoped<ILogService, LogService>();
+            builder?.Services.AddScoped<IResponseWithCorrelation, ResponseWithCorrelation>();
         }
     }
 }

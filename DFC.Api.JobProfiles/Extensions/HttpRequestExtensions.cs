@@ -1,5 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+﻿using DFC.Api.JobProfiles.Common.Services;
+using Microsoft.ApplicationInsights.DataContracts;
+using Microsoft.AspNetCore.Http;
 using System.Text;
 
 namespace DFC.Api.JobProfiles.Extensions
@@ -20,7 +21,7 @@ namespace DFC.Api.JobProfiles.Extensions
             return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
         }
 
-        public static void LogRequestHeaders(this HttpRequest request, ILogger log)
+        public static void LogRequestHeaders(this HttpRequest request, ILogService logger)
         {
             var message = new StringBuilder();
 
@@ -29,7 +30,7 @@ namespace DFC.Api.JobProfiles.Extensions
                 message.AppendLine($"Request Header Key: '{key}', Value: '{request.Headers[key]}'");
             }
 
-            log.LogError(message.ToString());
+            logger?.LogMessage(message.ToString(), SeverityLevel.Information);
         }
     }
 }
