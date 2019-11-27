@@ -27,10 +27,13 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public static async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request,
-            [Inject] ISummaryService summaryService)
+            [Inject] ISummaryService summaryService,
+            ILogger log)
         {
+            request.LogRequestHeaders(log);
+
             var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath()).ConfigureAwait(false);
-            if (viewModels is null)
+            if (viewModels is null || !viewModels.Any())
             {
                 return new NoContentResult();
             }
@@ -52,6 +55,8 @@ namespace DFC.Api.JobProfiles.Functions
             [Inject] IProfileDataService dataService,
             ILogger log)
         {
+            request.LogRequestHeaders(log);
+
             var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
             if (jobProfile is null)
             {

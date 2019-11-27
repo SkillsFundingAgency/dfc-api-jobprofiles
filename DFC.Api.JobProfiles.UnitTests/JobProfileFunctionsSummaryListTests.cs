@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Xunit;
 
 namespace DFC.Api.JobProfiles.UnitTests
@@ -17,21 +18,26 @@ namespace DFC.Api.JobProfiles.UnitTests
     {
         private readonly HttpRequest httpRequest;
         private readonly ISummaryService fakeSummaryService;
+        private readonly ILogger logger;
 
         public JobProfileFunctionsSummaryListTests()
         {
             httpRequest = A.Fake<HttpRequest>();
             fakeSummaryService = A.Fake<ISummaryService>();
+            logger = A.Fake<ILogger>();
         }
 
         [Fact]
         public async Task GetSummaryListReturnsOKAndViewModelsWhenReturnedFromSummaryService()
         {
+            // Arrange
             var expectedModels = GetSummaryApiModels();
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns(expectedModels);
 
-            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
+            // Act
+            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService, logger).ConfigureAwait(false);
 
+            // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
             okResult.Value.Should().BeEquivalentTo(expectedModels);
@@ -40,10 +46,13 @@ namespace DFC.Api.JobProfiles.UnitTests
         [Fact]
         public async Task GetSummaryListReturnsNoContentResultWhenNullReturnedFromSummaryService()
         {
-            A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IEnumerable<SummaryApiModel>)null);
+            // Arrange
+            A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IList<SummaryApiModel>)null);
 
-            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
+            // Act
+            var result = await JobProfileFunctions.GetSummaryList(httpRequest, fakeSummaryService, logger).ConfigureAwait(false);
 
+            // Assert
             var noContentResult = Assert.IsType<NoContentResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }
