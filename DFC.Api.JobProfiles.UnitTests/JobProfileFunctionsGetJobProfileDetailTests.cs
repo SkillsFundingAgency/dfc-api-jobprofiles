@@ -1,3 +1,4 @@
+using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
@@ -5,9 +6,9 @@ using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -21,7 +22,7 @@ namespace DFC.Api.JobProfiles.UnitTests
         private const string CanonicalName = "jobCanonicalName1";
         private readonly HttpRequest httpRequest;
         private readonly IProfileDataService profileDataService;
-        private readonly ILogger logger;
+        private readonly JobProfileFunctions functionApp;
 
         public JobProfileFunctionsGetJobProfileDetailTests()
         {
@@ -32,7 +33,13 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
 
             profileDataService = A.Fake<IProfileDataService>();
-            logger = A.Fake<ILogger>();
+            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
+            var correlationProvider = new RequestHeaderCorrelationIdProvider(httpContextAccessor);
+            var telemetryClient = new TelemetryClient();
+            var logger = new LogService(correlationProvider, telemetryClient);
+            var correlationResponse = new ResponseWithCorrelation(correlationProvider, httpContextAccessor);
+
+            functionApp = new JobProfileFunctions(logger, correlationResponse);
         }
 
         [Fact]
@@ -43,7 +50,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
 
             // Act
-            var result = await JobProfileFunctions.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService, logger).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -58,10 +65,10 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns((JobProfileApiModel)null);
 
             // Act
-            var result = await JobProfileFunctions.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService, logger).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
 
             // Assert
-            var noContentResult = Assert.IsType<NoContentResult>(result);
+            var noContentResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }
 

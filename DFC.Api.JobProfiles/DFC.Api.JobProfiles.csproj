@@ -29,6 +29,7 @@
     <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.8.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DFC.Api.JobProfiles.Common\DFC.Api.JobProfiles.Common.csproj" />
     <ProjectReference Include="..\DFC.Api.JobProfiles.ProfileServices\DFC.Api.JobProfiles.ProfileServices.csproj" />
   </ItemGroup>
   <ItemGroup>
