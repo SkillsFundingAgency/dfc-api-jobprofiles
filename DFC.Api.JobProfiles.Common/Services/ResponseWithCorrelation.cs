@@ -1,6 +1,8 @@
 ﻿using DFC.Api.JobProfiles.Common.Constants;
+using DFC.Api.JobProfiles.Data.ContractResolver;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Net;
 
 namespace DFC.Api.JobProfiles.Common.Services
@@ -24,8 +26,12 @@ namespace DFC.Api.JobProfiles.Common.Services
 
         public IActionResult ResponseObjectWithCorrelationId(object value)
         {
+            var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
+            var orderedModel = JsonConvert.SerializeObject(value, Formatting.Indented, settings);
+
             AddCorrelationId();
-            return new OkObjectResult(value);
+
+            return new OkObjectResult(JsonConvert.DeserializeObject(orderedModel));
         }
 
         private void AddCorrelationId()
