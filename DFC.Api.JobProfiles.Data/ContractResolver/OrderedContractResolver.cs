@@ -12,7 +12,7 @@ namespace DFC.Api.JobProfiles.Data.ContractResolver
         protected override IList<JsonProperty> CreateProperties(Type type, MemberSerialization memberSerialization)
         {
             var properties = base.CreateProperties(type, memberSerialization);
-            return properties?.OrderBy(p => p.DeclaringType.BaseTypesAndSelf().Count()).ThenBy(p => p.PropertyName).ToList();
+            return properties?.OrderBy(p => p.DeclaringType.BaseTypesAndSelf().Count()).ToList();
         }
     }
 }
