@@ -1,13 +1,16 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace DFC.Api.JobProfiles.Data.ApiModels.Overview
 {
     public class OverviewApiModel
     {
+        [JsonProperty(Order = -2)]
         public string Title { get; set; }
 
         public DateTime LastUpdatedDate { get; set; }
 
+        [JsonProperty(Order = -1)]
         public string Url { get; set; }
 
         public string Soc { get; set; }
