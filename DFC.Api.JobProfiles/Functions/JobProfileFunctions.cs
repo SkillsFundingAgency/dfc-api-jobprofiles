@@ -73,7 +73,7 @@ namespace DFC.Api.JobProfiles.Functions
             }
 
             jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
-            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url.TrimStart('/'));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
         }

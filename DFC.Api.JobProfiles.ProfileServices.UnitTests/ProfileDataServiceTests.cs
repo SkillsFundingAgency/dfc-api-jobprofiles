@@ -97,6 +97,31 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             result.CareerPathAndProgression.Should().BeEquivalentTo(GetCareerPathAndProgressionApiModel());
         }
 
+        [Fact]
+        public async Task GetJobProfileReturnsDataWhenNOSegmentsDataExists()
+        {
+            // Arrange
+            var noSegmentsDataModel = GetWithMissingSegmentsDataModel();
+            var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
+            A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(noSegmentsDataModel);
+            var dataService = new ProfileDataService(repository, defaultLogger);
+
+            // Act
+            var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
+
+            // Assert
+            Assert.True(result.Title is null
+                        && result.Overview is null
+                        && result.Soc is null
+                        && result.Url is null);
+
+            Assert.True(result.HowToBecome is null &&
+                result.CareerPathAndProgression is null &&
+                result.RelatedCareers is null &&
+                result.WhatItTakes is null &&
+                result.WhatYouWillDo is null);
+        }
+
         private IList<SegmentDataModel> GetSegmentDataModel()
         {
             return new List<SegmentDataModel>
@@ -156,6 +181,17 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
                             Json = JsonConvert.SerializeObject(GetOverviewApiModel()),
                         },
                     },
+                },
+            };
+        }
+
+        private IList<SegmentDataModel> GetWithMissingSegmentsDataModel()
+        {
+            return new List<SegmentDataModel>
+            {
+                new SegmentDataModel
+                {
+                    CanonicalName = "job1",
                 },
             };
         }

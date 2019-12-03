@@ -9,6 +9,7 @@ using FluentAssertions;
 using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -54,8 +55,9 @@ namespace DFC.Api.JobProfiles.UnitTests
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
+            var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
-            okResult.Value.Should().BeEquivalentTo(expectedModel);
+            deserialisedResult.Should().BeEquivalentTo(expectedModel);
         }
 
         [Fact]
