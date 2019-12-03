@@ -38,10 +38,10 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 return null;
             }
 
-            var overviewDataModel = segmentDetailModels.SingleOrDefault()?.Segments.SingleOrDefault(s => s.Segment == JobProfileSegment.Overview);
-            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewDataModel?.Json);
+            var overviewDataModel = segmentDetailModels.FirstOrDefault()?.Segments?.FirstOrDefault(s => s.Segment == JobProfileSegment.Overview);
+            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewDataModel?.Json ?? string.Empty) ?? new JobProfileApiModel();
 
-            var otherSegmentDataModels = segmentDetailModels.SingleOrDefault()?.Segments.Where(s => s.Segment != JobProfileSegment.Overview).ToList();
+            var otherSegmentDataModels = segmentDetailModels.FirstOrDefault()?.Segments?.Where(s => s.Segment != JobProfileSegment.Overview).ToList();
             if (otherSegmentDataModels == null || !otherSegmentDataModels.Any())
             {
                 return result;
