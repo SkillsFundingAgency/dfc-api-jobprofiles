@@ -1,0 +1,52 @@
+<policies>
+    <inbound>
+        <!-- The CorrelationId is not exposed on an inbound request -->
+        <!-- <return-response>
+            <set-header name="InboundString">
+                <value>a string from inbound</value>
+            </set-header>
+            <set-header name="InboundContextId">
+                <value>@{
+                    return context.Request.Headers.GetValueOrDefault("CorrelationId");
+                }</value>
+            </set-header>
+        </return-response> -->
+        <base />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <!-- The CorrelationId is exposed on an outbound response -->
+        <set-header name="OutboundContextId">
+            <value>@{
+                return context.Response.Headers.GetValueOrDefault("CorrelationId");
+            }</value>
+        </set-header>
+        <base />
+    </outbound>
+    <on-error>
+        <!-- The CorrelationId is not exposed on error in either request or response -->
+        <set-header name="OnErrorString">
+            <value>@{
+                return String.Format("test error");
+            }</value>
+        </set-header>
+        <set-header name="OnErrorContextRequest">
+            <value>@{
+                return context.Request.Headers.GetValueOrDefault("CorrelationId");
+            }</value>
+        </set-header>
+        <set-header name="OnErrorContextResponse">
+            <value>@{
+                return context.Response.Headers.GetValueOrDefault("CorrelationId");
+            }</value>
+        </set-header>
+        <set-header name="OnErrorReason">
+            <value>@{
+            return context.LastError.Reason;
+            }</value>
+        </set-header>
+        <base />
+    </on-error>
+</policies>
