@@ -16,7 +16,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.29" />
     <PackageReference Include="DFC.Functions.DI.Standard" Version="0.1.0" />
     <PackageReference Include="DFC.JSON.Standard" Version="0.1.4" />
-    <PackageReference Include="DFC.Swagger.Standard" Version="0.1.14" />
+    <PackageReference Include="DFC.Swagger.Standard" Version="0.1.15" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.4">
       <PrivateAssets>all</PrivateAssets>
