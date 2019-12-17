@@ -18,8 +18,8 @@
   },
   "JobProfileSearchIndexConfig": {
     "SearchIndex": "search-index",
-    "SearchServiceName": "search-index-name",
-    "AccessKey": "search-0index-access-key"
+    "SearchServiceName": "search-service-name",
+    "AccessKey": "search-index-access-key"
   },
   "Logging": {
     "LogLevel": {

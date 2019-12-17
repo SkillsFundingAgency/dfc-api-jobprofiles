@@ -1,8 +1,9 @@
 ﻿using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
+using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices
@@ -20,7 +21,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             this.searchQueryService = searchQueryService;
         }
 
-        public async Task<IList<SearchApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize)
+        public async Task<SearchApiModel<SearchItemApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize)
         {
             const bool useRawSearchTerm = true;
             var pageNumber = page > 0 ? page : 1;
@@ -33,8 +34,8 @@ namespace DFC.Api.JobProfiles.SearchServices
                 return null;
             }
 
-            var viewModels = mapper.Map<List<SearchApiModel>>(searchResult.Results);
-            viewModels.ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName?.TrimStart('/')}");
+            var viewModels = mapper.Map<SearchApiModel<SearchItemApiModel>>(searchResult);
+            viewModels.Results.ToList().ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName?.TrimStart('/')}");
 
             return viewModels;
         }

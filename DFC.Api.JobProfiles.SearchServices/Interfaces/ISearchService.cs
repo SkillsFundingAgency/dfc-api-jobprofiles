@@ -1,11 +1,11 @@
 ﻿using DFC.Api.JobProfiles.Data.ApiModels;
-using System.Collections.Generic;
+using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices.Interfaces
 {
     public interface ISearchService
     {
-        Task<IList<SearchApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize);
+        Task<SearchApiModel<SearchItemApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize);
     }
 }
