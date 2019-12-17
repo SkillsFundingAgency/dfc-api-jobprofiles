@@ -99,13 +99,13 @@ namespace DFC.Api.JobProfiles.Functions
             page ??= 1;
             pageSize ??= 10;
 
-            var viewModels = await searchService.GetResutsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page.Value, pageSize.Value).ConfigureAwait(false);
-            if (viewModels is null || !viewModels.Any())
+            var apiModels = await searchService.GetResutsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page.Value, pageSize.Value).ConfigureAwait(false);
+            if (apiModels is null || !apiModels.Any())
             {
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
             }
 
-            return responseWithCorrelation.ResponseObjectWithCorrelationId(viewModels);
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModels);
         }
     }
 }

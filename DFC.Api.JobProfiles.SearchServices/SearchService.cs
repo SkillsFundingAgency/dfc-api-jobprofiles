@@ -2,8 +2,6 @@
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using Microsoft.Azure.Search;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -36,7 +34,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             }
 
             var viewModels = mapper.Map<List<SearchApiModel>>(searchResult.Results);
-            viewModels.ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName.TrimStart('/')}");
+            viewModels.ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName?.TrimStart('/')}");
 
             return viewModels;
         }

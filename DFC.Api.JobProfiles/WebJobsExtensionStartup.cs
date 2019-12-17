@@ -54,7 +54,9 @@ namespace DFC.Api.JobProfiles
             builder?.Services.AddSingleton(jobProfileSearchIndexConfig);
             builder?.Services.AddSingleton<ISearchIndexClient>(searchIndexClient);
             builder?.Services.AddSingleton<IAzSearchQueryConverter, AzSearchQueryConverter>();
-            builder?.Services.AddSingleton<ISearchQueryService<JobProfileIndex>, AzSearchQueryService<JobProfileIndex>>();
+            builder?.Services.AddSingleton<ISearchQueryService<JobProfileIndex>, DfcSearchQueryService<JobProfileIndex>>();
+            builder?.Services.AddSingleton<ISearchManipulator<JobProfileIndex>, JobProfileSearchManipulator>();
+            builder?.Services.AddSingleton<ISearchQueryBuilder, DfcSearchQueryBuilder>();
             builder?.Services.AddSingleton<ILogger, Logger<WebJobsExtensionStartup>>();
             builder?.Services.AddSingleton<IProfileDataService, ProfileDataService>();
             builder?.Services.AddSingleton<ISummaryService, SummaryService>();
