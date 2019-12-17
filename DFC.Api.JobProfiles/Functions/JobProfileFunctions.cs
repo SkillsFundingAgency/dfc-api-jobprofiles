@@ -2,6 +2,7 @@ using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
+using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -76,6 +77,35 @@ namespace DFC.Api.JobProfiles.Functions
             jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
+        }
+
+        [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
+        [FunctionName("job-profiles-search")]
+        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> GetJobProfileSearchResults(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}/{page?}/{pageSize?}")] HttpRequest request,
+            [Inject] ISearchService searchService,
+            string searchTerm,
+            int? page,
+            int? pageSize)
+        {
+            request.LogRequestHeaders(logService);
+
+            page ??= 1;
+            pageSize ??= 10;
+
+            var viewModels = await searchService.GetResutsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page.Value, pageSize.Value).ConfigureAwait(false);
+            if (viewModels is null || !viewModels.Any())
+            {
+                return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
+            }
+
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(viewModels);
         }
     }
 }
