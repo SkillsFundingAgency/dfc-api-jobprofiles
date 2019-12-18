@@ -23,7 +23,7 @@ Clone the project and open the solution in Visual Studio 2019.
 
 ## Local Config Files
 
-Once you have cloned the public repo you need to rename the appsettings files by removing the -template part from the configuration file names listed below.
+Once you have cloned the public repo you need to rename the local.settings files by removing the -template part from the configuration file names listed below.
 
 | Location | Repo Filename | Rename to |
 |-------|-------|-------|
@@ -31,10 +31,17 @@ Once you have cloned the public repo you need to rename the appsettings files by
 
 ## Configuring to run locally
 
-The project contains a number of "appsettings-template.json" files which contain sample appsettings for the web app and the integration test projects. To use these files, rename them to "appsettings.json" and edit and replace the configuration item values with values suitable for your environment.
+The project contains a number of "local.settings-template.json" files which contain sample local.settings for the web app and the integration test projects. To use these files, rename them to "local.settings.json" and edit and replace the configuration item values with values suitable for your environment.
 
-By default, the appsettings include a local Azure Cosmos Emulator configuration using the well known configuration values. These may be changed to suit your environment if you are not using the Azure Cosmos Emulator. In addition, Sitefinity configuration settings will need to be edited.
+By default, the local.settings include a local Azure Cosmos Emulator configuration using the well known configuration values. These may be changed to suit your environment if you are not using the Azure Cosmos Emulator. In addition, Sitefinity configuration settings will need to be edited.
 
+The settings also include the parameters required to call Azure Search, which are:
+
+| Section | Parameter | Value |
+|-------|-------|-------|
+| JobProfileSearchIndexConfig | SearchIndex | search-index |
+| JobProfileSearchIndexConfig | SearchServiceName | search-service-name |
+| JobProfileSearchIndexConfig | AccessKey | search-index-access-key |
 
 ## Running locally
 
@@ -42,9 +49,10 @@ To run this product locally, you will need to configure the list of dependencies
 
 To run the project, start the JobProfileFunction Azure function app. On your local environment, swagger documentation is available at http://localhost:7071/api/swagger/ui
 
-The Job Profile API function app has 2 endpoints:
+The Job Profile API function app has 3 endpoints:
 - /job-profiles - fetches a summary list of job profiles stored in the main jobProfiles cosmos collection 
 - /job-profiles/{canonicalName} - fetches the detail of a specific job profile
+- /job-profiles/search/{searchTerm} - searches for matches across job profiles
 
 ## Deployments
 
