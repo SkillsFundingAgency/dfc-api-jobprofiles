@@ -25,23 +25,28 @@ namespace DFC.Api.JobProfiles.SearchServices
                             section.SectionDataTypes.Equals(field.Key, StringComparison.InvariantCultureIgnoreCase));
                         if (fieldFilter != null)
                         {
-                            var notApplicableSelected = fieldFilter.Options.Any(opt => opt.ClearOtherOptionsIfSelected);
-                            if (!notApplicableSelected)
-                            {
-                                var fieldValue = fieldFilter.SingleSelectOnly
-                                    ? fieldFilter.SingleSelectedValue
-                                    : string.Join(",", fieldFilter.Options.Where(opt => opt.IsSelected).Select(opt => opt.OptionKey));
-                                if (!string.IsNullOrWhiteSpace(fieldValue))
-                                {
-                                    builder.Append($"{(builder.Length > 0 ? field.Value.ToString().ToLowerInvariant() : string.Empty)} {field.Key}/any(t: search.in(t, '{fieldValue}')) ");
-                                }
-                            }
+                            BuildPreSearchFiltersForField(builder, fieldFilter, field);
                         }
                     }
                 }
             }
 
             return builder.ToString().Trim();
+        }
+
+        private void BuildPreSearchFiltersForField(System.Text.StringBuilder builder, FilterResultsSection fieldFilter, KeyValuePair<string, PreSearchFilterLogicalOperator> field)
+        {
+            var notApplicableSelected = fieldFilter.Options.Any(opt => opt.ClearOtherOptionsIfSelected);
+            if (!notApplicableSelected)
+            {
+                var fieldValue = fieldFilter.SingleSelectOnly
+                    ? fieldFilter.SingleSelectedValue
+                    : string.Join(",", fieldFilter.Options.Where(opt => opt.IsSelected).Select(opt => opt.OptionKey));
+                if (!string.IsNullOrWhiteSpace(fieldValue))
+                {
+                    builder.Append($"{(builder.Length > 0 ? field.Value.ToString().ToLowerInvariant() : string.Empty)} {field.Key}/any(t: search.in(t, '{fieldValue}')) ");
+                }
+            }
         }
     }
 }
