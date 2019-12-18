@@ -17,7 +17,7 @@ namespace DFC.Api.JobProfiles.SearchServices
                 foreach (var field in indexFields)
                 {
                     var validIndexField = typeof(JobProfileIndex).GetProperties()
-                        .Any(property => property.Name.Equals(field.Key));
+                        .Any(property => property.Name.Equals(field.Key, StringComparison.OrdinalIgnoreCase));
 
                     if (validIndexField)
                     {

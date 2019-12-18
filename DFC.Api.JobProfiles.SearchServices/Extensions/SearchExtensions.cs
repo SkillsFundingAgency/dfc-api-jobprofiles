@@ -1,10 +1,12 @@
 ﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using Microsoft.Azure.Search.Models;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 
 namespace DFC.Api.JobProfiles.SearchServices.Extensions
 {
+    [ExcludeFromCodeCoverage]
     public static class SearchExtensions
     {
         public static IEnumerable<SearchResultItem<T>> ToSearchResultItems<T>(this DocumentSearchResult<T> results, SearchProperties properties)

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels.Search;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
@@ -22,8 +23,8 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.ValueConverters
                           where !string.IsNullOrWhiteSpace(a)
                           select new JobProfileCategoryApiModel
                           {
-                              Title = a.Contains(FieldSeparator) ? a.Split(FieldSeparator)[0] : a,
-                              Name = a.Contains(FieldSeparator) ? a.Split(FieldSeparator)[1] : a,
+                              Title = a.Contains(FieldSeparator, StringComparison.OrdinalIgnoreCase) ? a.Split(FieldSeparator)[0] : a,
+                              Name = a.Contains(FieldSeparator, StringComparison.OrdinalIgnoreCase) ? a.Split(FieldSeparator)[1] : a,
                           }).ToList();
 
             return result;

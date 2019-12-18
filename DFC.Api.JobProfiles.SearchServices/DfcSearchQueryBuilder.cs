@@ -29,7 +29,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             var cleanSearchTerm = EscapeSpecialCharactersInSearchTerm(searchTerm, returnProperties);
 
             //Escape single quotes
-            cleanSearchTerm = cleanSearchTerm.Replace("'", "''");
+            cleanSearchTerm = cleanSearchTerm.Replace("'", "''", StringComparison.OrdinalIgnoreCase);
 
             if (string.IsNullOrWhiteSpace(returnProperties.FilterBy))
             {
@@ -49,7 +49,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             var cleanSearchTerm = EscapeSpecialCharactersInSearchTerm(searchTerm, returnProperties);
 
             //Escape single quotes
-            cleanSearchTerm = cleanSearchTerm.Replace("'", "''");
+            cleanSearchTerm = cleanSearchTerm.Replace("'", "''", StringComparison.OrdinalIgnoreCase);
 
             if (string.IsNullOrWhiteSpace(returnProperties.FilterBy))
             {
@@ -75,8 +75,8 @@ namespace DFC.Api.JobProfiles.SearchServices
                     .Split(' ')
                     .Aggregate(
                         newSearchTerm,
-                        (current, term) => $"{current} " + (term.Contains("-") ? term.Trim() : CreateContainTerm(term)))
-                : trimmedTerm.Contains("-") ? trimmedTerm : CreateContainTerm(trimmedTerm);
+                        (current, term) => $"{current} " + (term.Contains("-", StringComparison.OrdinalIgnoreCase) ? term.Trim() : CreateContainTerm(term)))
+                : trimmedTerm.Contains("-", StringComparison.OrdinalIgnoreCase) ? trimmedTerm : CreateContainTerm(trimmedTerm);
 
             return computedContains.Trim();
         }
