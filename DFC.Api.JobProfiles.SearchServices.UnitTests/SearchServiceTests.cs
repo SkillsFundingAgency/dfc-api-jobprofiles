@@ -36,20 +36,20 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
                 Results = A.CollectionOfFake<SearchResultItem<JobProfileIndex>>(expectedItemCount),
                 Count = expectedItemCount,
             };
-            var expectedResult = A.Fake<SearchApiModel<SearchItemApiModel>>();
+            var expectedResult = A.Fake<SearchApiModel>();
             expectedResult.Count = expectedItemCount;
             expectedResult.Results = A.CollectionOfFake<SearchItemApiModel>(expectedItemCount);
             var summaryService = new SearchService(mapper, searchQueryService);
 
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).Returns(searchResults);
-            A.CallTo(() => mapper.Map<SearchApiModel<SearchItemApiModel>>(searchResults)).Returns(expectedResult);
+            A.CallTo(() => mapper.Map<SearchApiModel>(searchResults)).Returns(expectedResult);
 
             // Act
             var results = await summaryService.GetResutsList(requestUrl, searchTerm, page, pageSize).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => mapper.Map<SearchApiModel<SearchItemApiModel>>(searchResults)).MustHaveHappenedOnceExactly();
+            A.CallTo(() => mapper.Map<SearchApiModel>(searchResults)).MustHaveHappenedOnceExactly();
             Assert.Equal(expectedResult.Count, results.Count);
         }
 
@@ -71,7 +71,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
 
             // Assert
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => mapper.Map<SearchApiModel<SearchItemApiModel>>(A< SearchResult<JobProfileIndex>>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => mapper.Map<SearchApiModel>(A< SearchResult<JobProfileIndex>>.Ignored)).MustNotHaveHappened();
             Assert.Null(results);
         }
     }

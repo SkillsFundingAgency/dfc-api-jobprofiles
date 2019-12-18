@@ -82,7 +82,7 @@ namespace DFC.Api.JobProfiles.Functions
 
         [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
         [FunctionName("job-profiles-search")]
-        [ProducesResponseType(typeof(SearchApiModel<SearchItemApiModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]

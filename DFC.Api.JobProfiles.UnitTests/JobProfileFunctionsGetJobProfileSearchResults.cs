@@ -56,7 +56,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => searchService.GetResutsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).MustHaveHappenedOnceExactly();
 
             var okResult = Assert.IsType<OkObjectResult>(result);
-            var deserialisedResult = JsonConvert.DeserializeObject<SearchApiModel<SearchItemApiModel>>(okResult.Value.ToString());
+            var deserialisedResult = JsonConvert.DeserializeObject<SearchApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
             deserialisedResult.Should().BeEquivalentTo(expectedResult);
         }
@@ -66,7 +66,7 @@ namespace DFC.Api.JobProfiles.UnitTests
         {
             // Arrange
             const string searchTerm = "nurse";
-            A.CallTo(() => searchService.GetResutsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns((SearchApiModel<SearchItemApiModel>)null);
+            A.CallTo(() => searchService.GetResutsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns((SearchApiModel)null);
 
             // Act
             var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchService, searchTerm).ConfigureAwait(false);
@@ -78,9 +78,9 @@ namespace DFC.Api.JobProfiles.UnitTests
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }
 
-        private SearchApiModel<SearchItemApiModel> GetJobProfileSearchApiModel()
+        private SearchApiModel GetJobProfileSearchApiModel()
         {
-            var result = new SearchApiModel<SearchItemApiModel>
+            var result = new SearchApiModel
             {
                 Results = new List<SearchItemApiModel>
                 {

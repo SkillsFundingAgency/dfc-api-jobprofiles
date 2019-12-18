@@ -6,6 +6,6 @@ namespace DFC.Api.JobProfiles.SearchServices.Interfaces
 {
     public interface ISearchService
     {
-        Task<SearchApiModel<SearchItemApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize);
+        Task<SearchApiModel> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize);
     }
 }
