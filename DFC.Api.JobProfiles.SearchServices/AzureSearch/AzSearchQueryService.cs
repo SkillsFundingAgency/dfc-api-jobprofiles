@@ -2,10 +2,12 @@
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
 {
+    [ExcludeFromCodeCoverage]
     public class AzSearchQueryService<T> : ISearchQueryService<T>, IServiceStatus
         where T : class
     {
