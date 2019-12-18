@@ -100,7 +100,7 @@ namespace DFC.Api.JobProfiles.Functions
 
             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize}", SeverityLevel.Warning);
 
-            var apiModel = await searchService.GetResutsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
+            var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
             if (apiModel?.Results is null || !apiModel.Results.Any())
             {
                 logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);

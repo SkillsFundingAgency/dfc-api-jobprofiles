@@ -21,7 +21,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             this.searchQueryService = searchQueryService;
         }
 
-        public async Task<SearchApiModel> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize)
+        public async Task<SearchApiModel> GetResultsList(string requestUrl, string searchTerm, int page, int pageSize)
         {
             const bool useRawSearchTerm = true;
             var pageNumber = page > 0 ? page : 1;

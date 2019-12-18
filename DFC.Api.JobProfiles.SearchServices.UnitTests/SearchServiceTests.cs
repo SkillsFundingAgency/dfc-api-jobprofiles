@@ -23,7 +23,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
         }
 
         [Fact]
-        public async Task GetResutsListReturnsSuccessForHappyPath()
+        public async Task GetResultsListReturnsSuccessForHappyPath()
         {
             // Arrange
             const string requestUrl = "http://Something.com/";
@@ -45,7 +45,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => mapper.Map<SearchApiModel>(searchResults)).Returns(expectedResult);
 
             // Act
-            var results = await summaryService.GetResutsList(requestUrl, searchTerm, page, pageSize).ConfigureAwait(false);
+            var results = await summaryService.GetResultsList(requestUrl, searchTerm, page, pageSize).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).MustHaveHappenedOnceExactly();
@@ -54,7 +54,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
         }
 
         [Fact]
-        public async Task GetResutsListReturnsNullForNoResults()
+        public async Task GetResultsListReturnsNullForNoResults()
         {
             // Arrange
             const string requestUrl = "http://Something.com/";
@@ -67,7 +67,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).Returns(searchResults);
 
             // Act
-            var results = await summaryService.GetResutsList(requestUrl, searchTerm, page, pageSize).ConfigureAwait(false);
+            var results = await summaryService.GetResultsList(requestUrl, searchTerm, page, pageSize).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).MustHaveHappenedOnceExactly();
