@@ -7,20 +7,23 @@ using System.Linq;
 namespace DFC.Api.JobProfiles.AutoMapperProfile.ValueConverters
 {
     [ExcludeFromCodeCoverage]
-    public class JobProfileCategoryFormatter : IValueConverter<IEnumerable<string>, IEnumerable<JobProfileCategoryApiModel>>
+    public class JobProfileCategoryConverter : IValueConverter<IEnumerable<string>, IEnumerable<JobProfileCategoryApiModel>>
     {
         public IEnumerable<JobProfileCategoryApiModel> Convert(IEnumerable<string> sourceMember, ResolutionContext context)
         {
+            const string FieldSeparator = "|";
+
             if (sourceMember is null || !sourceMember.Any())
             {
                 return null;
             }
 
             var result = (from a in sourceMember
+                          where !string.IsNullOrWhiteSpace(a)
                           select new JobProfileCategoryApiModel
                           {
-                              Title = a.Contains("|") ? a.Split("|")[0] : a,
-                              Name = a.Contains("|") ? a.Split("|")[1] : a,
+                              Title = a.Contains(FieldSeparator) ? a.Split(FieldSeparator)[0] : a,
+                              Name = a.Contains(FieldSeparator) ? a.Split(FieldSeparator)[1] : a,
                           }).ToList();
 
             return result;

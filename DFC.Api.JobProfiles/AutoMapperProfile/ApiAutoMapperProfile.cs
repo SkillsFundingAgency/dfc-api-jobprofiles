@@ -23,7 +23,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
 
             CreateMap<SearchResultItem<JobProfileIndex>, SearchItemApiModel>()
                 .ForMember(d => d.ResultItemAlternativeTitle, o => o.MapFrom(s => string.Join(", ", s.ResultItem.AlternativeTitle).Trim().TrimEnd(',')))
-                .ForMember(c => c.JobProfileCategories, opt => opt.ConvertUsing(new JobProfileCategoryFormatter(), a => a.ResultItem.JobProfileCategoriesWithUrl))
+                .ForMember(c => c.JobProfileCategories, opt => opt.ConvertUsing(new JobProfileCategoryConverter(), a => a.ResultItem.JobProfileCategoriesWithUrl))
                 .ForMember(d => d.ResultItemSalaryRange, o => o.MapFrom(s => s.ResultItem.SalaryStarter.Equals(0) || s.ResultItem.SalaryExperienced.Equals(0) ? string.Empty : string.Format(new CultureInfo("en-GB", false), "{0:C0} to {1:C0}", s.ResultItem.SalaryStarter, s.ResultItem.SalaryExperienced)));
         }
     }
