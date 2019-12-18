@@ -21,7 +21,7 @@ namespace DFC.Api.JobProfiles.SearchServices
             this.searchQueryService = searchQueryService;
         }
 
-        public async Task<SearchApiModel<SearchItemApiModel>> GetResutsList(string requestUrl, string searchTerm, int page, int pageSize)
+        public async Task<SearchApiModel> GetResultsList(string requestUrl, string searchTerm, int page, int pageSize)
         {
             const bool useRawSearchTerm = true;
             var pageNumber = page > 0 ? page : 1;
@@ -34,7 +34,7 @@ namespace DFC.Api.JobProfiles.SearchServices
                 return null;
             }
 
-            var viewModels = mapper.Map<SearchApiModel<SearchItemApiModel>>(searchResult);
+            var viewModels = mapper.Map<SearchApiModel>(searchResult);
             viewModels.Results.ToList().ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName?.TrimStart('/')}");
 
             return viewModels;

@@ -82,7 +82,7 @@ namespace DFC.Api.JobProfiles.Functions
 
         [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
         [FunctionName("job-profiles-search")]
-        [ProducesResponseType(typeof(SearchApiModel<SearchItemApiModel>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
@@ -100,7 +100,7 @@ namespace DFC.Api.JobProfiles.Functions
 
             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize}", SeverityLevel.Warning);
 
-            var apiModel = await searchService.GetResutsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
+            var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
             if (apiModel?.Results is null || !apiModel.Results.Any())
             {
                 logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);

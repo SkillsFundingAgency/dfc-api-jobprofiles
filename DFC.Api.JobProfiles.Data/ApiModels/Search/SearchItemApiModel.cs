@@ -23,7 +23,7 @@ namespace DFC.Api.JobProfiles.Data.ApiModels.Search
         [Example(Description = "http://api-url/nurse")]
         public string ResultItemUrlName { get; set; }
 
-        [Example(Description = "Healthcare|healthcare")]
+        [Example(Description = "List of job categories")]
         public IEnumerable<JobProfileCategoryApiModel> JobProfileCategories { get; set; }
 
         [Example(Description = "3.2")]
