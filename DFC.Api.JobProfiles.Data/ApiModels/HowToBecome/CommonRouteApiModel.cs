@@ -17,7 +17,7 @@ namespace DFC.Api.JobProfiles.Data.ApiModels.HowToBecome
         [Example(Description = "1 or 2 A levels for a foundation degree or higher national diploma, 2 to 3 A levels for a degree")]
         public List<string> EntryRequirements { get; set; }
 
-        [Example(Description = "equivalent entry requirements | https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels, student finance for fees and living costs | https://www.gov.uk/student-finance], [university courses and entry requirements | https://www.ucas.com/")]
+        [Example(Description = "[equivalent entry requirements | https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels], [student finance for fees and living costs | https://www.gov.uk/student-finance], [university courses and entry requirements | https://www.ucas.com/]")]
         public List<string> AdditionalInformation { get; set; }
     }
 }

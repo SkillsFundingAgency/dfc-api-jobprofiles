@@ -20,7 +20,7 @@ namespace DFC.Api.JobProfiles.Data.ApiModels
         [Example(Description = "http://api-url/web-developer")]
         public string Url { get; set; }
 
-        [Example(Description = "2137E")]
+        [Example(Description = "2137")]
         public string Soc { get; set; }
 
         [Example(Description = "15-1134.00")]
