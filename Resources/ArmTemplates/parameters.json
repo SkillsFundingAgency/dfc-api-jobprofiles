@@ -55,6 +55,15 @@
         },
         "ApimLoggerName": {
             "value": "__ApimLoggerName__"
+        },
+        "JobProfileSearchIndexName": {
+            "value": "__JpSearchIndexName__"
+        },
+        "JobProfileSearchServiceName": {
+            "value": "__JpSearchServiceName__"
+        },
+        "JobProfileSearchServiceAccessKey": {
+            "value": "__JpSearchServiceAccessKey__"
         }
     }
 }
