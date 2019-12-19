@@ -65,6 +65,15 @@
         },
         "ApimLoggerName": {
             "type": "string"
+        },
+        "JobProfileSearchIndexName": {
+            "type": "string"
+        },
+        "JobProfileSearchServiceName": {
+            "type": "string"
+        },
+        "JobProfileSearchServiceAccessKey": {
+            "type": "securestring"
         }
     },
     "variables": {
@@ -244,6 +253,18 @@
                             {
                                 "name": "AzureWebJobsStorage",
                                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('appSharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('appSharedResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('appSharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
+                            },
+                            {
+                                "name": "JobProfileSearchIndexConfig__SearchIndex",
+                                "value": "[parameters('JobProfileSearchIndexName')]"
+                            },
+                            {
+                                "name": "JobProfileSearchIndexConfig__SearchServiceName",
+                                "value": "[parameters('JobProfileSearchServiceName')]"
+                            },
+                            {
+                                "name": "JobProfileSearchIndexConfig__AccessKey",
+                                "value": "[parameters('JobProfileSearchServiceAccessKey')]"
                             },
                             {
                                 "name": "Configuration__CosmosDbConnections__JobProfileSegment__AccessKey",

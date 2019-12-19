@@ -43,6 +43,15 @@
         },
         "ApimLoggerName": {
             "value": "some-apim-logger"
+        },
+        "JobProfileSearchIndexName": {
+            "value": "dfc-digital-jobprofiles-r999"
+        },
+        "JobProfileSearchServiceName": {
+            "value": "dfc-foo-search"
+        },
+        "JobProfileSearchServiceAccessKey": {
+            "value": "not-a-real-query-key"
         }
     }
 }
