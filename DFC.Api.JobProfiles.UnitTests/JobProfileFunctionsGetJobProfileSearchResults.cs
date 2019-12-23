@@ -46,8 +46,13 @@ namespace DFC.Api.JobProfiles.UnitTests
         {
             // Arrange
             const string searchTerm = "nurse";
+            const int page = 2;
+            const int pageSize = 3;
             var expectedResult = GetJobProfileSearchApiModel();
             A.CallTo(() => searchService.GetResultsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns(expectedResult);
+
+            expectedResult.CurrentPage = page;
+            expectedResult.PageSize = pageSize;
 
             // Act
             var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchService, searchTerm).ConfigureAwait(false);
@@ -86,7 +91,6 @@ namespace DFC.Api.JobProfiles.UnitTests
                 {
                     new SearchItemApiModel
                     {
-                        Rank = 1,
                         ResultItemTitle = "Title 1",
                         ResultItemAlternativeTitle = "Alt title 1",
                         ResultItemOverview = "Overview 1",
@@ -100,11 +104,9 @@ namespace DFC.Api.JobProfiles.UnitTests
                                 Title = "Category 1",
                             },
                         },
-                        Score = 100,
                     },
                     new SearchItemApiModel
                     {
-                        Rank = 2,
                         ResultItemTitle = "Title 2",
                         ResultItemAlternativeTitle = "Alt title 2",
                         ResultItemOverview = "Overview 2",
@@ -118,11 +120,9 @@ namespace DFC.Api.JobProfiles.UnitTests
                                 Title = "Category 2",
                             },
                         },
-                        Score = 200,
                     },
                     new SearchItemApiModel
                     {
-                        Rank = 3,
                         ResultItemTitle = "Title 3",
                         ResultItemAlternativeTitle = "Alt title 3",
                         ResultItemOverview = "Overview 3",
@@ -136,11 +136,9 @@ namespace DFC.Api.JobProfiles.UnitTests
                                 Title = "Category 3",
                             },
                         },
-                        Score = 300,
                     },
                     new SearchItemApiModel
                     {
-                        Rank = 4,
                         ResultItemTitle = "Title 4",
                         ResultItemAlternativeTitle = "Alt title 4",
                         ResultItemOverview = "Overview 4",
@@ -154,7 +152,6 @@ namespace DFC.Api.JobProfiles.UnitTests
                                 Title = "Category 4",
                             },
                         },
-                        Score = 400,
                     },
                 },
             };
