@@ -36,6 +36,8 @@ namespace DFC.Api.JobProfiles.SearchServices
 
             var viewModels = mapper.Map<SearchApiModel>(searchResult);
             viewModels.Results.ToList().ForEach(v => v.ResultItemUrlName = $"{requestUrl}{v.ResultItemUrlName?.TrimStart('/')}");
+            viewModels.CurrentPage = page;
+            viewModels.PageSize = pageSize;
 
             return viewModels;
         }

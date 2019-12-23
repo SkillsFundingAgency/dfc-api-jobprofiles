@@ -5,9 +5,6 @@ namespace DFC.Api.JobProfiles.Data.ApiModels.Search
 {
     public class SearchItemApiModel
     {
-        [Example(Description = "2")]
-        public int Rank { get; set; }
-
         [Example(Description = "Nurse")]
         public string ResultItemTitle { get; set; }
 
@@ -25,8 +22,5 @@ namespace DFC.Api.JobProfiles.Data.ApiModels.Search
 
         [Example(Description = "List of job categories")]
         public IEnumerable<JobProfileCategoryApiModel> JobProfileCategories { get; set; }
-
-        [Example(Description = "3.2")]
-        public double Score { get; set; }
     }
 }

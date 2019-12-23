@@ -19,7 +19,9 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.LastUpdated, o => o.MapFrom(s => s.LastReviewed))
                 .ForMember(d => d.Url, o => o.MapFrom(s => s.CanonicalName));
 
-            CreateMap<SearchResult<JobProfileIndex>, SearchApiModel>();
+            CreateMap<SearchResult<JobProfileIndex>, SearchApiModel>()
+                .ForMember(d => d.CurrentPage, o => o.Ignore())
+                .ForMember(d => d.PageSize, o => o.Ignore());
 
             CreateMap<SearchResultItem<JobProfileIndex>, SearchItemApiModel>()
                 .ForMember(d => d.ResultItemAlternativeTitle, o => o.MapFrom(s => string.Join(", ", s.ResultItem.AlternativeTitle).Trim().TrimEnd(',')))
