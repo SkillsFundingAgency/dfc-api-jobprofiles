@@ -1,0 +1,739 @@
+{
+  "JobProfileId": "685e06e6-a42d-4bec-b660-c206399c534j",
+  "Title": "Blacksmith LJ Amend",
+  "DynamicTitlePrefix": "As Defined",
+  "AlternativeTitle": "Forge worker, artist blacksmith",
+  "Overview": "Blacksmiths work with different metals to make and repair decorative, industrial and everyday items.",
+  "SocLevelTwo": "52",
+  "UrlName": "blacksmith_lj_amend",
+  "DigitalSkillsLevel": "to be able to carry out basic tasks on a computer or hand-held device",
+  "Restrictions": [],
+  "OtherRequirements": "",
+  "CareerPathAndProgression": "<p>As an experienced artist blacksmith you could set up your own gallery. You could also teach craft skills.</p>\n<p>As an industrial blacksmith, you could move into workshop management. You could also train to become a design engineer. </p>",
+  "CourseKeywords": "'welding and fabrication''forgework'",
+  "MinimumHours": 47.0,
+  "MaximumHours": 49.0,
+  "SalaryStarter": 15000.0,
+  "SalaryExperienced": 30000.0,
+  "WorkingPattern": [
+    {
+      "Id": "9a438277-6be2-4b79-9634-ca30aaf52672",
+      "Title": "freelance / self-employed",
+      "Url": "freelance-self-employed",
+      "Description": null
+    }
+  ],
+  "WorkingPatternDetails": [
+    {
+      "Id": "cac8897f-8a67-4579-9923-ab51952acd17",
+      "Title": "managing your own hours",
+      "Url": "managing-your-own-hours",
+      "Description": null
+    }
+  ],
+  "WorkingHoursDetails": [
+    {
+      "Id": "f6820e1e-4183-4a43-8dcb-f1d0a85b156f",
+      "Title": "variable",
+      "Url": "variable",
+      "Description": null
+    }
+  ],
+  "HiddenAlternativeTitle": [
+    {
+      "Id": "28ccc3fb-d3df-4071-a6b6-0102a51d6080",
+      "Title": "Smithy LJ",
+      "Url": "smithy-lj",
+      "Description": null
+    }
+  ],
+  "JobProfileSpecialism": [],
+  "IsImported": false,
+  "HowToBecomeData": {
+    "RouteEntries": [
+      {
+        "RouteName": 2,
+        "EntryRequirements": [
+          {
+            "Id": "9b22e245-100b-426b-9144-1768bed033fc",
+            "Title": "Art Design foundation",
+            "Info": "a foundation studies diploma in art and design&nbsp;"
+          },
+          {
+            "Id": "42c90766-4606-41bf-abcc-5d94e2a72a53",
+            "Title": "Degree - standard entry requirements",
+            "Info": "2 to 3 A levels for a degree"
+          }
+        ],
+        "MoreInformationLinks": [
+          {
+            "Id": "dbb62bc5-07c4-46f9-ad10-75970ee68255",
+            "Title": "Show Equiv Entry Reqs",
+            "Url": "https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels",
+            "Text": "equivalent entry requirements"
+          },
+          {
+            "Id": "4ca5e788-3fee-4e05-8a6d-3c002ece90ad",
+            "Title": "Show Student finance",
+            "Url": "https://www.gov.uk/student-finance",
+            "Text": "student finance for fees and living costs"
+          },
+          {
+            "Id": "7f0898b8-5db4-4b37-b5f9-824e6a53f303",
+            "Title": "Show UCAS info",
+            "Url": "https://www.ucas.com/",
+            "Text": "university courses and entry requirements"
+          }
+        ],
+        "RouteSubjects": "<p>You can do a degree in <a href=\"https://www.hca.ac.uk/course/artist-blacksmithing\">artist blacksmithing</a> from Hereford College of Arts.</p>",
+        "FurtherRouteInformation": "<p>You'll need a portfolio of your work and creative ideas for course interviews.</p>",
+        "RouteRequirement": "You'll usually need:"
+      },
+      {
+        "RouteName": 1,
+        "EntryRequirements": [
+          {
+            "Id": "53f15a9c-b09c-4cb8-8e46-276674b38aef",
+            "Title": "Level 2 diploma entry requirements",
+            "Info": "2 or more GCSEs at grades 9 to 3 (A* to D) for a level 2 course"
+          },
+          {
+            "Id": "117ac935-3571-4b8e-bccb-20c1ece88ec6",
+            "Title": "Level 3 diploma entry requirements",
+            "Info": "4 or 5 GCSEs at grades 9 to 4 (A* to C) for a level 3 course"
+          }
+        ],
+        "MoreInformationLinks": [
+          {
+            "Id": "2a85c3fb-5795-453e-875b-ce91b523ca90",
+            "Title": "Show Equiv Entry Reqs",
+            "Url": "https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels",
+            "Text": "equivalent entry requirements"
+          },
+          {
+            "Id": "7df9feb9-2939-4e34-9a26-d2598a267685",
+            "Title": "Financial Help",
+            "Url": "https://www.gov.uk/further-education-courses/financial-help",
+            "Text": "funding advice"
+          },
+          {
+            "Id": "8ff3df66-4be5-4370-963a-84c4c1b28596",
+            "Title": "Find a course",
+            "Url": "/find-a-course/home",
+            "Text": "search for courses"
+          }
+        ],
+        "RouteSubjects": "<p>You could take an introductory college course in working with metal before looking for a trainee position with a blacksmith.</p>\n<p>You could also take a Level 2 in Diploma in Blacksmithing and Metalworking though this is only available in a small number of places.</p>\n<p>There is a Level 3 Diploma in Fabrication and Welding, which may lead you into industrial blacksmith work.</p>",
+        "FurtherRouteInformation": "<p>A course in general metalwork or art and design may also give you an advantage when looking for a job.</p>",
+        "RouteRequirement": "You may need:"
+      },
+      {
+        "RouteName": 0,
+        "EntryRequirements": [
+          {
+            "Id": "21a227aa-edbc-40f7-a3ef-ad75472aa2ba",
+            "Title": "intermediate apprenticeship entry reqs",
+            "Info": "some GCSEs, usually including English and maths, for an intermediate apprenticeship"
+          },
+          {
+            "Id": "edcecd88-a9b1-4022-9a7e-a70d96499b20",
+            "Title": "advanced apprenticeship entry reqs",
+            "Info": "5 GCSEs at grades 9 to 4 (A* to C), usually including English and maths, for an advanced apprenticeship"
+          }
+        ],
+        "MoreInformationLinks": [
+          {
+            "Id": "defe3b1d-8734-4369-b2c2-15e0546e5750",
+            "Title": "Show Equiv Entry Reqs",
+            "Url": "https://www.gov.uk/what-different-qualification-levels-mean/list-of-qualification-levels",
+            "Text": "equivalent entry requirements"
+          },
+          {
+            "Id": "aedbc62b-5024-47ae-8447-3ce762e6238b",
+            "Title": "Show Apprenticeship Guide",
+            "Url": "https://www.gov.uk/apprenticeships-guide",
+            "Text": "guide to apprenticeships"
+          }
+        ],
+        "RouteSubjects": "<p>You can get into industrial blacksmithing through an engineering or welding intermediate or advanced apprenticeship. </p>\n<p>You may be able to use this to find a trainee job with a specialist metalwork company.</p>",
+        "FurtherRouteInformation": "",
+        "RouteRequirement": "You'll usually need:"
+      }
+    ],
+    "FurtherInformation": {
+      "CareerTips": "<p>You'll need to show examples of your work and decorative ideas to get onto a design-related course or if contacting blacksmiths about trainee positions.</p>",
+      "ProfessionalAndIndustryBodies": "<p>You could join the <a href=\"https://www.babamembers.org.uk/baba-membership/\">British Artist Blacksmiths Association</a> and <a href=\"https://blacksmithscompany.co.uk/the-company/joining/\">The Worshipful Company of Blacksmiths</a> for professional development and to make industry contacts.</p>",
+      "FurtherInformation": "<p>You can get more details about working as an artist blacksmith from the <a href=\"http://www.baba.org.uk/education-training-and-courses/\">British Artist Blacksmiths Association</a> and <a href=\"https://ccskills.org.uk/careers/advice/article/an-artist-blacksmith-career\">Creative Choices</a>.</p>"
+    },
+    "FurtherRoutes": {
+      "Work": "<p>You could work as an assistant to an experienced blacksmith and learn the craft on the job. Experience in metalwork and technical drawing can be useful for this career.</p>",
+      "Volunteering": "",
+      "DirectApplication": "",
+      "OtherRoutes": "<p>You'll find it useful to do a short course in blacksmithing. This will help you decide if it's a suitable career and may be useful if you plan to look for a training position. The <a href=\"https://www.babamembers.org.uk/baba-directory/\">British Artist Blacksmiths Association</a> has details of training organisations.</p>"
+    },
+    "IntroText": "<p>You can get into this job through:</p>\n<ul>\n    <li>a university course</li>\n    <li>a college course</li>\n    <li>an apprenticeship</li>\n    <li>working towards this role</li>\n    <li>specialist courses run by private training organisations</li>\n</ul>",
+    "Registrations": []
+  },
+  "WhatYouWillDoData": {
+    "DailyTasks": "<p>For each job, you'll:</p>\n<ul>\n    <li>sketch out new design plans or follow customer instructions</li>\n    <li>heat metals to the right temperature in a forge or furnace</li>\n    <li>shape metals with hand tools like hammers, punches and anvils</li>\n    <li>use power tools, like drills, lathes and hydraulic presses</li>\n    <li>join metal parts together using riveting and welding methods</li>\n    <li>apply finishes</li>\n</ul>",
+    "Locations": [
+      {
+        "Id": "95fa9dd7-dba6-4ce3-a924-3b06cf74599c",
+        "Title": "Factory",
+        "Description": "in a factory",
+        "Url": "/Factory",
+        "IsNegative": false
+      },
+      {
+        "Id": "757760d3-00c0-4e97-b2c0-2d6e6b5ee1b2",
+        "Title": "Workshop",
+        "Description": "in a workshop",
+        "Url": "/Workshop",
+        "IsNegative": false
+      }
+    ],
+    "Uniforms": [
+      {
+        "Id": "07c66571-c71b-4e5d-ba09-0d1bc62b3844",
+        "Title": "Protective Clothing",
+        "Description": "protective clothing",
+        "Url": "/Protective-Clothing",
+        "IsNegative": false
+      }
+    ],
+    "Environments": [
+      {
+        "Id": "98ab8c0b-e70b-4ac5-94e2-6649cc39742d",
+        "Title": "Physically Demanding",
+        "Description": "physically demanding",
+        "Url": "/Physically-Demanding",
+        "IsNegative": false
+      },
+      {
+        "Id": "e21d0966-25af-4363-9dbc-f420bad0e25b",
+        "Title": "Hot",
+        "Description": "hot",
+        "Url": "/Hot",
+        "IsNegative": false
+      },
+      {
+        "Id": "259caadb-fcf4-4176-9d84-e8e258d37116",
+        "Title": "Noisy",
+        "Description": "noisy",
+        "Url": "/Noisy",
+        "IsNegative": false
+      }
+    ],
+    "Introduction": ""
+  },
+  "SocCodeData": {
+    "Id": "527a741b-0370-4883-b259-299e8481995e",
+    "SOCCode": "5211A",
+    "Description": "Blacksmith",
+    "ONetOccupationalCode": "27-1013.00",
+    "UrlName": "5211a",
+    "ApprenticeshipFramework": [],
+    "ApprenticeshipStandards": [
+      {
+        "Id": "152c8d2e-aced-4d30-89af-648d7f4168df",
+        "Title": "Welding (Level 2)",
+        "Url": "94",
+        "Description": null
+      }
+    ]
+  },
+  "RelatedCareersData": [
+    {
+      "Id": "7390d986-e5ea-497d-b246-3d54f45f32ea",
+      "Title": "Farrier",
+      "ProfileLink": "/farrier"
+    },
+    {
+      "Id": "c270e8de-e12b-4157-8959-6cb56349f493",
+      "Title": "Welder",
+      "ProfileLink": "/welder"
+    },
+    {
+      "Id": "ae8c8fc3-f508-453e-8a5f-94e5713858e8",
+      "Title": "Fine artist",
+      "ProfileLink": "/fine-artist"
+    }
+  ],
+  "SocSkillsMatrixData": [
+    {
+      "Id": "4e45d06f-c593-4fc7-8384-56252a37225c",
+      "Title": "5211A-Attention to Detail",
+      "Contextualised": "",
+      "ONetAttributeType": "WorkStyle",
+      "Rank": 1.0,
+      "ONetRank": 4.81,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "09dd5f1f-0152-482b-a5ac-cdc3573f0908",
+          "Title": "Attention to Detail",
+          "ONetElementId": "1.C.5.b",
+          "Description": "to be thorough and pay attention to detail"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "e412f007-4d7c-47f9-bba1-48916f607dc0",
+      "Title": "5211A-Design",
+      "Contextualised": "",
+      "ONetAttributeType": "Knowledge",
+      "Rank": 2.0,
+      "ONetRank": 4.79,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "d2e6411d-6fad-4820-85bb-bb9cdc6b85b4",
+          "Title": "Design",
+          "ONetElementId": "2.C.3.c",
+          "Description": "design skills and knowledge"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "af3563d1-b071-4b49-abf0-064e79403a3f",
+      "Title": "5211A-Computers and Electronics",
+      "Contextualised": "",
+      "ONetAttributeType": "Knowledge",
+      "Rank": 3.0,
+      "ONetRank": 4.67,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "6a018c2c-e668-4016-a4ea-325efc518683",
+          "Title": "Computers and Electronics",
+          "ONetElementId": "2.C.3.a",
+          "Description": "knowledge of computer operating systems, hardware and software"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "5703c117-54dd-4b1a-98b7-12ebf94b2463",
+      "Title": "5211A-Idea Generation and Reasoning Abilities",
+      "Contextualised": "",
+      "ONetAttributeType": "Ability",
+      "Rank": 4.0,
+      "ONetRank": 4.5,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "ed83c7ca-0044-4a35-aaba-8327e6b69ad6",
+          "Title": "Idea Generation and Reasoning Abilities",
+          "ONetElementId": "1.A.1.b",
+          "Description": "thinking and reasoning skills"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "20c4650d-2463-43cb-b43f-5bceb92cac82",
+      "Title": "5211A-Initiative",
+      "Contextualised": "",
+      "ONetAttributeType": "WorkStyle",
+      "Rank": 5.0,
+      "ONetRank": 4.48,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "108aeb11-b132-45ef-9ba0-1090818dcd8f",
+          "Title": "Initiative",
+          "ONetElementId": "1.C.1.c",
+          "Description": "the ability to use your initiative"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "4c80a57a-eb47-4038-9be1-7b2521c0a818",
+      "Title": "5211A-Stress Tolerance",
+      "Contextualised": "",
+      "ONetAttributeType": "WorkStyle",
+      "Rank": 6.0,
+      "ONetRank": 4.18,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "eb5c71f0-0627-4670-8917-2248e1703f73",
+          "Title": "Stress Tolerance",
+          "ONetElementId": "1.C.4.b",
+          "Description": "the ability to accept criticism and work well under pressure"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "67c30044-7896-4384-817f-43bbfe818187",
+      "Title": "5211A-Adaptability/Flexibility",
+      "Contextualised": "",
+      "ONetAttributeType": "WorkStyle",
+      "Rank": 7.0,
+      "ONetRank": 4.16,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "0eb51ad1-6046-432e-a415-9e0898e0e8e0",
+          "Title": "Adaptability/Flexibility",
+          "ONetElementId": "1.C.4.c",
+          "Description": "to be flexible and open to change"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "10d436d6-6d4c-439c-a858-f3aca392b6cb",
+      "Title": "5211A-Self Control",
+      "Contextualised": "",
+      "ONetAttributeType": "WorkStyle",
+      "Rank": 8.0,
+      "ONetRank": 4.12,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "9e375387-3254-41f0-93bc-767f7a84eddb",
+          "Title": "Self Control",
+          "ONetElementId": "1.C.4.a",
+          "Description": "patience and the ability to remain calm in stressful situations"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "8cef13f7-50b6-4720-a796-82fa753e31e8",
+      "Title": "5211A-English Language",
+      "Contextualised": "",
+      "ONetAttributeType": "Knowledge",
+      "Rank": 9.0,
+      "ONetRank": 4.03,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "1c824ec8-42d2-402a-bad9-8a31fe2be5b8",
+          "Title": "English Language",
+          "ONetElementId": "2.C.7.a",
+          "Description": "knowledge of English language"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "ef4a3a55-8be5-4785-be59-b415f00f2a48",
+      "Title": "5211A-Production and Processing",
+      "Contextualised": "",
+      "ONetAttributeType": "Knowledge",
+      "Rank": 10.0,
+      "ONetRank": 3.89,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "9b62b6cf-87e9-49cc-821a-f246b378c7f0",
+          "Title": "Production and Processing",
+          "ONetElementId": "2.C.2.a",
+          "Description": "knowledge of manufacturing production and processes"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "ee5c30af-06c6-43d0-b215-464b12fa470c",
+      "Title": "5211A-Fine Arts",
+      "Contextualised": "",
+      "ONetAttributeType": "Knowledge",
+      "Rank": 11.0,
+      "ONetRank": 3.87,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "78b1d167-c22d-48e6-bd71-7816b585fba9",
+          "Title": "Fine Arts",
+          "ONetElementId": "2.C.7.c",
+          "Description": "knowledge of the fine arts"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "c6602eb0-5255-4c08-9caf-bc8343404603",
+      "Title": "5211A-Fine Manipulative Abilities",
+      "Contextualised": "",
+      "ONetAttributeType": "Ability",
+      "Rank": 12.0,
+      "ONetRank": 3.75,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "86f266a0-ba81-4284-aa9b-030b4b28b665",
+          "Title": "Fine Manipulative Abilities",
+          "ONetElementId": "1.A.2.a",
+          "Description": "the ability to work well with your hands"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "ba3b268f-08d2-43b9-8052-652cca952ab4",
+      "Title": "5211A-Active Learning",
+      "Contextualised": "",
+      "ONetAttributeType": "Skill",
+      "Rank": 13.0,
+      "ONetRank": 3.31,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "21b45ae3-1e54-428f-b994-db60d8296c60",
+          "Title": "Active Learning",
+          "ONetElementId": "2.A.2.b",
+          "Description": "the ability to learn through your work"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "4b03505e-9f35-48f8-b7fb-7edecad09371",
+      "Title": "5211A-Verbal Abilities",
+      "Contextualised": "",
+      "ONetAttributeType": "Ability",
+      "Rank": 14.0,
+      "ONetRank": 3.31,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "28a9aea5-bbd2-4941-8d43-20b5b1859703",
+          "Title": "Verbal Abilities",
+          "ONetElementId": "1.A.1.a",
+          "Description": "excellent verbal communication skills"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "b26f3e4a-6126-4665-9f42-81f2aba785a7",
+      "Title": "5211A-Critical Thinking",
+      "Contextualised": "",
+      "ONetAttributeType": "Skill",
+      "Rank": 15.0,
+      "ONetRank": 3.25,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "52697a6c-db87-49f7-8996-ca87eb30f6e9",
+          "Title": "Critical Thinking",
+          "ONetElementId": "2.A.2.a",
+          "Description": "the ability to think clearly using logic and reasoning"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "e49533e0-f729-4289-b70c-3e2daf720361",
+      "Title": "5211A-Active Listening",
+      "Contextualised": "",
+      "ONetAttributeType": "Skill",
+      "Rank": 16.0,
+      "ONetRank": 3.18,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "320ba978-acb5-46b1-87e0-a3535dcbf6ed",
+          "Title": "Active Listening",
+          "ONetElementId": "2.A.1.b",
+          "Description": "active listening skills"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "90ff6a97-b386-4f70-8a59-afea312abd85",
+      "Title": "5211A-Reading Comprehension",
+      "Contextualised": "",
+      "ONetAttributeType": "Skill",
+      "Rank": 17.0,
+      "ONetRank": 3.06,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "c645d239-a4b2-4581-8f1e-a2f9959b4ad1",
+          "Title": "Reading Comprehension",
+          "ONetElementId": "2.A.1.a",
+          "Description": "the ability to read English"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "9eb39e79-2072-417f-8a29-a05341dea4ac",
+      "Title": "5211A-Judgment and Decision Making",
+      "Contextualised": "",
+      "ONetAttributeType": "Skill",
+      "Rank": 18.0,
+      "ONetRank": 3.0,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "054c13d0-eaa2-4e1e-b2ad-1f37d113561d",
+          "Title": "Judgment and Decision Making",
+          "ONetElementId": "2.B.4.e",
+          "Description": "the ability to use your judgement and make decisions"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "705b5bbc-760d-481d-8f96-bb531be4f579",
+      "Title": "5211A-Attentiveness",
+      "Contextualised": "",
+      "ONetAttributeType": "Ability",
+      "Rank": 19.0,
+      "ONetRank": 2.94,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "42e93a51-0256-4391-b844-512a1a980f93",
+          "Title": "Attentiveness",
+          "ONetElementId": "1.A.1.g",
+          "Description": "concentration skills"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    },
+    {
+      "Id": "b48fcaff-4c95-4d09-9abd-879d10244a4d",
+      "Title": "5211A-Control Movement Abilities",
+      "Contextualised": "",
+      "ONetAttributeType": "Ability",
+      "Rank": 20.0,
+      "ONetRank": 2.94,
+      "ONetElementId": null,
+      "RelatedSkill": [
+        {
+          "Id": "20850532-9e5c-4a10-a52d-9d6c1c1e0c11",
+          "Title": "Control Movement Abilities",
+          "ONetElementId": "1.A.2.b",
+          "Description": "physical skills like movement, coordination, dexterity and grace"
+        }
+      ],
+      "RelatedSOC": [
+        {
+          "Id": "527a741b-0370-4883-b259-299e8481995e",
+          "SOCCode": "5211a"
+        }
+      ]
+    }
+  ],
+  "JobProfileCategories": [
+    {
+      "Id": "c517ab41-34b2-4e43-a86f-4c59e7897b42",
+      "Name": "creative-and-media",
+      "Title": "Creative and media"
+    },
+    {
+      "Id": "3bc659e1-3b35-4150-878a-255f45df6bb8",
+      "Name": "manufacturing",
+      "Title": "Manufacturing"
+    }
+  ],
+  "LastModified": "2019-11-12T14:57:33.333Z",
+  "CanonicalName": "blacksmith_lj_amend",
+  "WidgetContentTitle": ""
+}
