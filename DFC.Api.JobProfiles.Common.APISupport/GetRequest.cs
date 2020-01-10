@@ -1,4 +1,6 @@
-﻿using RestSharp;
+﻿using Newtonsoft.Json;
+using RestSharp;
+using System;
 
 namespace DFC.Api.JobProfiles.Common.APISupport
 {
@@ -27,10 +29,27 @@ namespace DFC.Api.JobProfiles.Common.APISupport
             Request.AddHeader("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
         }
 
-        public IRestResponse<T> Execute<T>()
+        public Response<T> Execute<T>()
         {
+            Response<T> response = new Response<T>();
+            IRestResponse rawResponse = null;
             RestClient restClient = new RestClient();
-            return restClient.Execute<T>(Request);
+            restClient.ExecuteAsync(Request, (response) => { rawResponse = response; });
+            DateTime start = DateTime.Now;
+            while (DateTime.Now - start < TimeSpan.FromSeconds(10) && rawResponse == null) { }
+            
+            if(rawResponse == null)
+            {
+                throw new TimeoutException("Unable to get a valid response from the API");
+            }
+
+            response.HttpStatusCode = rawResponse.StatusCode;
+            response.IsSuccessful = rawResponse.IsSuccessful;
+            response.ErrorMessage = rawResponse.ErrorMessage;
+            response.ResponseStatus = rawResponse.ResponseStatus;
+            response.Data = JsonConvert.DeserializeObject<T>(rawResponse.Content);
+
+            return response;
         }
     }
 }

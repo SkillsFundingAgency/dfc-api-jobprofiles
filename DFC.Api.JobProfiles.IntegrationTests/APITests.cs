@@ -3,47 +3,55 @@ using DFC.Api.JobProfiles.Common.AzureServiceBusSupport;
 using DFC.Api.JobProfiles.IntegrationTests.Model;
 using DFC.Api.JobProfiles.IntegrationTests.Support;
 using NUnit.Framework;
-using RestSharp;
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.IntegrationTests
 {
-    public class APITests
+    public class JobProfileDetailsTest : Hook
     {
+        public JobProfileInputModel MessageBody { get; set; }
+        public Response<JobProfileDetails> JobProfileDetailsResponse { get; set; }
+
         [SetUp]
-        public void Setup()
-        {
-
-        }
-
-        [Test]
-        public async Task ServiceBusProofOfConcept()
+        public async Task Setup()
         {
             string customId = Guid.NewGuid().ToString();
             string canonicalName = CommonAction.RandomString(10);
+            MessageBody = ResourceManager.GetResource<JobProfileInputModel>("MessageBody");
+            MessageBody.JobProfileId = customId;
+            MessageBody.UrlName = canonicalName;
+            MessageBody.CanonicalName = canonicalName;
 
-            //SET THE INPUT:
-            Topic topic = new Topic("Endpoint=sb://dfc-sit-app-sharedresources-ns.servicebus.windows.net/;SharedAccessKeyName=monitor-cms-messages;SharedAccessKey=OoT1m7qwR9hwGOh/mNtQq/TVpETuKxjp/s5OE/8ZT1w=;EntityPath=cms-messages");
+            Topic topic = new Topic(Settings.ServiceBusConfig.Endpoint);
             Message message = new Message();
-            message.Body = ResourceManager.GetResourceContent("MessageBody");
             message.ContentType = "application/json";
+            message.Body = CommonAction.ConvertObjectToByteArray(MessageBody);
             message.CorrelationId = Guid.NewGuid().ToString();
             message.Label = "Automated message";
             message.MessageId = Guid.NewGuid().ToString();
-            message.UserProperties.Add("Id", "685e06e6-a42d-4bec-b660-c206399c534j"); // needs changing
+            message.UserProperties.Add("Id", customId);
             message.UserProperties.Add("ActionType", "Published");
             message.UserProperties.Add("CType", "JobProfile");
             await topic.SendAsync(message);
 
-            //READ THE OUTPUT
-            GetRequest getRequest = new GetRequest("https://sit.api.nationalcareersservice.org.uk/job-profiles/abcdefg");
-            getRequest.AddVersionHeader("v1");
-            getRequest.AddApimKeyHeader("747a0f99d84c468da7f2f6e72003db53");
-            IRestResponse<JobProfileDetails> jobProfileDetailsResponse = getRequest.Execute<JobProfileDetails>();
-            JobProfileDetails jpd = jobProfileDetailsResponse.Data;
+            GetRequest getRequest = new GetRequest($"https://sit.api.nationalcareersservice.org.uk/job-profiles/{canonicalName}");
+            getRequest.AddVersionHeader(Settings.APIConfig.Version);
+            getRequest.AddApimKeyHeader(Settings.APIConfig.ApimSubscriptionKey);
+            JobProfileDetailsResponse = getRequest.Execute<JobProfileDetails>();
+        }
 
-            Assert.AreEqual("Hello James", jpd.Title);
+        [Test]
+        public void Status200()
+        {
+            Assert.AreEqual(HttpStatusCode.OK, JobProfileDetailsResponse.HttpStatusCode);
+        }
+
+        [Test]
+        public void TitleField()
+        {
+            Assert.AreEqual(MessageBody.Title, JobProfileDetailsResponse.Data.Title);
         }
     }
 }

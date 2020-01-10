@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.IO;
 using System.Text;
 
@@ -6,7 +7,7 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
 {
     internal class ResourceManager
     {
-        internal static byte[] GetResourceContent(string resourceName)
+        private static string GetResourceContent(string resourceName)
         {
             DirectoryInfo resourcesDirectory = Directory.GetParent(Environment.CurrentDirectory).Parent.Parent.GetDirectories("Resource")[0];
             FileInfo[] files = resourcesDirectory.GetFiles();
@@ -28,9 +29,14 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
 
             using (StreamReader streamReader = new StreamReader(selectedResource.FullName))
             {
-                string contents = streamReader.ReadToEnd();
-                return Encoding.ASCII.GetBytes(contents);
+                return streamReader.ReadToEnd();
             }
+        }
+
+        internal static T GetResource<T>(string resourceName)
+        {
+            string content = GetResourceContent(resourceName);
+            return JsonConvert.DeserializeObject<T>(content);
         }
     }
 }
