@@ -1,5 +1,4 @@
 ﻿using Microsoft.Azure.ServiceBus;
-using System;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Common.AzureServiceBusSupport
