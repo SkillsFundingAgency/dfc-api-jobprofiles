@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
-using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using System.Linq;

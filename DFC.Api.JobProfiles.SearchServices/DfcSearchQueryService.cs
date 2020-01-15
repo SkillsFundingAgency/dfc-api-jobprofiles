@@ -16,8 +16,9 @@ namespace DFC.Api.JobProfiles.SearchServices
             ISearchIndexClient indexClient,
             IAzSearchQueryConverter queryConverter,
             ISearchQueryBuilder queryBuilder,
-            ISearchManipulator<T> searchManipulator)
-            : base(indexClient, queryConverter)
+            ISearchManipulator<T> searchManipulator,
+            ISharedConfigFactory sharedConfigFactory)
+            : base(indexClient, queryConverter, sharedConfigFactory)
         {
             this.queryBuilder = queryBuilder;
             this.searchManipulator = searchManipulator;
