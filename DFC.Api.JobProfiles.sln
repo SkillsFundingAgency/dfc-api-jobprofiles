@@ -57,7 +57,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{78C6AF
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Common.AzureServiceBusSupport", "DFC.Api.JobProfiles.Common.AzureServiceBusSupport\DFC.Api.JobProfiles.Common.AzureServiceBusSupport.csproj", "{F40B4C66-53CD-49C5-93A8-DD224189FDE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.Api.JobProfiles.Common.APISupport", "DFC.Api.JobProfiles.Common.APISupport\DFC.Api.JobProfiles.Common.APISupport.csproj", "{9C51ED91-04A4-46F2-8549-FF563308A9BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Common.APISupport", "DFC.Api.JobProfiles.Common.APISupport\DFC.Api.JobProfiles.Common.APISupport.csproj", "{9C51ED91-04A4-46F2-8549-FF563308A9BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.API.JobProfiles.Common.CosmosDbSupport", "DFC.API.JobProfiles.Common.CosmosDbSupport\DFC.API.JobProfiles.Common.CosmosDbSupport.csproj", "{4545FAFC-2C0B-4A94-AEB9-CE7935038861}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -113,6 +115,10 @@ Global
 		{9C51ED91-04A4-46F2-8549-FF563308A9BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9C51ED91-04A4-46F2-8549-FF563308A9BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9C51ED91-04A4-46F2-8549-FF563308A9BA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4545FAFC-2C0B-4A94-AEB9-CE7935038861}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4545FAFC-2C0B-4A94-AEB9-CE7935038861}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4545FAFC-2C0B-4A94-AEB9-CE7935038861}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4545FAFC-2C0B-4A94-AEB9-CE7935038861}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -135,6 +141,7 @@ Global
 		{78C6AF4C-AB62-4406-8EFE-84822A93F15D} = {6A118A2C-35C6-49BF-A889-892EB0C6CCBF}
 		{F40B4C66-53CD-49C5-93A8-DD224189FDE9} = {78C6AF4C-AB62-4406-8EFE-84822A93F15D}
 		{9C51ED91-04A4-46F2-8549-FF563308A9BA} = {78C6AF4C-AB62-4406-8EFE-84822A93F15D}
+		{4545FAFC-2C0B-4A94-AEB9-CE7935038861} = {78C6AF4C-AB62-4406-8EFE-84822A93F15D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {EA2B434A-A6E5-461C-8EC9-B77E8742CAC0}

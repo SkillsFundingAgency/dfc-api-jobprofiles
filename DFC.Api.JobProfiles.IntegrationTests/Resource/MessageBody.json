@@ -1,11 +1,11 @@
 {
-  "JobProfileId": "5cde83c1-04c5-4750-b765-1d7dab31e925",
+  "JobProfileId": "",
   "Title": "Api Test Profile",
   "DynamicTitlePrefix": "As Defined",
   "AlternativeTitle": "Testing",
   "Overview": "Test profile for API's",
   "SocLevelTwo": "22",
-  "UrlName": "api-test-profile",
+  "UrlName": "",
   "DigitalSkillsLevel": "",
   "Restrictions": [],
   "OtherRequirements": "",
@@ -128,7 +128,7 @@
     }
   ],
   "LastModified": "2020-01-10T08:48:43.37Z",
-  "CanonicalName": "api-test-profile",
+  "CanonicalName": "",
   "WidgetContentTitle": "",
   "IncludeInSitemap": true
 }

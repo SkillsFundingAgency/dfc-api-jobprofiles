@@ -19,6 +19,7 @@
   <ItemGroup>
     <ProjectReference Include="..\DFC.Api.JobProfiles.Common.APISupport\DFC.Api.JobProfiles.Common.APISupport.csproj" />
     <ProjectReference Include="..\DFC.Api.JobProfiles.Common.AzureServiceBusSupport\DFC.Api.JobProfiles.Common.AzureServiceBusSupport.csproj" />
+    <ProjectReference Include="..\DFC.API.JobProfiles.Common.CosmosDbSupport\DFC.API.JobProfiles.Common.CosmosDbSupport.csproj" />
   </ItemGroup>
 
   <ItemGroup>

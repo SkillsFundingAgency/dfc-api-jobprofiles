@@ -1,25 +1,65 @@
-﻿using Newtonsoft.Json;
+﻿using DFC.Api.JobProfiles.Common.APISupport;
+using DFC.Api.JobProfiles.Common.AzureServiceBusSupport;
+using Newtonsoft.Json;
 using System;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.IntegrationTests.Support
 {
-    public class CommonAction
+    internal class CommonAction
     {
         private static Random Random = new Random();
 
-        public static string RandomString(int length)
+        internal static string RandomString(int length)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[Random.Next(s.Length)]).ToArray());
         }
 
-        public static byte[] ConvertObjectToByteArray(object obj)
+        internal static byte[] ConvertObjectToByteArray(object obj)
         {
             string serialisedContent = JsonConvert.SerializeObject(obj);
             return Encoding.ASCII.GetBytes(serialisedContent);
+        }
+
+        internal static Message CreateMessage(Guid messageId, byte[] messageBody)
+        {
+            Message message = new Message();
+            message.ContentType = "application/json";
+            message.Body = messageBody;
+            message.CorrelationId = Guid.NewGuid().ToString();
+            message.Label = "Automated message";
+            message.MessageId = Guid.NewGuid().ToString();
+            message.UserProperties.Add("Id", messageId);
+            message.UserProperties.Add("ActionType", "Published");
+            message.UserProperties.Add("CType", "JobProfile");
+            return message;
+        }
+
+        internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpointBaseUrl, string canonicalName)
+        {
+            GetRequest getRequest = new GetRequest(endpointBaseUrl + canonicalName);
+            getRequest.AddVersionHeader(Settings.APIConfig.Version);
+            getRequest.AddApimKeyHeader(Settings.APIConfig.ApimSubscriptionKey);
+            Response<T> response = getRequest.Execute<T>();
+
+            DateTime startTime = DateTime.Now;
+            while(response.HttpStatusCode.Equals(HttpStatusCode.NoContent) && DateTime.Now - startTime < Settings.GracePeriod)
+            {
+                await Task.Delay(500);
+                response = getRequest.Execute<T>();
+            }
+
+            if (!response.HttpStatusCode.Equals(HttpStatusCode.OK))
+            {
+                throw new Exception($"Status code {(int)response.HttpStatusCode} was returned by the API");
+            }
+
+            return response;
         }
     }
 }

@@ -1,12 +1,17 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Common.APISupport
 {
     public class GetRequest
     {
         private RestRequest Request { get; set; }
+        public Dictionary<string, string> Headers { get; } = new Dictionary<string, string>();
 
         public GetRequest(string endpoint)
         {
@@ -22,34 +27,35 @@ namespace DFC.Api.JobProfiles.Common.APISupport
         public void AddVersionHeader(string version)
         {
             Request.AddHeader("version", version);
+            Headers.Add("version", version);
         }
 
         public void AddApimKeyHeader(string apimSubscriptionKey)
         {
             Request.AddHeader("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
+            Headers.Add("Ocp-Apim-Subscription-Key", apimSubscriptionKey);
         }
 
         public Response<T> Execute<T>()
         {
+            AutoResetEvent autoResetEvent = new AutoResetEvent(false);
             Response<T> response = new Response<T>();
             IRestResponse rawResponse = null;
-            RestClient restClient = new RestClient();
-            restClient.ExecuteAsync(Request, (response) => { rawResponse = response; });
-            DateTime start = DateTime.Now;
-            while (DateTime.Now - start < TimeSpan.FromSeconds(10) && rawResponse == null) { }
             
-            if(rawResponse == null)
-            {
-                throw new TimeoutException("Unable to get a valid response from the API");
-            }
+            RestRequestAsyncHandle handle = new RestClient().ExecuteAsync(Request, (response) => { 
+                rawResponse = response;
+                autoResetEvent.Set();
+            });
 
+            autoResetEvent.WaitOne();
             response.HttpStatusCode = rawResponse.StatusCode;
             response.IsSuccessful = rawResponse.IsSuccessful;
             response.ErrorMessage = rawResponse.ErrorMessage;
             response.ResponseStatus = rawResponse.ResponseStatus;
             response.Data = JsonConvert.DeserializeObject<T>(rawResponse.Content);
-
             return response;
         }
+
+
     }
 }
