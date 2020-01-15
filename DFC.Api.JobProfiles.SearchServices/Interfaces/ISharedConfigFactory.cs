@@ -7,6 +7,6 @@ namespace DFC.Api.JobProfiles.SearchServices.Interfaces
     {
         Task<ISearchIndexClient> GetSearchIndexClient();
 
-        Task<ISearchIndexClient> CreateOrRefresh();
+        Task<ISearchIndexClient> CreateOrRefreshIndexClient();
     }
 }

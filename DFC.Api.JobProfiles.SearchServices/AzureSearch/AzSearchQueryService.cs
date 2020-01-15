@@ -47,7 +47,7 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
             }
             catch (Exception)
             {
-                var newIndexClient = await this.sharedConfigFactory.CreateOrRefresh().ConfigureAwait(false);
+                var newIndexClient = await this.sharedConfigFactory.CreateOrRefreshIndexClient().ConfigureAwait(false);
                 return await SearchAsyncWithIndexClient(newIndexClient, searchTerm, properties).ConfigureAwait(false);
             }
         }
@@ -101,7 +101,7 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
         private async Task<SuggestionResult<T>> GetSuggestionAsyncWithIndexClient(ISearchIndexClient searchIndexClient, string partialTerm, SuggestProperties properties)
         {
             var suggestParameters = queryConverter.BuildSuggestParameters(properties);
-            var result = await indexClient.Documents.SuggestAsync<T>(partialTerm, DefaultSuggesterName, suggestParameters).ConfigureAwait(false);
+            var result = await searchIndexClient.Documents.SuggestAsync<T>(partialTerm, DefaultSuggesterName, suggestParameters).ConfigureAwait(false);
             return queryConverter.ConvertToSuggestionResult(result, properties);
         }
     }

@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
 using AzureFunctions.Extensions.Swashbuckle;
-using Dfc.SharedConfig.IoC;
-using Dfc.SharedConfig.Models;
-using Dfc.SharedConfig.Services;
 using DFC.Api.JobProfiles;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
@@ -13,10 +10,12 @@ using DFC.Api.JobProfiles.SearchServices;
 using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard;
+using Dfc.SharedConfig.IoC;
+using Dfc.SharedConfig.Models;
+using Dfc.SharedConfig.Services;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Search;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -46,18 +45,11 @@ namespace DFC.Api.JobProfiles
             var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get<CosmosDbConnection>();
             var documentClient = new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey);
             var jobProfileSearchIndexConfig = configuration.GetSection(nameof(JobProfileSearchIndexConfig)).Get<JobProfileSearchIndexConfig>();
-
-            //if (jobProfileSearchIndexConfig is null)
-            //{
             var sharedConfigSettings = configuration.GetSection("SharedConfigSettings").Get<SharedConfigSettings>();
             var services = builder?.Services.AddAzureTableSharedConfigService(sharedConfigSettings).BuildServiceProvider();
-
-            var service = services.GetService<ISharedConfigurationService>();
-            //var configItem = service.GetConfigAsync<JobProfileSearchIndexConfig>("JobProfilesApi", "JobProfileSearchIndexConfig").GetAwaiter().GetResult();
-
-            var sharedConfigFactory = new SharedConfigFactory(jobProfileSearchIndexConfig, service);
+            var sharedConfigurationService = services.GetService<ISharedConfigurationService>();
+            var sharedConfigFactory = new SharedConfigFactory(jobProfileSearchIndexConfig, sharedConfigurationService);
             var searchIndexClient = sharedConfigFactory.GetSearchIndexClient().GetAwaiter().GetResult();
-            //var searchIndexClient = new SearchIndexClient(jobProfileSearchIndexConfig.SearchServiceName, jobProfileSearchIndexConfig.SearchIndex, new SearchCredentials(jobProfileSearchIndexConfig.AccessKey));
 
             builder.AddDependencyInjection();
             builder.AddSwashBuckle(Assembly.GetExecutingAssembly());
@@ -66,7 +58,7 @@ namespace DFC.Api.JobProfiles
             builder?.Services.AddSingleton(cosmosDbConnection);
             builder?.Services.AddSingleton<IDocumentClient>(documentClient);
             builder?.Services.AddSingleton(jobProfileSearchIndexConfig ?? new JobProfileSearchIndexConfig());
-            builder?.Services.AddSingleton<ISearchIndexClient>(searchIndexClient);
+            builder?.Services.AddSingleton(searchIndexClient);
             builder?.Services.AddSingleton<ISharedConfigFactory>(sharedConfigFactory);
 
             builder?.Services.AddSingleton<IAzSearchQueryConverter, AzSearchQueryConverter>();

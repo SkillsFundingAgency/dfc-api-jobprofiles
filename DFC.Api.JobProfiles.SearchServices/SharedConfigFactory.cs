@@ -1,6 +1,6 @@
-﻿using Dfc.SharedConfig.Services;
-using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
+using Dfc.SharedConfig.Services;
 using Microsoft.Azure.Search;
 using System.Threading.Tasks;
 
@@ -20,22 +20,17 @@ namespace DFC.Api.JobProfiles.SearchServices
 
         public async Task<ISearchIndexClient> GetSearchIndexClient()
         {
-            if (string.IsNullOrWhiteSpace(config?.SearchIndex))//|| indexClient is null)
+            if (string.IsNullOrWhiteSpace(config?.SearchIndex))
             {
                 return await CreateClientFromPackage().ConfigureAwait(false);
             }
             else
             {
-                if (indexClient is null)
-                {
-                    return new SearchIndexClient(config.SearchServiceName, config.SearchIndex, new SearchCredentials(config.AccessKey));
-                }
-
-                return indexClient;
+                return indexClient ?? new SearchIndexClient(config.SearchServiceName, config.SearchIndex, new SearchCredentials(config.AccessKey));
             }
         }
 
-        public async Task<ISearchIndexClient> CreateOrRefresh()
+        public async Task<ISearchIndexClient> CreateOrRefreshIndexClient()
         {
             return await CreateClientFromPackage().ConfigureAwait(false);
         }
