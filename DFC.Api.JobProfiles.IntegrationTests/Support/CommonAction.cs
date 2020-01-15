@@ -15,7 +15,7 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
 
         internal static string RandomString(int length)
         {
-            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             return new string(Enumerable.Repeat(chars, length)
               .Select(s => s[Random.Next(s.Length)]).ToArray());
         }
@@ -40,11 +40,19 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
             return message;
         }
 
-        internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpointBaseUrl, string canonicalName)
+        internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpointBaseUrl, string canonicalName, bool AuthoriseRequest = true)
         {
             GetRequest getRequest = new GetRequest(endpointBaseUrl + canonicalName);
             getRequest.AddVersionHeader(Settings.APIConfig.Version);
-            getRequest.AddApimKeyHeader(Settings.APIConfig.ApimSubscriptionKey);
+
+            if(AuthoriseRequest)
+            {
+                getRequest.AddApimKeyHeader(Settings.APIConfig.ApimSubscriptionKey);
+            } else
+            {
+                getRequest.AddApimKeyHeader(RandomString(20).ToLower());
+            }
+
             Response<T> response = getRequest.Execute<T>();
 
             DateTime startTime = DateTime.Now;
@@ -52,11 +60,6 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
             {
                 await Task.Delay(500);
                 response = getRequest.Execute<T>();
-            }
-
-            if (!response.HttpStatusCode.Equals(HttpStatusCode.OK))
-            {
-                throw new Exception($"Status code {(int)response.HttpStatusCode} was returned by the API");
             }
 
             return response;

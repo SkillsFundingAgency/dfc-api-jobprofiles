@@ -96,7 +96,7 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Model
         public string Title { get; set; }
     }
 
-    public class JobProfileInputModel
+    public class JobProfileMessageBody
     {
         public string JobProfileId { get; set; }
         public string Title { get; set; }
