@@ -52,7 +52,10 @@ namespace DFC.Api.JobProfiles.Common.APISupport
             response.IsSuccessful = rawResponse.IsSuccessful;
             response.ErrorMessage = rawResponse.ErrorMessage;
             response.ResponseStatus = rawResponse.ResponseStatus;
-            response.Data = JsonConvert.DeserializeObject<T>(rawResponse.Content);
+            if (response.HttpStatusCode.Equals(HttpStatusCode.OK)) 
+            { 
+                response.Data = JsonConvert.DeserializeObject<T>(rawResponse.Content); 
+            }
             return response;
         }
 

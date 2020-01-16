@@ -13,21 +13,21 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Test.Create
         [Test]
         public async Task ResponseCode200()
         {
-            Response<JobProfileAPIResponse> authorisedAPIResponseWithContent = await CommonAction.ExecuteGetRequest<JobProfileAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail, CanonicalName);
+            Response<JobProfileDetailsAPIResponse> authorisedAPIResponseWithContent = await CommonAction.ExecuteGetRequest<JobProfileDetailsAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail + CanonicalName);
             Assert.AreEqual(HttpStatusCode.OK, authorisedAPIResponseWithContent.HttpStatusCode);
         }
 
         [Test]
         public async Task ResponseCode204()
         {
-            Response<JobProfileAPIResponse> authorisedAPIResponseNoContent = await CommonAction.ExecuteGetRequest<JobProfileAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail, CommonAction.RandomString(10).ToLower());
+            Response<JobProfileDetailsAPIResponse> authorisedAPIResponseNoContent = await CommonAction.ExecuteGetRequest<JobProfileDetailsAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail + CommonAction.RandomString(10).ToLower());
             Assert.AreEqual(HttpStatusCode.NoContent, authorisedAPIResponseNoContent.HttpStatusCode);
         }
 
         [Test]
         public async Task ResponseCode401()
         {
-            Response<JobProfileAPIResponse> unauthorisedAPIResponse = await CommonAction.ExecuteGetRequest<JobProfileAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail, CanonicalName, false);
+            Response<JobProfileDetailsAPIResponse> unauthorisedAPIResponse = await CommonAction.ExecuteGetRequest<JobProfileDetailsAPIResponse>(Settings.APIConfig.EndpointBaseUrl.ProfileDetail + CanonicalName, false);
             Assert.AreEqual(HttpStatusCode.Unauthorized, unauthorisedAPIResponse.HttpStatusCode);
         }
     }

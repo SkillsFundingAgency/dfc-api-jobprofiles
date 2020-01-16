@@ -40,9 +40,9 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
             return message;
         }
 
-        internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpointBaseUrl, string canonicalName, bool AuthoriseRequest = true)
+        internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpoint, bool AuthoriseRequest = true)
         {
-            GetRequest getRequest = new GetRequest(endpointBaseUrl + canonicalName);
+            GetRequest getRequest = new GetRequest(endpoint);
             getRequest.AddVersionHeader(Settings.APIConfig.Version);
 
             if(AuthoriseRequest)
@@ -53,6 +53,7 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
                 getRequest.AddApimKeyHeader(RandomString(20).ToLower());
             }
 
+            await Task.Delay(3000); //This needs removing once DFC-11492 has been fixed.
             Response<T> response = getRequest.Execute<T>();
 
             DateTime startTime = DateTime.Now;

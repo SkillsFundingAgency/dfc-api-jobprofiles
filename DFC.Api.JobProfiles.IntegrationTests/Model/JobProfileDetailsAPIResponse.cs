@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace DFC.Api.JobProfiles.IntegrationTests.Model
 {
-    public class JobProfileAPIResponse
+    public class JobProfileDetailsAPIResponse
     {
         public string Title { get; set; }
         public DateTime LastUpdatedDate { get; set; }
