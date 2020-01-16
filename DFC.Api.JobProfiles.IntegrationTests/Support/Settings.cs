@@ -23,7 +23,5 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
                 public static string ProfileSummary { get; set; }
             }
         }
-
-        
     }
 }

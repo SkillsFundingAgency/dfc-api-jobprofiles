@@ -1,7 +1,10 @@
 ﻿using DFC.Api.JobProfiles.Common.APISupport;
 using DFC.Api.JobProfiles.Common.AzureServiceBusSupport;
+using DFC.Api.JobProfiles.IntegrationTests.Model;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -20,13 +23,26 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
               .Select(s => s[Random.Next(s.Length)]).ToArray());
         }
 
-        internal static byte[] ConvertObjectToByteArray(object obj)
+        internal static void InitialiseAppSettings()
+        {
+            IConfigurationRoot Configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
+            Settings.ServiceBusConfig.Endpoint = Configuration.GetSection("ServiceBusConfig").GetSection("Endpoint").Value;
+            Settings.APIConfig.Version = Configuration.GetSection("APIConfig").GetSection("Version").Value;
+            Settings.APIConfig.ApimSubscriptionKey = Configuration.GetSection("APIConfig").GetSection("ApimSubscriptionKey").Value;
+            Settings.APIConfig.EndpointBaseUrl.ProfileDetail = Configuration.GetSection("APIConfig").GetSection("EndpointBaseUrl").GetSection("ProfileDetail").Value;
+            Settings.APIConfig.EndpointBaseUrl.ProfileSearch = Configuration.GetSection("APIConfig").GetSection("EndpointBaseUrl").GetSection("ProfileSearch").Value;
+            Settings.APIConfig.EndpointBaseUrl.ProfileSummary = Configuration.GetSection("APIConfig").GetSection("EndpointBaseUrl").GetSection("ProfileSummary").Value;
+            if (!int.TryParse(Configuration.GetSection("GracePeriodInSeconds").Value, out int gracePeriodInSeconds)) { throw new InvalidCastException("Unable to retrieve an integer value for the grace period setting"); }
+            Settings.GracePeriod = TimeSpan.FromSeconds(gracePeriodInSeconds);
+        }
+
+        private static byte[] ConvertObjectToByteArray(object obj)
         {
             string serialisedContent = JsonConvert.SerializeObject(obj);
             return Encoding.ASCII.GetBytes(serialisedContent);
         }
 
-        internal static Message CreateMessage(Guid messageId, byte[] messageBody)
+        private static Message CreateCreateMessage(Guid messageId, byte[] messageBody)
         {
             Message message = new Message();
             message.ContentType = "application/json";
@@ -38,6 +54,36 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Support
             message.UserProperties.Add("ActionType", "Published");
             message.UserProperties.Add("CType", "JobProfile");
             return message;
+        }
+
+        private static Message CreateDeleteMessage(Guid messageId, byte[] messageBody)
+        {
+            Message message = new Message();
+            message.ContentType = "application/json";
+            message.UserProperties.Add("Id", messageId);
+            message.UserProperties.Add("ActionType", "Deleted");
+            message.UserProperties.Add("CType", "JobProfile");
+            message.Label = "Automated message";
+            message.Body = messageBody;
+            return message;
+        }
+
+        internal async static Task DeleteJobProfileWithId(Topic topic, Guid jobProfileId)
+        {
+            JobProfileDeleteMessageBody messageBody = ResourceManager.GetResource<JobProfileDeleteMessageBody>("JobProfileDeleteMessageBody");
+            messageBody.JobProfileId = jobProfileId.ToString();
+            Message deleteMessage = CommonAction.CreateDeleteMessage(jobProfileId, CommonAction.ConvertObjectToByteArray(messageBody));
+            await topic.SendAsync(deleteMessage);
+        }
+
+        internal async static Task CreateJobProfile(Topic topic, Guid messageId, string canonicalName)
+        {
+            JobProfileCreateMessageBody messageBody = ResourceManager.GetResource<JobProfileCreateMessageBody>("JobProfileCreateMessageBody");
+            messageBody.JobProfileId = messageId.ToString();
+            messageBody.UrlName = canonicalName;
+            messageBody.CanonicalName = canonicalName;
+            Message message = CreateCreateMessage(messageId, CommonAction.ConvertObjectToByteArray(messageBody));
+            await topic.SendAsync(message);
         }
 
         internal async static Task<Response<T>> ExecuteGetRequest<T>(string endpoint, bool AuthoriseRequest = true)

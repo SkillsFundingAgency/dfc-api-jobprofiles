@@ -9,7 +9,6 @@ namespace DFC.Api.JobProfiles.IntegrationTests.Test.Create
 {
     public class DetailTest : Hook
     {
-
         [Test]
         public async Task ResponseCode200()
         {

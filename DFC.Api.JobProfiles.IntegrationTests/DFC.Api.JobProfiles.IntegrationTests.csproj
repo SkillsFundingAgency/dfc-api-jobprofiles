@@ -26,7 +26,7 @@
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resource\JobProfileMessageBody.json">
+    <None Update="Resource\JobProfileCreateMessageBody.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

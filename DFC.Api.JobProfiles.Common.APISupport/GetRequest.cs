@@ -1,10 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
-using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Common.APISupport
 {
@@ -58,7 +56,5 @@ namespace DFC.Api.JobProfiles.Common.APISupport
             }
             return response;
         }
-
-
     }
 }
