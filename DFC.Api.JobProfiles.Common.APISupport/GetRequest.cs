@@ -40,7 +40,7 @@ namespace DFC.Api.JobProfiles.Common.APISupport
             Response<T> response = new Response<T>();
             IRestResponse rawResponse = null;
             
-            RestRequestAsyncHandle handle = new RestClient().ExecuteAsync(Request, (response) => { 
+            new RestClient().ExecuteAsync(Request, (response) => { 
                 rawResponse = response;
                 autoResetEvent.Set();
             });

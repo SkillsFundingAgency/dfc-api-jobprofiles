@@ -59,7 +59,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Common.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Common.APISupport", "DFC.Api.JobProfiles.Common.APISupport\DFC.Api.JobProfiles.Common.APISupport.csproj", "{9C51ED91-04A4-46F2-8549-FF563308A9BA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.API.JobProfiles.Common.CosmosDbSupport", "DFC.API.JobProfiles.Common.CosmosDbSupport\DFC.API.JobProfiles.Common.CosmosDbSupport.csproj", "{4545FAFC-2C0B-4A94-AEB9-CE7935038861}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.API.JobProfiles.Common.CosmosDbSupport", "DFC.API.JobProfiles.Common.CosmosDbSupport\DFC.API.JobProfiles.Common.CosmosDbSupport.csproj", "{4545FAFC-2C0B-4A94-AEB9-CE7935038861}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
