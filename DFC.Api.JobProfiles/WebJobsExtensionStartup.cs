@@ -12,7 +12,6 @@ using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard;
 using Dfc.SharedConfig.IoC;
 using Dfc.SharedConfig.Models;
-using Dfc.SharedConfig.Services;
 using DFC.Swagger.Standard;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
@@ -43,24 +42,16 @@ namespace DFC.Api.JobProfiles
                 .Build();
 
             var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get<CosmosDbConnection>();
-            var documentClient = new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey);
-            var jobProfileSearchIndexConfig = configuration.GetSection(nameof(JobProfileSearchIndexConfig)).Get<JobProfileSearchIndexConfig>();
             var sharedConfigSettings = configuration.GetSection("SharedConfigSettings").Get<SharedConfigSettings>();
-            var services = builder?.Services.AddAzureTableSharedConfigService(sharedConfigSettings).BuildServiceProvider();
-            var sharedConfigurationService = services.GetService<ISharedConfigurationService>();
-            var sharedConfigFactory = new SharedConfigFactory(jobProfileSearchIndexConfig, sharedConfigurationService);
-            var searchIndexClient = sharedConfigFactory.GetSearchIndexClient().GetAwaiter().GetResult();
+            builder?.Services.AddAzureTableSharedConfigService(sharedConfigSettings).BuildServiceProvider();
 
             builder.AddDependencyInjection();
             builder.AddSwashBuckle(Assembly.GetExecutingAssembly());
             builder?.Services.AddApplicationInsightsTelemetry();
             builder?.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
             builder?.Services.AddSingleton(cosmosDbConnection);
-            builder?.Services.AddSingleton<IDocumentClient>(documentClient);
-            builder?.Services.AddSingleton(jobProfileSearchIndexConfig ?? new JobProfileSearchIndexConfig());
-            builder?.Services.AddSingleton(searchIndexClient);
-            builder?.Services.AddSingleton<ISharedConfigFactory>(sharedConfigFactory);
-
+            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey));
+            builder?.Services.AddSingleton<ISearchIndexClientFactory, SearchIndexClientFactory>();
             builder?.Services.AddSingleton<IAzSearchQueryConverter, AzSearchQueryConverter>();
             builder?.Services.AddSingleton<ISearchQueryService<JobProfileIndex>, DfcSearchQueryService<JobProfileIndex>>();
             builder?.Services.AddSingleton<ISearchManipulator<JobProfileIndex>, JobProfileSearchManipulator>();

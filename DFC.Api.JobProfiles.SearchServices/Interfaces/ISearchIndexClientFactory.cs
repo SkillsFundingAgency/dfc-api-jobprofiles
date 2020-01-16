@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices.Interfaces
 {
-    public interface ISharedConfigFactory
+    public interface ISearchIndexClientFactory
     {
         Task<ISearchIndexClient> GetSearchIndexClient();
 
