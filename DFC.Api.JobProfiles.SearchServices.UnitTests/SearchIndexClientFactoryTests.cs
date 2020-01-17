@@ -1,6 +1,7 @@
-﻿using Dfc.SharedConfig.Services;
-using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+using DFC.Api.JobProfiles.Data.Settings;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
+using Dfc.SharedConfig.Services;
 using FakeItEasy;
 using System.Threading.Tasks;
 using Xunit;
@@ -19,8 +20,9 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
 
             defaultSharedConfigService = A.Fake<ISharedConfigurationService>();
             A.CallTo(() => defaultSharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).Returns(defaultSharedConfig);
+            var configParams = new SharedConfigParameters { SharedConfigServiceName = "TestServiceName", SharedConfigKeyName = "TestKeyName" };
 
-            defaultConfigFactory = new SearchIndexClientFactory(defaultSharedConfigService);
+            defaultConfigFactory = new SearchIndexClientFactory(defaultSharedConfigService, configParams);
         }
 
         [Fact]
@@ -32,8 +34,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             // Assert
             A.CallTo(() => defaultSharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).MustHaveHappenedOnceExactly();
             Assert.Equal(defaultSharedConfig.SearchIndex, result.IndexName);
-        } 
-        
+        }
 
         [Fact]
         public async Task GetSearchIndexClientWhenIndexClientHasBeenRetrievedThenSharedConfigurationServiceNotCalledAgain()

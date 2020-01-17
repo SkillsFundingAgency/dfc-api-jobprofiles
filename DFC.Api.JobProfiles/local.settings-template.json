@@ -26,6 +26,10 @@
       "Default": "Information"
     }
   },
+  "SharedConfigParameters": {
+    "SharedConfigServiceName": "dfc-digital",
+    "SharedConfigKeyName": "JobProfileSearchIndexConfig"
+  },
   "SharedConfigSettings": {
     "ConfigurationStorageConnectionString": "storage-connection-string",
     "CloudStorageTableName": "Configuration",

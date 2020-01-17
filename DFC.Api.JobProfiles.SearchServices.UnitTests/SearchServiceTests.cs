@@ -4,8 +4,6 @@ using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using FakeItEasy;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -71,7 +69,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
 
             // Assert
             A.CallTo(() => searchQueryService.SearchAsync(A<string>.Ignored, A<SearchProperties>.Ignored)).MustHaveHappenedOnceExactly();
-            A.CallTo(() => mapper.Map<SearchApiModel>(A< SearchResult<JobProfileIndex>>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => mapper.Map<SearchApiModel>(A<SearchResult<JobProfileIndex>>.Ignored)).MustNotHaveHappened();
             Assert.Null(results);
         }
     }

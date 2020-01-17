@@ -1,4 +1,5 @@
 ﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+using DFC.Api.JobProfiles.Data.Settings;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using Dfc.SharedConfig.Services;
 using Microsoft.Azure.Search;
@@ -8,14 +9,14 @@ namespace DFC.Api.JobProfiles.SearchServices
 {
     public class SearchIndexClientFactory : ISearchIndexClientFactory
     {
-        private const string SharedConfigServiceName = "JobProfilesApi";
-        private const string SharedConfigKeyName = "JobProfileSearchIndexConfig";
         private readonly ISharedConfigurationService sharedConfigurationService;
+        private readonly SharedConfigParameters sharedConfigParameters;
         private SearchIndexClient indexClient;
 
-        public SearchIndexClientFactory(ISharedConfigurationService sharedConfigurationService)
+        public SearchIndexClientFactory(ISharedConfigurationService sharedConfigurationService, SharedConfigParameters sharedConfigParameters)
         {
             this.sharedConfigurationService = sharedConfigurationService;
+            this.sharedConfigParameters = sharedConfigParameters;
         }
 
         public async Task<ISearchIndexClient> GetSearchIndexClient()
@@ -41,7 +42,7 @@ namespace DFC.Api.JobProfiles.SearchServices
         }
 
         private async Task<JobProfileSearchIndexConfig> GetIndexConfig() => await sharedConfigurationService
-            .GetConfigAsync<JobProfileSearchIndexConfig>(SharedConfigServiceName, SharedConfigKeyName)
+            .GetConfigAsync<JobProfileSearchIndexConfig>(sharedConfigParameters.SharedConfigServiceName, sharedConfigParameters.SharedConfigKeyName)
             .ConfigureAwait(false);
     }
 }
