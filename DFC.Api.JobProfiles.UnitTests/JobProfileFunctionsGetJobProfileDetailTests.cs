@@ -61,6 +61,24 @@ namespace DFC.Api.JobProfiles.UnitTests
         }
 
         [Fact]
+        public async Task GetJobProfileDetailTestsReturnsOKWhenRelatedCareersDoesNotExist()
+        {
+            // Arrange
+            var expectedModel = GetJobProfileApiModel();
+            expectedModel.RelatedCareers = null;
+            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+
+            // Act
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
+
+            // Assert
+            var okResult = Assert.IsType<OkObjectResult>(result);
+            var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
+            Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
+            deserialisedResult.Should().BeEquivalentTo(expectedModel);
+        }
+
+        [Fact]
         public async Task GetJobProfileDetailTestsReturnsNoContentWhenNullReturnedFromProfileDataService()
         {
             // Arrange
