@@ -74,6 +74,21 @@
         },
         "JobProfileSearchServiceAccessKey": {
             "type": "securestring"
+        },
+        "SharedConfigDigitalServiceName": {
+            "type": "string"
+        },
+        "SharedConfigDigitalSearchKeyName": {
+            "type": "string"
+        },
+        "SharedConfigStorageConnectionString": {
+            "type": "securestring"
+        },
+        "SharedConfigTableName": {
+            "type": "string"
+        },
+        "SharedConfigTTL": {
+            "type": "string"
         }
     },
     "variables": {
@@ -285,6 +300,26 @@
                             {
                                 "name": "Configuration__CosmosDbConnections__JobProfileSegment__PartitionKey",
                                 "value": "[variables('cosmosDbCollectionPartitionKey')]"
+                            },
+                            {
+                                "name": "SharedConfigParameters__SharedConfigServiceName",
+                                "value": "[parameters('SharedConfigDigitalServiceName')]"
+                            },
+                            {
+                                "name": "SharedConfigParameters__SharedConfigKeyName",
+                                "value": "[parameters('SharedConfigDigitalSearchKeyName')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__ConfigurationStorageConnectionString",
+                                "value": "[parameters('SharedConfigStorageConnectionString')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__CloudStorageTableName",
+                                "value": "[parameters('SharedConfigTableName')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__InMemoryCacheTimeToLiveTimespan",
+                                "value": "[parameters('SharedConfigTTL')]"
                             }
                         ]
                     }

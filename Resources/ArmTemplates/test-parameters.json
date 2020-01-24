@@ -52,6 +52,21 @@
         },
         "JobProfileSearchServiceAccessKey": {
             "value": "not-a-real-query-key"
+        },
+        "SharedConfigDigitalServiceName": {
+            "value": "dfc-digital"
+        },
+        "SharedConfigDigitalSearchKeyName": {
+            "value": "JobProfileSearchIndexConfig"
+        },
+        "SharedConfigStorageConnectionString": {
+            "value": "some-storage-connection-string"
+        },
+        "SharedConfigTableName": {
+            "value": "Configuration"
+        },
+        "SharedConfigTTL": {
+            "value": "00:01:00"
         }
     }
 }
