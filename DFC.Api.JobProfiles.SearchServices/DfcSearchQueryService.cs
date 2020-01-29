@@ -1,7 +1,6 @@
 ﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using Microsoft.Azure.Search;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices
@@ -13,11 +12,11 @@ namespace DFC.Api.JobProfiles.SearchServices
         private readonly ISearchManipulator<T> searchManipulator;
 
         public DfcSearchQueryService(
-            ISearchIndexClient indexClient,
             IAzSearchQueryConverter queryConverter,
             ISearchQueryBuilder queryBuilder,
-            ISearchManipulator<T> searchManipulator)
-            : base(indexClient, queryConverter)
+            ISearchManipulator<T> searchManipulator,
+            ISearchIndexClientFactory searchIndexClientFactory)
+            : base(queryConverter, searchIndexClientFactory)
         {
             this.queryBuilder = queryBuilder;
             this.searchManipulator = searchManipulator;

@@ -25,5 +25,14 @@
     "LogLevel": {
       "Default": "Information"
     }
+  },
+  "SharedConfigParameters": {
+    "SharedConfigServiceName": "dfc-digital",
+    "SharedConfigKeyName": "JobProfileSearchIndexConfig"
+  },
+  "SharedConfigSettings": {
+    "ConfigurationStorageConnectionString": "storage-connection-string",
+    "CloudStorageTableName": "Configuration",
+    "InMemoryCacheTimeToLiveTimespan": "00:00:01.00"
   }
 }

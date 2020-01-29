@@ -1,6 +1,5 @@
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
-using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
