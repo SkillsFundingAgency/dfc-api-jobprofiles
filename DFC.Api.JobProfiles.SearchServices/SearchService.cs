@@ -22,9 +22,8 @@ namespace DFC.Api.JobProfiles.SearchServices
 
         public async Task<SearchApiModel> GetResultsList(string requestUrl, string searchTerm, int page, int pageSize)
         {
-            const bool useRawSearchTerm = true;
             var pageNumber = page > 0 ? page : 1;
-            var searchProperties = new SearchProperties { Page = pageNumber, Count = pageSize, UseRawSearchTerm = useRawSearchTerm };
+            var searchProperties = new SearchProperties { Page = pageNumber, Count = pageSize };
 
             var searchResult = await searchQueryService.SearchAsync(searchTerm, searchProperties).ConfigureAwait(false);
 
