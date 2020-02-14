@@ -2,6 +2,7 @@
 using DFC.Api.JobProfiles.SearchServices.UnitTests.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace DFC.Api.JobProfiles.SearchServices.UnitTests.Utilities
@@ -51,11 +52,11 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.Utilities
                     Rank = i,
                     ResultItem = new JobProfileIndex
                     {
-                        IdentityField = $"dummy{title.ConvertToKey()}{(useIndex ? i.ToString() : string.Empty)}",
-                        Title = $"dummy{nameof(JobProfileIndex.Title)}{title.ConvertToKey()}{(useIndex ? i.ToString() : string.Empty)}",
-                        UrlName = $"dummy{title.ConvertToKey()}{(useIndex ? i.ToString() : string.Empty)}",
-                        AlternativeTitle = $"dummy{nameof(JobProfileIndex.AlternativeTitle)}{(useIndex ? i.ToString() : string.Empty)}".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(a => a.Trim()),
-                        Overview = $"dummy{nameof(JobProfileIndex.Overview)}{(useIndex ? i.ToString() : string.Empty)}",
+                        IdentityField = $"dummy{title.ConvertToKey()}{(useIndex ? i.ToString(new NumberFormatInfo()) : string.Empty)}",
+                        Title = $"dummy{nameof(JobProfileIndex.Title)}{title.ConvertToKey()}{(useIndex ? i.ToString(new NumberFormatInfo()) : string.Empty)}",
+                        UrlName = $"dummy{title.ConvertToKey()}{(useIndex ? i.ToString(new NumberFormatInfo()) : string.Empty)}",
+                        AlternativeTitle = $"dummy{nameof(JobProfileIndex.AlternativeTitle)}{(useIndex ? i.ToString(new NumberFormatInfo()) : string.Empty)}".Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(a => a.Trim()),
+                        Overview = $"dummy{nameof(JobProfileIndex.Overview)}{(useIndex ? i.ToString(new NumberFormatInfo()) : string.Empty)}",
                         SalaryStarter = 10,
                         SalaryExperienced = 10,
                     },

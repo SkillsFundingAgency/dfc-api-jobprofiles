@@ -13,16 +13,16 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
         private readonly JobProfileSearchIndexConfig defaultSharedConfig;
         private readonly ISharedConfigurationService defaultSharedConfigService;
         private readonly ISearchIndexClientFactory defaultConfigFactory;
+        private readonly SharedConfigParameters defaultConfigParams;
 
         public SearchIndexClientFactoryTests()
         {
             defaultSharedConfig = new JobProfileSearchIndexConfig { SearchIndex = "SharedIndexName", AccessKey = "SharedAccessKey", SearchServiceName = "JobProfilesApiTest" };
-
             defaultSharedConfigService = A.Fake<ISharedConfigurationService>();
             A.CallTo(() => defaultSharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).Returns(defaultSharedConfig);
-            var configParams = new SharedConfigParameters { SharedConfigServiceName = "TestServiceName", SharedConfigKeyName = "TestKeyName" };
 
-            defaultConfigFactory = new SearchIndexClientFactory(defaultSharedConfigService, configParams);
+            defaultConfigParams = new SharedConfigParameters { SharedConfigServiceName = "TestServiceName", SharedConfigKeyName = "TestKeyName" };
+            defaultConfigFactory = new SearchIndexClientFactory(defaultSharedConfigService, defaultConfigParams);
         }
 
         [Fact]
@@ -37,15 +37,24 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
         }
 
         [Fact]
-        public async Task GetSearchIndexClientWhenIndexClientHasBeenRetrievedThenSharedConfigurationServiceNotCalledAgain()
+        public async Task GetSearchIndexClientRefreshesIndexClientFromSharedConfig()
         {
+            // Arrange
+            var staleSharedConfig = new JobProfileSearchIndexConfig { SearchIndex = "StaleIndexName", AccessKey = "SharedAccessKey", SearchServiceName = "JobProfilesApiTest" };
+            var sharedConfigService = A.Fake<ISharedConfigurationService>();
+            A.CallTo(() => sharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).Returns(staleSharedConfig);
+            var searchIndexClientFactory = new SearchIndexClientFactory(sharedConfigService, defaultConfigParams);
+
             // Act
-            await defaultConfigFactory.GetSearchIndexClient().ConfigureAwait(false);
-            var secondResult = await defaultConfigFactory.GetSearchIndexClient().ConfigureAwait(false);
+            var staleIndex = await searchIndexClientFactory.GetSearchIndexClient().ConfigureAwait(false);
+
+            A.CallTo(() => sharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).Returns(defaultSharedConfig);
+            var freshIndex = await searchIndexClientFactory.GetSearchIndexClient().ConfigureAwait(false);
 
             // Assert
-            A.CallTo(() => defaultSharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).MustHaveHappenedOnceExactly();
-            Assert.Equal(defaultSharedConfig.SearchIndex, secondResult.IndexName);
+            Assert.NotEqual(staleIndex.IndexName, freshIndex.IndexName);
+            Assert.Equal(defaultSharedConfig.SearchIndex, freshIndex.IndexName);
+            A.CallTo(() => sharedConfigService.GetConfigAsync<JobProfileSearchIndexConfig>(A<string>.Ignored, A<string>.Ignored, A<bool>.Ignored)).MustHaveHappenedTwiceExactly();
         }
 
         [Fact]
