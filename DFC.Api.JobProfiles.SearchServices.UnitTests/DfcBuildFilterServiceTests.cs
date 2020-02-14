@@ -3,6 +3,7 @@ using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Xunit;
 
@@ -141,7 +142,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             {
                 yield return new FilterResultsOption
                 {
-                    Id = (index + 1).ToString(),
+                    Id = (index + 1).ToString(new NumberFormatInfo()),
                     IsSelected = true,
                     OptionKey = $"{item.Key.ToLowerInvariant()}{index + 1}",
                 };

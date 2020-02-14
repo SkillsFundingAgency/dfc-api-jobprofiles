@@ -21,9 +21,10 @@ namespace DFC.Api.JobProfiles.SearchServices
 
         public async Task<ISearchIndexClient> GetSearchIndexClient()
         {
-            if (indexClient is null)
+            var configItem = await GetIndexConfig().ConfigureAwait(false);
+            if (indexClient is null || indexClient.IndexName != configItem.SearchIndex)
             {
-                await CreateSearchIndexClient().ConfigureAwait(false);
+                CreateSearchIndexClient(configItem);
             }
 
             return indexClient;
@@ -31,13 +32,13 @@ namespace DFC.Api.JobProfiles.SearchServices
 
         public async Task<ISearchIndexClient> CreateOrRefreshIndexClient()
         {
-            await CreateSearchIndexClient().ConfigureAwait(false);
+            var configItem = await GetIndexConfig().ConfigureAwait(false);
+            CreateSearchIndexClient(configItem);
             return indexClient;
         }
 
-        private async Task CreateSearchIndexClient()
+        private void CreateSearchIndexClient(JobProfileSearchIndexConfig configItem)
         {
-            var configItem = await GetIndexConfig().ConfigureAwait(false);
             indexClient = new SearchIndexClient(configItem.SearchServiceName, configItem.SearchIndex, new SearchCredentials(configItem.AccessKey));
         }
 
