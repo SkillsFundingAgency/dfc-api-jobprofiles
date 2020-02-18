@@ -55,6 +55,30 @@
         },
         "ApimLoggerName": {
             "value": "__ApimLoggerName__"
+        },
+        "JobProfileSearchIndexName": {
+            "value": "__JpSearchIndexName__"
+        },
+        "JobProfileSearchServiceName": {
+            "value": "__JpSearchServiceName__"
+        },
+        "JobProfileSearchServiceAccessKey": {
+            "value": "__JpSearchServiceAccessKey__"
+        },
+        "SharedConfigDigitalServiceName": {
+            "value": "__SharedConfigDigitalServiceName__"
+        },
+        "SharedConfigDigitalSearchKeyName": {
+            "value": "__SharedConfigDigitalSearchKeyName__"
+        },
+        "SharedConfigStorageConnectionString": {
+            "value": "__SharedConfigStorageConnectionString__"
+        },
+        "SharedConfigTableName": {
+            "value": "__SharedConfigTableName__"
+        },
+        "SharedConfigTTL": {
+            "value": "__SharedConfigTTL__"
         }
     }
 }

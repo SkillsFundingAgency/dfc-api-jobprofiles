@@ -1,6 +1,6 @@
+using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
-using DFC.Api.JobProfiles.Data.ApiModels.Overview;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
@@ -196,9 +196,9 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             };
         }
 
-        private OverviewApiModel GetOverviewApiModel()
+        private JobProfileApiModel GetOverviewApiModel()
         {
-            return new OverviewApiModel
+            return new JobProfileApiModel
             {
                 Title = "job1",
                 Overview = "Overview text",

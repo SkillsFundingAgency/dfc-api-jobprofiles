@@ -2,6 +2,7 @@ using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
+using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard.Attributes;
 using DFC.Swagger.Standard.Annotations;
 using Microsoft.ApplicationInsights.DataContracts;
@@ -72,10 +73,42 @@ namespace DFC.Api.JobProfiles.Functions
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
             }
 
-            jobProfile.RelatedCareers.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
+            jobProfile.RelatedCareers?.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
             jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
+        }
+
+        [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
+        [FunctionName("job-profiles-search")]
+        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> GetJobProfileSearchResults(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}")] HttpRequest request,
+            [Inject] ISearchService searchService,
+            string searchTerm)
+        {
+            request.LogRequestHeaders(logService);
+
+            int page = int.TryParse(request.Query[nameof(page)].ToString(), out var outPage) ? outPage : 1;
+            int pageSize = int.TryParse(request.Query[nameof(pageSize)].ToString(), out var outPageSize) ? outPageSize : 10;
+
+            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize}", SeverityLevel.Warning);
+
+            var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
+            if (apiModel?.Results is null || !apiModel.Results.Any())
+            {
+                logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
+                return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
+            }
+
+            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
+
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
         }
     }
 }
