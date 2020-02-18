@@ -65,6 +65,30 @@
         },
         "ApimLoggerName": {
             "type": "string"
+        },
+        "JobProfileSearchIndexName": {
+            "type": "string"
+        },
+        "JobProfileSearchServiceName": {
+            "type": "string"
+        },
+        "JobProfileSearchServiceAccessKey": {
+            "type": "securestring"
+        },
+        "SharedConfigDigitalServiceName": {
+            "type": "string"
+        },
+        "SharedConfigDigitalSearchKeyName": {
+            "type": "string"
+        },
+        "SharedConfigStorageConnectionString": {
+            "type": "securestring"
+        },
+        "SharedConfigTableName": {
+            "type": "string"
+        },
+        "SharedConfigTTL": {
+            "type": "string"
         }
     },
     "variables": {
@@ -246,6 +270,18 @@
                                 "value": "[concat('DefaultEndpointsProtocol=https;AccountName=',parameters('appSharedStorageAccountName'),';AccountKey=',listKeys(resourceId(parameters('appSharedResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('appSharedStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).keys[0].value, ';EndpointSuffix=core.windows.net')]"
                             },
                             {
+                                "name": "JobProfileSearchIndexConfig__SearchIndex",
+                                "value": "[parameters('JobProfileSearchIndexName')]"
+                            },
+                            {
+                                "name": "JobProfileSearchIndexConfig__SearchServiceName",
+                                "value": "[parameters('JobProfileSearchServiceName')]"
+                            },
+                            {
+                                "name": "JobProfileSearchIndexConfig__AccessKey",
+                                "value": "[parameters('JobProfileSearchServiceAccessKey')]"
+                            },
+                            {
                                 "name": "Configuration__CosmosDbConnections__JobProfileSegment__AccessKey",
                                 "value": "[parameters('cosmosDbKey')]"
                             },
@@ -264,6 +300,26 @@
                             {
                                 "name": "Configuration__CosmosDbConnections__JobProfileSegment__PartitionKey",
                                 "value": "[variables('cosmosDbCollectionPartitionKey')]"
+                            },
+                            {
+                                "name": "SharedConfigParameters__SharedConfigServiceName",
+                                "value": "[parameters('SharedConfigDigitalServiceName')]"
+                            },
+                            {
+                                "name": "SharedConfigParameters__SharedConfigKeyName",
+                                "value": "[parameters('SharedConfigDigitalSearchKeyName')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__ConfigurationStorageConnectionString",
+                                "value": "[parameters('SharedConfigStorageConnectionString')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__CloudStorageTableName",
+                                "value": "[parameters('SharedConfigTableName')]"
+                            },
+                            {
+                                "name": "SharedConfigSettings__InMemoryCacheTimeToLiveTimespan",
+                                "value": "[parameters('SharedConfigTTL')]"
                             }
                         ]
                     }

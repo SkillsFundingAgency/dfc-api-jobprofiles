@@ -16,7 +16,7 @@ namespace DFC.Api.JobProfiles.Extensions
 
             if (string.IsNullOrEmpty(apimUrl))
             {
-                return $"{request.Scheme}://{request.Host}{request.Path}/{trimmedRelativePath}";
+                return $"{request.Scheme}://{request.Host}/{trimmedRelativePath}";
             }
 
             return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
