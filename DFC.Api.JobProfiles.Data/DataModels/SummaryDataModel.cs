@@ -7,5 +7,7 @@ namespace DFC.Api.JobProfiles.Data.DataModels
         public string BreadcrumbTitle { get; set; }
 
         public DateTime LastReviewed { get; set; }
+
+        public bool? IncludeInSitemap { get; set; }
     }
 }
