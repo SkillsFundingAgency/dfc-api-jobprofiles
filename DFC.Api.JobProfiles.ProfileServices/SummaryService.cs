@@ -27,7 +27,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                         BreadcrumbTitle = s.BreadcrumbTitle,
                         LastReviewed = s.LastReviewed,
                     },
-                    null)
+                    s => s.IncludeInSitemap.HasValue && s.IncludeInSitemap.Value)
                 .ConfigureAwait(false);
 
             if (dataModels is null)
