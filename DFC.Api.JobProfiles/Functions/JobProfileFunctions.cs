@@ -13,19 +13,23 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Functions
 {
     public class JobProfileFunctions
     {
+        private const string SuccessMessage = "Document store is available";
         private readonly ILogService logService;
         private readonly IResponseWithCorrelation responseWithCorrelation;
+        private readonly string resourceName;
 
         public JobProfileFunctions(ILogService logService, IResponseWithCorrelation responseWithCorrelation)
         {
             this.logService = logService;
             this.responseWithCorrelation = responseWithCorrelation;
+            resourceName = typeof(JobProfileFunctions).Namespace;
         }
 
         [Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
@@ -109,6 +113,49 @@ namespace DFC.Api.JobProfiles.Functions
             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
+        }
+
+        [Display(Name = "Ping job profile API", Description = "Pings job profile API")]
+        [FunctionName("job-profiles-ping")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile Ping.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/ping")] HttpRequest request)
+        {
+            request.LogRequestHeaders(logService);
+            logService.LogMessage($"{nameof(Ping)} has been called", SeverityLevel.Information);
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
+        }
+
+        [Display(Name = "Job profile API Health Check", Description = "Job profile API Health Check")]
+        [FunctionName("job-profiles-healthcheck")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile API Health Check.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.ServiceUnavailable, Description = "Job profile API Health failed", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> HealthCheck([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/healthcheck")] HttpRequest request, [Inject] IProfileDataService dataService)
+        {
+            request.LogRequestHeaders(logService);
+            logService.LogMessage($"{nameof(HealthCheck)} has been called", SeverityLevel.Information);
+            try
+            {
+                var isHealthy = !(dataService is null) && await dataService.PingAsync().ConfigureAwait(false);
+                if (isHealthy)
+                {
+                    logService.LogMessage($"{nameof(HealthCheck)} responded with: {resourceName} - {SuccessMessage}", SeverityLevel.Information);
+                    return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
+                }
+
+                logService.LogMessage($"{nameof(HealthCheck)}: Ping to {resourceName} has failed", SeverityLevel.Error);
+            }
+            catch (HttpRequestException ex)
+            {
+                logService.LogMessage($"{nameof(HealthCheck)}: {resourceName} exception: {ex.Message}", SeverityLevel.Error);
+            }
+
+            return new StatusCodeResult((int)HttpStatusCode.ServiceUnavailable);
         }
     }
 }
