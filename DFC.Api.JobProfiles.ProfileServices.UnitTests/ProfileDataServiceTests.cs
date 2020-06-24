@@ -122,6 +122,23 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
                 result.WhatYouWillDo is null);
         }
 
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task PingAsyncPingsRepository(bool repositoryPingSuccessful)
+        {
+            // Arrange
+            var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
+            var dataService = new ProfileDataService(repository, defaultLogger);
+            A.CallTo(() => repository.PingAsync()).Returns(repositoryPingSuccessful);
+
+            // Act
+            var result = await dataService.PingAsync().ConfigureAwait(false);
+
+            // Assert
+            Assert.Equal(repositoryPingSuccessful, result);
+        }
+
         private IList<SegmentDataModel> GetSegmentDataModel()
         {
             return new List<SegmentDataModel>

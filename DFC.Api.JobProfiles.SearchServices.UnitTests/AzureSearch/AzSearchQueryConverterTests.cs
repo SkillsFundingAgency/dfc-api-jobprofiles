@@ -21,7 +21,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
             var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.BuildSearchParameters(searchProperties));
 
             // assert
-            Assert.Equal("Value cannot be null.\r\nParameter name: properties", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'properties')", exceptionResult.Message);
         }
 
         [Fact]
@@ -66,7 +66,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
             var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(result, searchProperties));
 
             // assert
-            Assert.Equal("Value cannot be null.\r\nParameter name: properties", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'properties')", exceptionResult.Message);
         }
 
         [Fact]
@@ -81,7 +81,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
             var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(result, searchProperties));
 
             // assert
-            Assert.Equal("Value cannot be null.\r\nParameter name: result", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'result')", exceptionResult.Message);
         }
 
         [Fact]
@@ -113,7 +113,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
             var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSuggestionResult(result, suggestProperties));
 
             // assert
-            Assert.Equal("Value cannot be null.\r\nParameter name: properties", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'properties')", exceptionResult.Message);
         }
 
         [Fact]
@@ -128,7 +128,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
             var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSuggestionResult(result, suggestProperties));
 
             // assert
-            Assert.Equal("Value cannot be null.\r\nParameter name: result", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'result')", exceptionResult.Message);
         }
 
         [Fact]
