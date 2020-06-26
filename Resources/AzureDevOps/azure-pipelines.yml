@@ -1,5 +1,5 @@
 variables:
-    ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'     
+    ArmTemplateRoot: '$(Build.SourcesDirectory)\Resources\ArmTemplates'
     SolutionBaseName: 'DFC.Api.JobProfiles'
     BuildPlatform: 'any cpu'
     BuildConfiguration: 'release'
@@ -13,38 +13,36 @@ resources:
     ref: refs/tags/v1.11.2
     endpoint: 'GitHub (ESFA)'
 
-trigger:
-  - v1-*
+pool:
+  name: NCS - CI and CD
+  demands:
+  - msbuild
+  - visualstudio
 
-pr: 
-  - v1-dev
-  - v1-master
-
-jobs:
-
-#Build and test resources
-- template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
-  parameters:
-    ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
-    SolutionBaseName: '${{ variables.SolutionBaseName }}'
+stages:
+- stage: Build
+  displayName: Build, Test and Analyze
+  jobs:
+  - job: BuildTestAndAnalyze
+    displayName: "Test & package ARM template(s)"
+    steps:
+      - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-arm-build.yml@dfc-devops
+        parameters:
+          ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
+          SolutionBaseName: '${{ variables.SolutionBaseName }}'
 
 #Build and test application
-- job: BuildDotNetCore
-  displayName: Build-DotNetCore
-  workspace:
-    clean: all
-  pool:
-    name: NCS - CI and CD
-    demands:
-    - msbuild
-    - visualstudio
-  steps:
-  # Build DFC.App.JobProfileTasks
-  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
-    parameters:
-      SolutionBaseName: $(SolutionBaseName)
-      BuildPlatform: $(BuildPlatform)
-      BuildConfiguration: $(BuildConfiguration)
-      DotNetCoreVersion: 3.1.101 
-      PublishWebApp: true
-      TestSuffix: UnitTests
+  - job: BuildDotNetCore
+    displayName: Build-DotNetCore
+
+
+    steps:
+    #  Build DFC.Api.JobProfiles
+    - template: AzureDevOpsTemplates\Build\StepTemplates\dfc-dotnetcore-build-sonar.yml@dfc-devops
+      parameters:
+        SolutionBaseName: $(SolutionBaseName)
+        BuildPlatform: $(BuildPlatform)
+        BuildConfiguration: $(BuildConfiguration)
+        DotNetCoreVersion: '3.1.100'
+        PublishWebApp: true
+        TestSuffix: UnitTests
