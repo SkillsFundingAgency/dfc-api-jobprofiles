@@ -13,6 +13,13 @@ resources:
     ref: refs/tags/v1.11.2
     endpoint: 'GitHub (ESFA)'
 
+trigger:
+  - v1-*
+      
+pr: 
+  - v1-dev
+  - v1-master
+
 pool:
   name: NCS - CI and CD
   demands:
