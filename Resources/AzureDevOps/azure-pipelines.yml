@@ -23,9 +23,10 @@ pr:
 jobs:
 
 #Build and test resources
-- template: AzureDevOpsTemplates/Build/dfc-arm-build.yml@dfc-devops
+- template: AzureDevOpsTemplates/Build/StepTemplates/dfc-arm-build.yml@dfc-devops
   parameters:
-    ArmTemplateRoot: $(ArmTemplateRoot)
+    ArmTemplateRoot: '${{ variables.ArmTemplateRoot }}'
+    SolutionBaseName: '${{ variables.SolutionBaseName }}'
 
 #Build and test application
 - job: BuildDotNetCore
@@ -40,7 +41,7 @@ jobs:
 
   steps:
   # Build DFC.App.JobProfileTasks
-  - template: AzureDevOpsTemplates/Build/dfc-dotnetcore-build-sonar.yml@dfc-devops
+  - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
     parameters:
       SolutionBaseName: $(SolutionBaseName)
       BuildPlatform: $(BuildPlatform)
