@@ -38,7 +38,6 @@ jobs:
     demands:
     - msbuild
     - visualstudio
-
   steps:
   # Build DFC.App.JobProfileTasks
   - template: AzureDevOpsTemplates/Build/StepTemplates/dfc-dotnetcore-build-sonar.yml@dfc-devops
