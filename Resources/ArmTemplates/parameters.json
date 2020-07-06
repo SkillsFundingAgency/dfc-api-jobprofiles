@@ -79,6 +79,12 @@
         },
         "SharedConfigTTL": {
             "value": "__SharedConfigTTL__"
+        },
+        "enableAlerts": {
+            "value": __EnableAzureMonitorAlerting__
+        },
+        "exceptionsThreshold": {
+            "value": "__ExceptionsThreshold__"
         }
     }
 }

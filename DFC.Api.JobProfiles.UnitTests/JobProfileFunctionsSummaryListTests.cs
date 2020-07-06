@@ -5,6 +5,7 @@ using DFC.Api.JobProfiles.ProfileServices;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -28,7 +29,8 @@ namespace DFC.Api.JobProfiles.UnitTests
             fakeSummaryService = A.Fake<ISummaryService>();
             var httpContextAccessor = A.Fake<IHttpContextAccessor>();
             var correlationProvider = new RequestHeaderCorrelationIdProvider(httpContextAccessor);
-            var telemetryClient = new TelemetryClient();
+            using var telemetryConfig = new TelemetryConfiguration();
+            var telemetryClient = new TelemetryClient(telemetryConfig);
             var logger = new LogService(correlationProvider, telemetryClient);
             var correlationResponse = new ResponseWithCorrelation(correlationProvider, httpContextAccessor);
 

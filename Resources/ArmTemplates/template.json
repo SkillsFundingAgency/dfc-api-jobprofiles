@@ -89,6 +89,19 @@
         },
         "SharedConfigTTL": {
             "type": "string"
+        },
+        "enableAlerts": {
+            "type": "bool",
+            "metadata": {
+                "description": "Enable or disable alerting"
+            }
+        },
+        "exceptionsThreshold": {
+            "type": "string",
+            "defaultValue": "0",
+            "metadata": {
+                "description": "The threshold for alerting on exceptions"
+            }
         }
     },
     "variables": {
@@ -101,7 +114,8 @@
         "cosmosDbEndpoint": "[concat('https://', parameters('cosmosDbName'), '.documents.azure.com:443/')]",
         "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles'))]",
         "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles-ai'))]",
-        "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]"
+        "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]",
+        "ActionGroupName": "[concat('dfc-', replace(tolower(parameters('Environment')), '-draft', ''), '-app-sharedresources-actgrp')]"
     },
     "resources": [
         {
@@ -130,39 +144,6 @@
                     }
                 }
             }
-        },
-        {
-            "name": "[parameters('ApiName')]",
-            "type": "Microsoft.Resources/deployments",
-            "resourceGroup": "[parameters('ApimResourceGroup')]",
-            "apiVersion": "2017-05-10",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'APIM/apim-api.json')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "apimProductInstanceName": {
-                        "value": "[parameters('ApimProductInstanceName')]"
-                    },
-                    "apimServiceName": {
-                        "value": "[parameters('ApimServiceName')]"
-                    },
-                    "apiName": {
-                        "value": "[parameters('ApiName')]"
-                    },
-                    "apiVersion": {
-                        "value": "[parameters('ApiVersionNumber')]"
-                    },
-                    "apimLoggerName": {
-                        "value": "[parameters('ApimLoggerName')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[variables('VersionSetName')]"
-            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -224,7 +205,7 @@
             "properties": {
                 "mode": "Incremental",
                 "templateLink": {
-                    "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service.json')]",
+                    "uri": "[concat(variables('buildingBlocksDfcBaseUrl'), 'app-service-staging.json')]",
                     "contentVersion": "1.0.0.0"
                 },
                 "parameters": {
@@ -240,14 +221,11 @@
                     "appServiceType": {
                         "value": "functionapp"
                     },
-                    "deployStagingSlot": {
-                        "value": false
-                    },
                     "appServiceAppSettings": {
                         "value": [
                             {
                                 "name": "FUNCTIONS_EXTENSION_VERSION",
-                                "value": "~2"
+                                "value": "~3"
                             },
                             {
                                 "name": "FUNCTIONS_WORKER_RUNTIME",
@@ -328,7 +306,90 @@
             "dependsOn": [
                 "[variables('functionAppInsightsName')]"
             ]
-        }
+        },
+        {
+          "apiVersion": "2019-05-01",
+          "name": "[concat(variables('functionAppInsightsName'), '-metric-exceptions')]",
+          "type": "Microsoft.Resources/deployments",
+          "dependsOn": [
+              "[variables('functionAppInsightsName')]"
+          ],
+          "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                  "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'Application-Insights/metric-alerts.json')]",
+                  "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                  "enabled": {
+                      "value": "[parameters('enableAlerts')]"
+                  },
+                  "alertName": {
+                      "value": "[concat(variables('functionAppInsightsName'), '-metric-exceptions')]"
+                  },
+                  "alertSeverity": {
+                      "value": 3
+                  },
+                  "metricName": {
+                      "value": "exceptions/count"
+                  },
+                  "operator": {
+                      "value": "GreaterThan"
+                  },
+                  "threshold": {
+                      "value": "[parameters('exceptionsThreshold')]"
+                  },
+                  "aggregation": {
+                      "value": "Count"
+                  },
+                  "windowSize": {
+                      "value": "PT5M"
+                  },
+                  "evaluationFrequency": {
+                      "value": "PT1M"
+                  },
+                  "actionGroupName": {
+                      "value": "[variables('ActionGroupName')]"
+                  },
+                  "actionGroupResourceGroup": {
+                      "value": "[parameters('appSharedResourceGroup')]"
+                  },
+                  "resourceId": {
+                      "value": "[resourceId('Microsoft.Insights/Components', variables('functionAppInsightsName'))]"
+                  }
+              }
+          }
+      },
+      {
+          "apiVersion": "2019-05-01",
+          "name": "[concat(variables('functionAppInsightsName'), '-failure-anomaly-v2')]",
+          "type": "Microsoft.Resources/deployments",
+          "dependsOn": [
+              "[variables('functionAppInsightsName')]"
+          ],
+          "properties": {
+              "mode": "Incremental",
+              "templateLink": {
+                  "uri": "[concat(variables('BuildingBlocksDfcBaseUrl'), 'Application-Insights/failure-anomaly-rule.json')]",
+                  "contentVersion": "1.0.0.0"
+              },
+              "parameters": {
+                  "alertName": {
+                      "value": "[concat(variables('functionAppInsightsName'), '-failure-anomaly-v2')]"
+                  },
+                  "enabled": {
+                      "value": "[parameters('enableAlerts')]"
+                  },
+                  "resourceId": {
+                      "value": "[resourceId('Microsoft.Insights/Components', variables('functionAppInsightsName'))]"
+                  },
+                  "actionGroupId": {
+                      "value": "[resourceId(parameters('appSharedResourceGroup'), 'microsoft.insights/actionGroups', variables('ActionGroupName'))]"
+                  }
+              }
+          }
+      }
+
     ],
     "outputs": {}
 }
