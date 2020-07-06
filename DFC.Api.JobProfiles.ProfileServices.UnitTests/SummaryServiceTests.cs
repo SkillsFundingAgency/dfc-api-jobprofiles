@@ -21,7 +21,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         {
             mapper = A.Fake<IMapper>();
             var apiModels = GetSummaryApiModels();
-            A.CallTo(() => mapper.Map<IEnumerable<SummaryApiModel>>(A<IEnumerable<SummaryDataModel>>.Ignored)).Returns(apiModels);
+            A.CallTo(() => mapper.Map<List<SummaryApiModel>>(A<List<SummaryDataModel>>.Ignored)).Returns(apiModels);
         }
 
         [Fact]
@@ -30,7 +30,9 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             // Arrange
             var dataModels = GetSummaryDataModels();
             var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
-            A.CallTo(() => repository.GetData(A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored, null)).Returns(dataModels);
+            A.CallTo(() => repository.GetData(
+                A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored,
+                A<Expression<Func<SummaryDataModel, bool>>>.Ignored)).Returns(dataModels);
 
             var summaryService = new SummaryService(repository, mapper);
 
@@ -50,7 +52,9 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         {
             // Arrange
             var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
-            A.CallTo(() => repository.GetData(A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored, null)).Returns((IList<SummaryDataModel>)null);
+            A.CallTo(() => repository.GetData(
+                A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored,
+                A<Expression<Func<SummaryDataModel, bool>>>.Ignored)).Returns((IList<SummaryDataModel>)null);
 
             var summaryService = new SummaryService(repository, mapper);
 
@@ -70,17 +74,19 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
                     BreadcrumbTitle = "JobTitle1",
                     CanonicalName = "job1",
                     LastReviewed = DateTime.UtcNow,
+                    IncludeInSitemap = true,
                 },
                 new SummaryDataModel
                 {
                     BreadcrumbTitle = "JobTitle2",
                     CanonicalName = "job2",
                     LastReviewed = DateTime.UtcNow.AddDays(-1),
+                    IncludeInSitemap = true,
                 },
             };
         }
 
-        private IList<SummaryApiModel> GetSummaryApiModels()
+        private List<SummaryApiModel> GetSummaryApiModels()
         {
             return new List<SummaryApiModel>
             {

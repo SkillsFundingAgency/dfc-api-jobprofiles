@@ -96,5 +96,10 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             return result;
         }
+
+        public async Task<bool> PingAsync()
+        {
+            return await repository.PingAsync().ConfigureAwait(false);
+        }
     }
 }
