@@ -37,6 +37,12 @@ stages:
           parameters:
             ArmTemplateRoot: $(ArmTemplateRoot)
 
+        - task: PublishPipelineArtifact@0
+          displayName: Publish APIM Policy artifact
+          inputs:
+              targetPath: '$(Build.SourcesDirectory)/Resources/ApimPolicy'
+              artifactName: ${{ variables.SolutionBaseName }}.ApimPolicy
+
 #Build and test application
     - job: BuildDotNetCore
       displayName: Build-DotNetCore
