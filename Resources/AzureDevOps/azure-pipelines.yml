@@ -38,7 +38,7 @@ stages:
             ArmTemplateRoot: $(ArmTemplateRoot)
 
         - task: PublishPipelineArtifact@0
-          displayName: Publish Page Registration artifact
+          displayName: Publish APIM Policy artifact
           inputs:
               targetPath: '$(Build.SourcesDirectory)/Resources/ApimPolicy'
               artifactName: ${{ variables.SolutionBaseName }}.ApimPolicy
