@@ -56,6 +56,9 @@
         "ApimLoggerName": {
             "value": "__ApimLoggerName__"
         },
+        "apimContentApiKey": {
+            "value": "__apimContentApiKey__"
+        },
         "JobProfileSearchIndexName": {
             "value": "__JpSearchIndexName__"
         },

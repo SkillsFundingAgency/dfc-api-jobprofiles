@@ -68,6 +68,9 @@
         "SharedConfigTTL": {
             "value": "00:01:00"
         },
+        "apimContentApiKey": {
+            "value": "FakeKey"
+        },
         "enableAlerts": {
             "value": false
         }

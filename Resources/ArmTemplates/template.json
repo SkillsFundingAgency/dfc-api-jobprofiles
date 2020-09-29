@@ -66,6 +66,9 @@
         "ApimLoggerName": {
             "type": "string"
         },
+        "apimContentApiKey": {
+            "type": "securestring"
+        },
         "JobProfileSearchIndexName": {
             "type": "string"
         },
@@ -278,6 +281,22 @@
                             {
                                 "name": "Configuration__CosmosDbConnections__JobProfileSegment__PartitionKey",
                                 "value": "[variables('cosmosDbCollectionPartitionKey')]"
+                            },
+                            {
+                                "name": "Configuration__CosmosDbConnections__StaticContent__CollectionId",
+                                "value": "shared-content"
+                            },
+                            {
+                                "name": "CmsApiClientOptions__ApiKey",
+                                "value": "[parameters('apimContentApiKey')]"
+                            },
+                            {
+                                "name": "CmsApiClientOptions__StaticContentEndpoint",
+                                "value": "api/execute/sharedcontent/"
+                            },
+                            {
+                                "name": "CmsApiClientOptions__SummaryEndpoint",
+                                "value": "api/execute/jobprofile"
                             },
                             {
                                 "name": "SharedConfigParameters__SharedConfigServiceName",
