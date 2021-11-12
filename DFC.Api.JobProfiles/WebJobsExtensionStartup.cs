@@ -45,6 +45,9 @@ namespace DFC.Api.JobProfiles
             var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get<CosmosDbConnection>();
             var sharedConfigSettings = configuration.GetSection("SharedConfigSettings").Get<SharedConfigSettings>();
             var sharedConfigParameters = configuration.GetSection("SharedConfigParameters").Get<SharedConfigParameters>();
+            var retryOptions = new RetryOptions { MaxRetryAttemptsOnThrottledRequests = 20, MaxRetryWaitTimeInSeconds = 60 };
+            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey, new ConnectionPolicy { RetryOptions = retryOptions }));
+
             builder?.Services.AddAzureTableSharedConfigService(sharedConfigSettings).BuildServiceProvider();
 
             builder.AddDependencyInjection();
