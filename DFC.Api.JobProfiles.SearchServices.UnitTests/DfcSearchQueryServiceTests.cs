@@ -33,7 +33,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             var dummySearchParameters = A.Dummy<SearchParameters>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
             var fakeManipulator = A.Fake<ISearchManipulator<JobProfileIndex>>();
-            var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "SearchIndex", SearchServiceName = "SearchServiceName" };
+            //var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "search-index", SearchServiceName = "SearchServiceName" };
 
             //Configure
             A.CallTo(() => fakeQueryBuilder.RemoveSpecialCharactersFromTheSearchTerm(A<string>._, A<SearchProperties>._)).Returns(CleanedSearchTerm);
@@ -45,7 +45,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => fakeManipulator.BuildSearchExpression(A<string>._, A<string>._, A<string>._, A<SearchProperties>._)).Returns(nameof(fakeManipulator.BuildSearchExpression));
 
             //Act
-            var searchService = new DfcSearchQueryService<JobProfileIndex>(fakeQueryConverter, fakeQueryBuilder, fakeManipulator, searchIndexSettings);
+            var searchService = new DfcSearchQueryService<JobProfileIndex>(fakeQueryConverter, fakeQueryBuilder, fakeManipulator, fakeIndexClient);
             await searchService.SearchAsync("searchTerm", dummySearchProperty).ConfigureAwait(false);
 
             //Assert
@@ -76,7 +76,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             var dummySearchProperty = A.Dummy<SearchProperties>();
             var dummySearchParameters = A.Dummy<SearchParameters>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
-            var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "SearchIndex", SearchServiceName = "SearchServiceName" };
+            //var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "search-index", SearchServiceName = "SearchServiceName" };
 
             //Configure
             A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).Returns(dummySearchParameters);
@@ -84,7 +84,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<DocumentSearchResult<JobProfileIndex>>._, A<SearchProperties>._)).Returns(dummySearchResult);
 
             //Act
-            var searchService = new DfcSearchQueryService<JobProfileIndex>(fakeQueryConverter, actualQueryBuilder, actualManipulator, searchIndexSettings);
+            var searchService = new DfcSearchQueryService<JobProfileIndex>(fakeQueryConverter, actualQueryBuilder, actualManipulator, fakeIndexClient);
             await searchService.SearchAsync(searchTerm, dummySearchProperty).ConfigureAwait(false);
 
             //Assert

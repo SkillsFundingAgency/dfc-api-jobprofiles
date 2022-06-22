@@ -17,12 +17,12 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
         private const string ServiceName = "Search Service";
 
         private readonly IAzSearchQueryConverter queryConverter;
-        private readonly SearchIndexClient indexClient;
+        private readonly ISearchIndexClient indexClient;
 
-        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, SearchIndexSettings searchIndexSettings)
+        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, ISearchIndexClient indexClient)
         {
             this.queryConverter = queryConverter;
-            indexClient = new SearchIndexClient(searchIndexSettings.SearchServiceName, searchIndexSettings.SearchIndex, new SearchCredentials(searchIndexSettings.AccessKey));
+            this.indexClient = indexClient;
         }
 
         public async Task<ServiceStatus> GetCurrentStatusAsync()
