@@ -1,6 +1,7 @@
 ﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
+
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices
@@ -15,8 +16,8 @@ namespace DFC.Api.JobProfiles.SearchServices
             IAzSearchQueryConverter queryConverter,
             ISearchQueryBuilder queryBuilder,
             ISearchManipulator<T> searchManipulator,
-            ISearchIndexClientFactory searchIndexClientFactory)
-            : base(queryConverter, searchIndexClientFactory)
+            SearchIndexSettings searchIndexSettings)
+            : base(queryConverter, searchIndexSettings)
         {
             this.queryBuilder = queryBuilder;
             this.searchManipulator = searchManipulator;
