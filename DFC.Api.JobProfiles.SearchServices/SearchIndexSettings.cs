@@ -1,5 +1,8 @@
-﻿namespace DFC.Api.JobProfiles.SearchServices
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace DFC.Api.JobProfiles.SearchServices
 {
+    [ExcludeFromCodeCoverage]
     public class SearchIndexSettings
     {
         public string SearchIndex { get; set; }
