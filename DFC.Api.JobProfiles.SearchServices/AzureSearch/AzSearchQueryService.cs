@@ -1,10 +1,10 @@
 ﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
+
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
-using Microsoft.Rest.Azure;
+
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
@@ -17,54 +17,30 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
         private const string ServiceName = "Search Service";
 
         private readonly IAzSearchQueryConverter queryConverter;
-        private readonly ISearchIndexClientFactory searchIndexClientFactory;
+        private readonly ISearchIndexClient indexClient;
 
-        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, ISearchIndexClientFactory searchIndexClientFactory)
+        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, ISearchIndexClient indexClient)
         {
             this.queryConverter = queryConverter;
-            this.searchIndexClientFactory = searchIndexClientFactory;
+            this.indexClient = indexClient;
         }
 
         public async Task<ServiceStatus> GetCurrentStatusAsync()
         {
-            try
-            {
-                var indexClient = await searchIndexClientFactory.GetSearchIndexClient().ConfigureAwait(false);
-                return await GetCurrentStatusWithSearchIndexAsync(indexClient).ConfigureAwait(false);
-            }
-            catch (CloudException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound)
-            {
-                var refreshedIndexClient = await searchIndexClientFactory.CreateOrRefreshIndexClient().ConfigureAwait(false);
-                return await GetCurrentStatusWithSearchIndexAsync(refreshedIndexClient).ConfigureAwait(false);
-            }
+            return await GetCurrentStatusWithSearchIndexAsync(indexClient)
+                .ConfigureAwait(false);
         }
 
         public virtual async Task<Data.AzureSearch.Models.SearchResult<T>> SearchAsync(string searchTerm, SearchProperties properties = null)
         {
-            try
-            {
-                var indexClient = await searchIndexClientFactory.GetSearchIndexClient().ConfigureAwait(false);
-                return await SearchWithSearchIndexClientAsync(indexClient, searchTerm, properties).ConfigureAwait(false);
-            }
-            catch (CloudException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound)
-            {
-                var refreshedIndexClient = await this.searchIndexClientFactory.CreateOrRefreshIndexClient().ConfigureAwait(false);
-                return await SearchWithSearchIndexClientAsync(refreshedIndexClient, searchTerm, properties).ConfigureAwait(false);
-            }
+            return await SearchWithSearchIndexClientAsync(indexClient, searchTerm, properties)
+                .ConfigureAwait(false);
         }
 
         public async Task<SuggestionResult<T>> GetSuggestionAsync(string partialTerm, SuggestProperties properties)
         {
-            try
-            {
-                var indexClient = await searchIndexClientFactory.GetSearchIndexClient().ConfigureAwait(false);
-                return await GetSuggestionAsyncWithIndexClient(indexClient, partialTerm, properties).ConfigureAwait(false);
-            }
-            catch (CloudException ex) when (ex.Response.StatusCode == HttpStatusCode.NotFound)
-            {
-                var refreshedIndexClient = await this.searchIndexClientFactory.CreateOrRefreshIndexClient().ConfigureAwait(false);
-                return await GetSuggestionAsyncWithIndexClient(refreshedIndexClient, partialTerm, properties).ConfigureAwait(false);
-            }
+            return await GetSuggestionAsyncWithIndexClient(indexClient, partialTerm, properties)
+                .ConfigureAwait(false);
         }
 
         private async Task<ServiceStatus> GetCurrentStatusWithSearchIndexAsync(ISearchIndexClient searchIndexClient)

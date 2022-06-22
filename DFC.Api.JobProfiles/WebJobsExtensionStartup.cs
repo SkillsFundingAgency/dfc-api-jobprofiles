@@ -1,26 +1,28 @@
 ﻿using AutoMapper;
+
 using AzureFunctions.Extensions.Swashbuckle;
+
 using DFC.Api.JobProfiles;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.Data.DataModels;
-using DFC.Api.JobProfiles.Data.Settings;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Api.JobProfiles.SearchServices;
 using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard;
-using Dfc.SharedConfig.IoC;
-using Dfc.SharedConfig.Models;
 using DFC.Swagger.Standard;
+
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
+using Microsoft.Azure.Search;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+
 using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
@@ -33,6 +35,7 @@ namespace DFC.Api.JobProfiles
     public class WebJobsExtensionStartup : IWebJobsStartup
     {
         public const string CosmosDbConfigAppSettings = "Configuration:CosmosDbConnections:JobProfileSegment";
+        public const string AzureSearchConfigAppSettings = "JobProfileSearchIndexConfig";
 
         public void Configure(IWebJobsBuilder builder)
         {
@@ -43,21 +46,16 @@ namespace DFC.Api.JobProfiles
                 .Build();
 
             var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get<CosmosDbConnection>();
-            var sharedConfigSettings = configuration.GetSection("SharedConfigSettings").Get<SharedConfigSettings>();
-            var sharedConfigParameters = configuration.GetSection("SharedConfigParameters").Get<SharedConfigParameters>();
+            var searchIndexSettings = configuration.GetSection(AzureSearchConfigAppSettings).Get<SearchIndexSettings>() ?? throw new ArgumentException("SearchIndexSettings are invalid.");
             var retryOptions = new RetryOptions { MaxRetryAttemptsOnThrottledRequests = 20, MaxRetryWaitTimeInSeconds = 60 };
-            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey, new ConnectionPolicy { RetryOptions = retryOptions }));
-
-            builder?.Services.AddAzureTableSharedConfigService(sharedConfigSettings).BuildServiceProvider();
 
             builder.AddDependencyInjection();
             builder.AddSwashBuckle(Assembly.GetExecutingAssembly());
             builder?.Services.AddApplicationInsightsTelemetry();
             builder?.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
             builder?.Services.AddSingleton(cosmosDbConnection);
-            builder?.Services.AddSingleton(sharedConfigParameters);
-            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey));
-            builder?.Services.AddSingleton<ISearchIndexClientFactory, SearchIndexClientFactory>();
+            builder?.Services.AddSingleton<ISearchIndexClient>(new SearchIndexClient(searchIndexSettings.SearchServiceName, searchIndexSettings.SearchIndex, new SearchCredentials(searchIndexSettings.AccessKey)));
+            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey, new ConnectionPolicy { RetryOptions = retryOptions }));
             builder?.Services.AddSingleton<IAzSearchQueryConverter, AzSearchQueryConverter>();
             builder?.Services.AddSingleton<ISearchQueryService<JobProfileIndex>, DfcSearchQueryService<JobProfileIndex>>();
             builder?.Services.AddSingleton<ISearchManipulator<JobProfileIndex>, JobProfileSearchManipulator>();
