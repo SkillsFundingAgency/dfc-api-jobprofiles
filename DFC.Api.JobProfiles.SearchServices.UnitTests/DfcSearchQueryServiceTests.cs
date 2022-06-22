@@ -33,7 +33,6 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             var dummySearchParameters = A.Dummy<SearchParameters>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
             var fakeManipulator = A.Fake<ISearchManipulator<JobProfileIndex>>();
-            //var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "search-index", SearchServiceName = "SearchServiceName" };
 
             //Configure
             A.CallTo(() => fakeQueryBuilder.RemoveSpecialCharactersFromTheSearchTerm(A<string>._, A<SearchProperties>._)).Returns(CleanedSearchTerm);
@@ -76,7 +75,6 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             var dummySearchProperty = A.Dummy<SearchProperties>();
             var dummySearchParameters = A.Dummy<SearchParameters>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
-            //var searchIndexSettings = new SearchIndexSettings { AccessKey = "AccessKey", SearchIndex = "search-index", SearchServiceName = "SearchServiceName" };
 
             //Configure
             A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).Returns(dummySearchParameters);
