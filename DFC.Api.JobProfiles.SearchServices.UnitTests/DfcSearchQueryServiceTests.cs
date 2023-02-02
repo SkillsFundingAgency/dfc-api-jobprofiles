@@ -1,12 +1,8 @@
-﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+﻿using Azure.Search.Documents;
+using Azure.Search.Documents.Models;
+using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-
 using FakeItEasy;
-
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
-
-using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -25,12 +21,12 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
         public async Task SearchAsyncTest()
         {
             //Arrange
-            var fakeIndexClient = A.Fake<ISearchIndexClient>(o => o.Strict());
+            var fakeIndexClient = A.Fake<SearchClient>(o => o.Strict());
             var fakeQueryBuilder = A.Fake<ISearchQueryBuilder>(o => o.Strict());
             var fakeQueryConverter = A.Fake<IAzSearchQueryConverter>(o => o.Strict());
-            var fakeDocumentsOperation = A.Fake<IDocumentsOperations>();
+            //var fakeDocumentsOperation = A.Fake<SearchClient>();
             var dummySearchProperty = A.Dummy<SearchProperties>();
-            var dummySearchParameters = A.Dummy<SearchParameters>();
+            var dummySearchParameters = A.Dummy<SearchOptions>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
             var fakeManipulator = A.Fake<ISearchManipulator<JobProfileIndex>>();
 
@@ -39,8 +35,8 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => fakeQueryBuilder.BuildContainPartialSearch(A<string>._, A<SearchProperties>._)).Returns(PartialTermToSearch);
             A.CallTo(() => fakeQueryBuilder.TrimCommonWordsAndSuffixes(A<string>._, A<SearchProperties>._)).Returns(TrimmedResults);
             A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).Returns(dummySearchParameters);
-            A.CallTo(() => fakeIndexClient.Documents).Returns(fakeDocumentsOperation);
-            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<DocumentSearchResult<JobProfileIndex>>._, A<SearchProperties>._)).Returns(dummySearchResult);
+            //A.CallTo(() => fakeIndexClient).Returns(fakeDocumentsOperation);
+            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<SearchResults<JobProfileIndex>>._, A<SearchProperties>._)).Returns(dummySearchResult);
             A.CallTo(() => fakeManipulator.BuildSearchExpression(A<string>._, A<string>._, A<string>._, A<SearchProperties>._)).Returns(nameof(fakeManipulator.BuildSearchExpression));
 
             //Act
@@ -52,9 +48,9 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             A.CallTo(() => fakeQueryBuilder.TrimCommonWordsAndSuffixes(A<string>.That.IsEqualTo(CleanedSearchTerm), A<SearchProperties>._)).MustHaveHappened();
             A.CallTo(() => fakeQueryBuilder.BuildContainPartialSearch(A<string>.That.IsEqualTo(TrimmedResults), A<SearchProperties>._)).MustHaveHappened();
             A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).MustHaveHappened();
-            A.CallTo(() => fakeIndexClient.Documents).MustHaveHappened();
-            A.CallTo(() => fakeDocumentsOperation.SearchWithHttpMessagesAsync<JobProfileIndex>(A<string>.That.IsEqualTo(nameof(fakeManipulator.BuildSearchExpression)), A<SearchParameters>._, A<SearchRequestOptions>._, A<Dictionary<string, List<string>>>._, A<CancellationToken>._)).MustHaveHappened();
-            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<DocumentSearchResult<JobProfileIndex>>._, A<SearchProperties>._)).MustHaveHappened();
+            A.CallTo(() => fakeIndexClient).MustHaveHappened();
+            A.CallTo(() => fakeIndexClient.SearchAsync<JobProfileIndex>(A<string>.That.IsEqualTo(nameof(fakeManipulator.BuildSearchExpression)), A<SearchOptions>._, A<CancellationToken>._)).MustHaveHappened();
+            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<SearchResults<JobProfileIndex>>._, A<SearchProperties>._)).MustHaveHappened();
         }
 
         [Theory]
@@ -69,17 +65,17 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
             var actualManipulator = new JobProfileSearchManipulator();
 
             //Fakes
-            var fakeIndexClient = A.Fake<ISearchIndexClient>(o => o.Strict());
+            var fakeIndexClient = A.Fake<SearchClient>(o => o.Strict());
             var fakeQueryConverter = A.Fake<IAzSearchQueryConverter>(o => o.Strict());
-            var fakeDocumentsOperation = A.Fake<IDocumentsOperations>();
+            var fakeDocumentsOperation = A.Fake<SearchClient>();
             var dummySearchProperty = A.Dummy<SearchProperties>();
-            var dummySearchParameters = A.Dummy<SearchParameters>();
+            var dummySearchParameters = A.Dummy<SearchOptions>();
             var dummySearchResult = A.Dummy<Data.AzureSearch.Models.SearchResult<JobProfileIndex>>();
 
             //Configure
-            A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).Returns(dummySearchParameters);
-            A.CallTo(() => fakeIndexClient.Documents).Returns(fakeDocumentsOperation);
-            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<DocumentSearchResult<JobProfileIndex>>._, A<SearchProperties>._)).Returns(dummySearchResult);
+            //A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).Returns(dummySearchParameters);
+            A.CallTo(() => fakeIndexClient).Returns(fakeDocumentsOperation);
+            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<SearchResults<JobProfileIndex>>._, A<SearchProperties>._)).Returns(dummySearchResult);
 
             //Act
             var searchService = new DfcSearchQueryService<JobProfileIndex>(fakeQueryConverter, actualQueryBuilder, actualManipulator, fakeIndexClient);
@@ -87,9 +83,9 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests
 
             //Assert
             A.CallTo(() => fakeQueryConverter.BuildSearchParameters(A<SearchProperties>._)).MustHaveHappened();
-            A.CallTo(() => fakeIndexClient.Documents).MustHaveHappened();
-            A.CallTo(() => fakeDocumentsOperation.SearchWithHttpMessagesAsync<JobProfileIndex>(A<string>.That.Contains(expectedComputedSearchTerm), A<SearchParameters>._, A<SearchRequestOptions>._, A<Dictionary<string, List<string>>>._, A<CancellationToken>._)).MustHaveHappened();
-            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<DocumentSearchResult<JobProfileIndex>>._, A<SearchProperties>._)).MustHaveHappened();
+            A.CallTo(() => fakeIndexClient).MustHaveHappened();
+            A.CallTo(() => fakeDocumentsOperation.SearchAsync<JobProfileIndex>(A<string>.That.Contains(expectedComputedSearchTerm), A<SearchOptions>._, A<CancellationToken>._)).MustHaveHappened();
+            A.CallTo(() => fakeQueryConverter.ConvertToSearchResult(A<SearchResults<JobProfileIndex>>._, A<SearchProperties>._)).MustHaveHappened();
         }
     }
 }
