@@ -1,7 +1,9 @@
-﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+﻿using Azure;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Models;
+using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using FakeItEasy;
-using Microsoft.Azure.Search.Models;
 using System;
 using System.Collections.Generic;
 using Xunit;
@@ -56,14 +58,16 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
         public void ConvertToSearchResultRaisesArgumentNullExceptionForMissingSearchProperties()
         {
             // Arrange
-            var searchResults = A.Fake<IList<Microsoft.Azure.Search.Models.SearchResult<JobProfileIndex>>>();
-            var facets = A.Fake<IDictionary<string, IList<FacetResult>>>();
-            var result = new DocumentSearchResult<JobProfileIndex>(searchResults, 0, 0, facets, null);
+            var fakeResults = A.Fake<IEnumerable<Azure.Search.Documents.Models.SearchResult<JobProfileIndex>>>();
+            var fakeFacets = A.Fake<IDictionary<string, IList<FacetResult>>>();
+            var fakeResponse = A.Fake<Response>();
+            var modelledResults = SearchModelFactory.SearchResults<JobProfileIndex>(fakeResults, 0, fakeFacets, 0, fakeResponse); // maybe null response
+
             SearchProperties searchProperties = null;
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
             // Act
-            var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(result, searchProperties));
+            var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(modelledResults, searchProperties));
 
             // assert
             Assert.Equal("Value cannot be null. (Parameter 'properties')", exceptionResult.Message);
@@ -73,39 +77,40 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
         public void ConvertToSearchResultRaisesArgumentNullExceptionForMissingResult()
         {
             // Arrange
-            DocumentSearchResult<JobProfileIndex> result = null;
+            SearchResults<JobProfileIndex> results = null;
             var searchProperties = A.Fake<SearchProperties>();
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
             // Act
-            var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(result, searchProperties));
+            var exceptionResult = Assert.Throws<ArgumentNullException>(() => azSearchQueryConverter.ConvertToSearchResult(results, searchProperties));
 
             // assert
-            Assert.Equal("Value cannot be null. (Parameter 'result')", exceptionResult.Message);
+            Assert.Equal("Value cannot be null. (Parameter 'results')", exceptionResult.Message);
         }
 
         [Fact]
         public void ConvertToSearchResultReturnsSearchResultForSearchProperties()
         {
             // Arrange
-            var searchResults = A.Fake<IList<Microsoft.Azure.Search.Models.SearchResult<JobProfileIndex>>>();
+            var fakeResults = A.Fake<IEnumerable<Azure.Search.Documents.Models.SearchResult<JobProfileIndex>>>();
             var facets = A.Fake<IDictionary<string, IList<FacetResult>>>();
-            var result = new DocumentSearchResult<JobProfileIndex>(searchResults, 0, 0, facets, null);
+            var fakeResponse = A.Fake<Response>();
+            var modelledResults = SearchModelFactory.SearchResults<JobProfileIndex>(fakeResults, 0, facets, 0, fakeResponse); // maybe null response
             var searchProperties = A.Fake<SearchProperties>();
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
             // Act
-            var results = azSearchQueryConverter.ConvertToSearchResult(result, searchProperties);
+            var finalResult = azSearchQueryConverter.ConvertToSearchResult(modelledResults, searchProperties);
 
             // Assert
-            Assert.NotNull(results);
+            Assert.NotNull(finalResult);
         }
 
         [Fact]
         public void ConvertToSuggestionResultRaisesArgumentNullExceptionForMissingSearchProperties()
         {
             // Arrange
-            var result = A.Fake<DocumentSuggestResult<JobProfileIndex>>();
+            var result = A.Fake<SuggestResults<JobProfileIndex>>();
             SuggestProperties suggestProperties = null;
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
@@ -120,7 +125,7 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
         public void ConvertToSuggestionResultRaisesArgumentNullExceptionForMissingResult()
         {
             // Arrange
-            DocumentSuggestResult<JobProfileIndex> result = null;
+            SuggestResults<JobProfileIndex> result = null;
             var suggestProperties = A.Fake<SuggestProperties>();
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
@@ -135,15 +140,15 @@ namespace DFC.Api.JobProfiles.SearchServices.UnitTests.AzureSearch
         public void ConvertToSuggestionResultReturnsSuggestionResultForSearchProperties()
         {
             // Arrange
-            var result = A.Fake<DocumentSuggestResult<JobProfileIndex>>();
-            var suggestProperties = A.Fake<SuggestProperties>();
+            var fakeResult = A.Fake<SuggestResults<JobProfileIndex>>();
+            var fakeSuggestProperties = A.Fake<SuggestProperties>();
             var azSearchQueryConverter = new AzSearchQueryConverter();
 
             // Act
-            var results = azSearchQueryConverter.ConvertToSuggestionResult(result, suggestProperties);
+            var finalResult = azSearchQueryConverter.ConvertToSuggestionResult(fakeResult, fakeSuggestProperties);
 
             // Assert
-            Assert.NotNull(results);
+            Assert.NotNull(finalResult);
         }
     }
 }
