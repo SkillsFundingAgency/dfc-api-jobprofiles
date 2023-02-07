@@ -16,20 +16,34 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
                 throw new ArgumentNullException(nameof(properties));
             }
 
-            return new SearchOptions
+            var searchOptions = new SearchOptions
             {
                 SearchMode = SearchMode.Any,
                 IncludeTotalCount = true,
-
-                //SearchFields = properties.SearchFields, readonly
                 Filter = properties.FilterBy,
                 Skip = (properties.Page - 1) * properties.Count,
                 Size = properties.Count,
                 QueryType = SearchQueryType.Full,
-
-                //OrderBy = properties.OrderByFields, readonly
                 ScoringProfile = properties.ScoringProfile,
             };
+
+            if (properties.OrderByFields != null)
+            {
+                foreach (var field in properties.OrderByFields)
+                {
+                    searchOptions.OrderBy.Add(field);
+                }
+            }
+
+            if (properties.SearchFields != null)
+            {
+                foreach (var field in properties.SearchFields)
+                {
+                    searchOptions.SearchFields.Add(field);
+                }
+            }
+
+            return searchOptions;
         }
 
         public SuggestOptions BuildSuggestParameters(SuggestProperties properties)
