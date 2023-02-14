@@ -12,7 +12,7 @@ using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Functions.DI.Standard;
 using DFC.Swagger.Standard;
-using Microsoft.Azure.Documents;
+using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Hosting;
@@ -43,7 +43,7 @@ namespace DFC.Api.JobProfiles
 
             var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get<CosmosDbConnection>();
             var searchIndexSettings = configuration.GetSection(AzureSearchConfigAppSettings).Get<SearchIndexSettings>() ?? throw new ArgumentException("SearchIndexSettings are invalid.");
-            var retryOptions = new RetryOptions { MaxRetryAttemptsOnThrottledRequests = 20, MaxRetryWaitTimeInSeconds = 60 };
+            var cosmosClientOptions = new CosmosClientOptions { MaxRetryAttemptsOnRateLimitedRequests = 20, MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60) };
             var searchServiceName = searchIndexSettings.SearchServiceName;
 
             UriBuilder uriBuilder = new ()
@@ -58,8 +58,14 @@ namespace DFC.Api.JobProfiles
             builder?.Services.AddApplicationInsightsTelemetry();
             builder?.Services.AddAutoMapper(typeof(WebJobsExtensionStartup).Assembly);
             builder?.Services.AddSingleton(cosmosDbConnection);
-            builder?.Services.AddSingleton<SearchClient>(new SearchClient(endpoint: searchServiceUri, searchIndexSettings.SearchIndex, new AzureKeyCredential(searchIndexSettings.AccessKey)));
-            builder?.Services.AddSingleton<IDocumentClient>(new DocumentClient(new Uri(cosmosDbConnection.EndpointUrl), cosmosDbConnection.AccessKey, new ConnectionPolicy { RetryOptions = retryOptions }));
+            builder?.Services.AddSingleton<SearchClient>(new SearchClient(
+                endpoint: searchServiceUri,
+                searchIndexSettings.SearchIndex,
+                new AzureKeyCredential(searchIndexSettings.AccessKey)));
+            builder?.Services.AddSingleton<CosmosClient>(new CosmosClient(
+                cosmosDbConnection.EndpointUrl,
+                cosmosDbConnection.AccessKey,
+                cosmosClientOptions));
             builder?.Services.AddSingleton<IAzSearchQueryConverter, AzSearchQueryConverter>();
             builder?.Services.AddSingleton<ISearchQueryService<JobProfileIndex>, DfcSearchQueryService<JobProfileIndex>>();
             builder?.Services.AddSingleton<ISearchManipulator<JobProfileIndex>, JobProfileSearchManipulator>();
