@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
-    <AzureFunctionsVersion>v3</AzureFunctionsVersion>
+    <TargetFramework>net6.0</TargetFramework>
+    <AzureFunctionsVersion>v4</AzureFunctionsVersion>
     <CodeAnalysisRuleSet>../DFC.Digital.CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
 	<ProjectGuid>{ADC6F28A-3F83-4EEB-A48E-A119691F911F}</ProjectGuid>
@@ -13,23 +13,20 @@
 
   <ItemGroup>
     <PackageReference Include="AzureFunctions.Extensions.Swashbuckle" Version="1.4.5-preview5" />
-    <PackageReference Include="Dfc.SharedConfig" Version="0.1.5" />
-    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.5" />
+    <PackageReference Include="Dfc.SharedConfig" Version="0.1.9" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="4.1.3" />
     <PackageReference Include="DFC.Functions.DI.Standard" Version="0.1.0" />
     <PackageReference Include="DFC.JSON.Standard" Version="0.1.4" />
-    <PackageReference Include="DFC.Swagger.Standard" Version="0.1.15" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="7.0.0" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.8">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="DFC.Swagger.Standard" Version="0.1.27" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Spatial" Version="7.5.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     <PackageReference Include="StyleCop.Analyzers" Version="1.1.118">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.13.1" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.21.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DFC.Api.JobProfiles.Common\DFC.Api.JobProfiles.Common.csproj" />

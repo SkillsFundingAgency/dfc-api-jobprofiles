@@ -1,11 +1,9 @@
 ﻿using DFC.Api.JobProfiles.Data.DataModels;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
+using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
@@ -19,56 +17,57 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
         where T : BaseDataModel
     {
         private readonly CosmosDbConnection cosmosDbConnection;
-        private readonly IDocumentClient documentClient;
+        private readonly CosmosClient cosmosClient;
+        private readonly Container container;
 
-        public CosmosRepository(CosmosDbConnection cosmosDbConnection, IDocumentClient documentClient, IHostingEnvironment hostingEnvironment)
+        public CosmosRepository(CosmosDbConnection cosmosDbConnection, CosmosClient cosmosClient, IHostingEnvironment hostingEnvironment)
         {
             this.cosmosDbConnection = cosmosDbConnection;
-            this.documentClient = documentClient;
+            this.cosmosClient = cosmosClient;
 
             if (hostingEnvironment.IsDevelopment())
             {
                 CreateDatabaseIfNotExistsAsync().GetAwaiter().GetResult();
                 CreateCollectionIfNotExistsAsync().GetAwaiter().GetResult();
             }
-        }
 
-        private Uri DocumentCollectionUri => UriFactory.CreateDocumentCollectionUri(cosmosDbConnection.DatabaseId, cosmosDbConnection.CollectionId);
+            container = cosmosClient.GetContainer(cosmosDbConnection.DatabaseId, cosmosDbConnection.CollectionId);
+        }
 
         public async Task<bool> PingAsync()
         {
-            var query = documentClient.CreateDocumentQuery<T>(DocumentCollectionUri, new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true })
-                                       .AsDocumentQuery();
+            FeedIterator<T> resultSet = container.GetItemQueryIterator<T>(
+                queryDefinition: null,
+                requestOptions: new QueryRequestOptions()
+                {
+                    MaxItemCount = 1,
+                });
 
-            if (query == null)
+            if (resultSet == null)
             {
                 return false;
             }
 
-            var models = await query.ExecuteNextAsync<T>().ConfigureAwait(false);
-            var firstModel = models.FirstOrDefault();
-
-            return firstModel != null;
+            var models = await resultSet.ReadNextAsync().ConfigureAwait(false);
+            return models.Any();
         }
 
         public async Task<IList<T>> GetData(Expression<Func<T, T>> selector, Expression<Func<T, bool>> filter)
         {
-            var feedOptions = new FeedOptions
+            List<T> dataModels = new List<T>();
+            IOrderedQueryable<T> queryable = container.GetItemLinqQueryable<T>(requestOptions: new QueryRequestOptions() { MaxConcurrency = -1 });
+            var matches = filter != null ? queryable.Where(filter).Select(selector) : queryable.Select(selector);
+
+            using (FeedIterator<T> linqFeed = matches.ToFeedIterator())
             {
-                EnableCrossPartitionQuery = true,
-                MaxDegreeOfParallelism = -1,
-            };
-
-            var baseQuery = documentClient.CreateDocumentQuery<T>(DocumentCollectionUri, feedOptions);
-
-            var query = filter != null ? baseQuery.Where(filter).Select(selector).AsDocumentQuery() : baseQuery.Select(selector).AsDocumentQuery();
-
-            var dataModels = new List<T>();
-            while (query.HasMoreResults)
-            {
-                var response = await query.ExecuteNextAsync<T>().ConfigureAwait(false);
-
-                dataModels.AddRange(response);
+                while (linqFeed.HasMoreResults)
+                {
+                    FeedResponse<T> response = await linqFeed.ReadNextAsync();
+                    foreach (var item in response)
+                    {
+                        dataModels.Add(item);
+                    }
+                }
             }
 
             return dataModels;
@@ -78,13 +77,13 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
         {
             try
             {
-                await documentClient.ReadDatabaseAsync(UriFactory.CreateDatabaseUri(cosmosDbConnection.DatabaseId)).ConfigureAwait(false);
+                cosmosClient.GetDatabase(cosmosDbConnection.DatabaseId);
             }
-            catch (DocumentClientException e)
+            catch (CosmosException e)
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    await documentClient.CreateDatabaseAsync(new Database { Id = cosmosDbConnection.DatabaseId }).ConfigureAwait(false);
+                    await cosmosClient.CreateDatabaseIfNotExistsAsync(cosmosDbConnection.DatabaseId).ConfigureAwait(false);
                 }
                 else
                 {
@@ -97,21 +96,19 @@ namespace DFC.Api.JobProfiles.Repository.CosmosDb
         {
             try
             {
-                await documentClient.ReadDocumentCollectionAsync(UriFactory.CreateDocumentCollectionUri(cosmosDbConnection.DatabaseId, cosmosDbConnection.CollectionId)).ConfigureAwait(false);
+                cosmosClient.GetContainer(cosmosDbConnection.DatabaseId, cosmosDbConnection.CollectionId);
             }
-            catch (DocumentClientException e)
+            catch (CosmosException e)
             {
                 if (e.StatusCode == HttpStatusCode.NotFound)
                 {
-                    var pkDef = new PartitionKeyDefinition
-                    {
-                        Paths = new Collection<string>() { cosmosDbConnection.PartitionKey },
-                    };
-
-                    await documentClient.CreateDocumentCollectionAsync(
-                                UriFactory.CreateDatabaseUri(cosmosDbConnection.DatabaseId),
-                                new DocumentCollection { Id = cosmosDbConnection.CollectionId, PartitionKey = pkDef },
-                                new RequestOptions { OfferThroughput = 1000 }).ConfigureAwait(false);
+                    var pkDef = cosmosDbConnection.PartitionKey;
+                    Database database = cosmosClient.GetDatabase(cosmosDbConnection.DatabaseId);
+                    await database.CreateContainerIfNotExistsAsync(
+                        id: cosmosDbConnection.CollectionId,
+                        partitionKeyPath: pkDef,
+                        throughput: 1000)
+                        .ConfigureAwait(false);
                 }
                 else
                 {

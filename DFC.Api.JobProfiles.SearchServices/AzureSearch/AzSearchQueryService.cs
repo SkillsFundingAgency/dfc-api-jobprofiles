@@ -1,9 +1,8 @@
-﻿using DFC.Api.JobProfiles.Data.AzureSearch.Models;
+﻿using Azure;
+using Azure.Search.Documents;
+using Azure.Search.Documents.Models;
+using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
-
 using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
@@ -17,33 +16,33 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
         private const string ServiceName = "Search Service";
 
         private readonly IAzSearchQueryConverter queryConverter;
-        private readonly ISearchIndexClient indexClient;
+        private readonly SearchClient searchClient;
 
-        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, ISearchIndexClient indexClient)
+        public AzSearchQueryService(IAzSearchQueryConverter queryConverter, SearchClient searchClient)
         {
             this.queryConverter = queryConverter;
-            this.indexClient = indexClient;
+            this.searchClient = searchClient;
         }
 
         public async Task<ServiceStatus> GetCurrentStatusAsync()
         {
-            return await GetCurrentStatusWithSearchIndexAsync(indexClient)
+            return await GetCurrentStatusWithSearchIndexAsync(searchClient)
                 .ConfigureAwait(false);
         }
 
         public virtual async Task<Data.AzureSearch.Models.SearchResult<T>> SearchAsync(string searchTerm, SearchProperties properties = null)
         {
-            return await SearchWithSearchIndexClientAsync(indexClient, searchTerm, properties)
+            return await SearchWithSearchIndexClientAsync(searchClient, searchTerm, properties)
                 .ConfigureAwait(false);
         }
 
         public async Task<SuggestionResult<T>> GetSuggestionAsync(string partialTerm, SuggestProperties properties)
         {
-            return await GetSuggestionAsyncWithIndexClient(indexClient, partialTerm, properties)
+            return await GetSuggestionAsyncWithIndexClient(searchClient, partialTerm, properties)
                 .ConfigureAwait(false);
         }
 
-        private async Task<ServiceStatus> GetCurrentStatusWithSearchIndexAsync(ISearchIndexClient searchIndexClient)
+        private async Task<ServiceStatus> GetCurrentStatusWithSearchIndexAsync(SearchClient searchClient)
         {
             const string searchTerm = "*";
 
@@ -55,14 +54,14 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
                 CheckParametersUsed = $"Search term - {searchTerm}",
             };
 
-            var searchParam = new SearchParameters { Top = 5 };
-            var result = await searchIndexClient.Documents.SearchAsync<T>(searchTerm, searchParam).ConfigureAwait(false);
+            var searchParam = new SearchOptions { Size = 5 };
+            var result = await searchClient.SearchAsync<T>(searchTerm, searchParam).ConfigureAwait(false);
 
             // The call worked ok
             serviceStatus.Status = ServiceState.Amber;
             serviceStatus.Notes = "Success search with 0 results";
 
-            if (result.Results.Count <= 0)
+            if (result.Value.TotalCount <= 0)
             {
                 return serviceStatus;
             }
@@ -73,21 +72,21 @@ namespace DFC.Api.JobProfiles.SearchServices.AzureSearch
             return serviceStatus;
         }
 
-        private async Task<Data.AzureSearch.Models.SearchResult<T>> SearchWithSearchIndexClientAsync(ISearchIndexClient searchIndexClient, string searchTerm, SearchProperties properties = null)
+        private async Task<Data.AzureSearch.Models.SearchResult<T>> SearchWithSearchIndexClientAsync(SearchClient searchClient, string searchTerm, SearchProperties properties = null)
         {
             var searchParam = queryConverter.BuildSearchParameters(properties);
-            var result = await searchIndexClient.Documents.SearchAsync<T>(searchTerm, searchParam).ConfigureAwait(false);
-            var output = queryConverter.ConvertToSearchResult(result, properties);
+            var result = await searchClient.SearchAsync<T>(searchTerm, searchParam).ConfigureAwait(false);
+            var output = queryConverter.ConvertToSearchResult(result.Value, properties);
             output.ComputedSearchTerm = searchTerm;
             output.SearchParametersQueryString = searchParam.ToString();
             return output;
         }
 
-        private async Task<SuggestionResult<T>> GetSuggestionAsyncWithIndexClient(ISearchIndexClient searchIndexClient, string partialTerm, SuggestProperties properties)
+        private async Task<SuggestionResult<T>> GetSuggestionAsyncWithIndexClient(SearchClient searchClient, string partialTerm, SuggestProperties properties)
         {
             var suggestParameters = queryConverter.BuildSuggestParameters(properties);
-            var result = await searchIndexClient.Documents.SuggestAsync<T>(partialTerm, DefaultSuggesterName, suggestParameters).ConfigureAwait(false);
-            return queryConverter.ConvertToSuggestionResult(result, properties);
+            var result = await searchClient.SuggestAsync<T>(partialTerm, DefaultSuggesterName, suggestParameters).ConfigureAwait(false);
+            return queryConverter.ConvertToSuggestionResult(result.Value, properties);
         }
     }
 }
