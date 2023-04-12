@@ -1,6 +1,6 @@
-﻿using DFC.Api.JobProfiles.Data.AzureSearch.Attributes;
-using Microsoft.Azure.Search;
-using Microsoft.Azure.Search.Models;
+﻿using Azure.Search.Documents.Indexes;
+using Azure.Search.Documents.Indexes.Models;
+using DFC.Api.JobProfiles.Data.AzureSearch.Attributes;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,112 +12,101 @@ namespace DFC.Api.JobProfiles.Data.AzureSearch.Models
         [Key]
         public string IdentityField { get; set; }
 
-        [IsFilterable, IsSortable, IsFacetable]
+        [SimpleField(IsFilterable= true, IsSortable = true, IsFacetable = true)]
         public string SocCode { get; set; }
 
-        [IsSearchable, IsFilterable, IsSortable, IsSuggestible]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(IsFilterable = true, IsSortable = true, AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
+        [IsSuggestible]
         [AddWeighting(7)]
         public string Title { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.Keyword)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.Keyword)]
         [AddWeighting(100)]
         public string TitleAsKeyword => Title.ToLowerInvariant();
 
-        [IsSearchable, IsFilterable, IsSuggestible]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(IsFilterable = true, AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
+        [IsSuggestible]
         [AddWeighting(6)]
         public IEnumerable<string> AlternativeTitle { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.Keyword)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.Keyword)]
         [AddWeighting(100)]
         public IEnumerable<string> AltTitleAsKeywords => AlternativeTitle?.Select(a => a.ToLowerInvariant());
 
-        [IsSearchable]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         [AddWeighting(5)]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
         public string Overview { get; set; }
 
-        [IsFilterable, IsSortable, IsFacetable]
+        [SimpleField(IsFilterable= true, IsSortable = true, IsFacetable = true)]
         public double SalaryStarter { get; set; }
 
-        [IsFilterable, IsSortable, IsFacetable]
+        [SimpleField(IsFilterable= true, IsSortable = true, IsFacetable = true)]
         public double SalaryExperienced { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Design", "CA1056:UriPropertiesShouldNotBeStrings", Justification = "This is an application field of type string, last segment and is not a complete uri")]
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public string UrlName { get; set; }
 
-        [IsSearchable, IsFilterable]
+        [SearchableField(IsFilterable= true, AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         [AddWeighting(4)]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
         public IEnumerable<string> JobProfileCategories { get; set; }
 
-        [IsSearchable, IsFilterable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(IsFilterable= true, AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         [AddWeighting(3)]
         public IEnumerable<string> JobProfileSpecialism { get; set; }
 
-        [IsSearchable, IsFilterable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(IsFilterable= true, AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         [AddWeighting(3)]
         public IEnumerable<string> HiddenAlternativeTitle { get; set; }
 
         public IEnumerable<string> JobProfileCategoriesWithUrl { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> Interests { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> Enablers { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> EntryQualifications { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> TrainingRoutes { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> PreferredTaskTypes { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> JobAreas { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         public string CollegeRelevantSubjects { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         public string UniversityRelevantSubjects { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         public string ApprenticeshipRelevantSubjects { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         public string WYDDayToDayTasks { get; set; }
 
-        [IsSearchable]
-        [Analyzer(AnalyzerName.AsString.EnLucene)]
+        [SearchableField(AnalyzerName = LexicalAnalyzerName.Values.EnLucene)]
         public string CareerPathAndProgression { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> WorkingPattern { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> WorkingPatternDetails { get; set; }
 
-        [IsFilterable]
+        [SimpleField(IsFilterable = true)]
         public IEnumerable<string> WorkingHoursDetails { get; set; }
 
-        [IsFilterable, IsSortable, IsFacetable]
+        [SimpleField(IsFilterable= true, IsSortable = true, IsFacetable = true)]
         public double MinimumHours { get; set; }
 
-        [IsFilterable, IsSortable, IsFacetable]
+        [SimpleField(IsFilterable= true, IsSortable = true, IsFacetable = true)]
         public double MaximumHours { get; set; }
     }
 }
