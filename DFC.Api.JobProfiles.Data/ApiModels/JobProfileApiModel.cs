@@ -23,6 +23,12 @@ namespace DFC.Api.JobProfiles.Data.ApiModels
         [Example(Description = "2137")]
         public string Soc { get; set; }
 
+        [Example(Description = "2137")]
+        public string Soc2020 { get; set; }
+
+        [Example(Description = "2137")]
+        public string Soc2020Extension { get; set; }
+
         [Example(Description = "15-1134.00")]
         public string ONetOccupationalCode { get; set; }
 
