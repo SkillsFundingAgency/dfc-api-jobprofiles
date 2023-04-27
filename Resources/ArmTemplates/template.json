@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "appInsightsName": {
+            "type": "string"
+        },
         "appSharedResourceGroup": {
             "type": "string"
         },
@@ -113,7 +116,7 @@
         "cosmosDbCollectionName": "jobProfiles",
         "cosmosDbEndpoint": "[concat('https://', parameters('cosmosDbName'), '.documents.azure.com:443/')]",
         "resourcePrefix": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles'))]",
-        "functionAppInsightsName": "[tolower(concat('dfc-', parameters('Environment'), '-api-jobprofiles-ai'))]",
+        "functionAppInsightsName": "[parameters('appInsightsName')]",
         "VersionSetName": "[concat(toLower(parameters('ApiName')), '-versionset')]",
         "ActionGroupName": "[concat('dfc-', replace(tolower(parameters('Environment')), '-draft', ''), '-app-sharedresources-actgrp')]"
     },
