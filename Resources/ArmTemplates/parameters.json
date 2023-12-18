@@ -85,6 +85,12 @@
         },
         "exceptionsThreshold": {
             "value": "__ExceptionsThreshold__"
+        },
+        "workspaceName": {
+            "value": "__sharedLogAnalyticsWorkspace__"
+        },
+        "workspaceResourceGroup": {
+            "value": "__sharedLogAnalyticsResourceGroup__"
         }
     }
 }
