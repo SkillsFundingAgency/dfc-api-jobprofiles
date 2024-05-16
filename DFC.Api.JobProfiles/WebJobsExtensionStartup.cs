@@ -1,4 +1,4 @@
-﻿using Azure;
+﻿/*using Azure;
 using Azure.Search.Documents;
 using AzureFunctions.Extensions.Swashbuckle;
 using DFC.Api.JobProfiles;
@@ -82,4 +82,4 @@ namespace DFC.Api.JobProfiles
             builder?.Services.AddScoped<IResponseWithCorrelation, ResponseWithCorrelation>();
         }
     }
-}
+}*/
