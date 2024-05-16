@@ -41,10 +41,11 @@ namespace DFC.Api.JobProfiles.Functions
         private readonly ISharedContentRedisInterface sharedContentRedisInterface;
         private readonly string resourceName;
         private readonly HealthCheckService healthCheckService;
+        private ISearchService searchService;
         private ISummaryService summaryService;
         private IFunctionContextAccessor functionContextAccessor;
 
-        public JobProfileFunctions(ILogService logService, IResponseWithCorrelation responseWithCorrelation, ISharedContentRedisInterface sharedContentRedisInterface, IMapper mapper, IFunctionContextAccessor functionContextAccessor, ISummaryService summaryService, HealthCheckService healthCheckService)
+        public JobProfileFunctions(ILogService logService, IResponseWithCorrelation responseWithCorrelation, ISharedContentRedisInterface sharedContentRedisInterface, IMapper mapper, IFunctionContextAccessor functionContextAccessor, ISummaryService summaryService, HealthCheckService healthCheckService, ISearchService searchService)
         {
             this.logService = logService;
             this.responseWithCorrelation = responseWithCorrelation;
@@ -54,6 +55,7 @@ namespace DFC.Api.JobProfiles.Functions
             this.mapper = mapper;
             this.summaryService = summaryService;
             this.healthCheckService = healthCheckService;
+            this.searchService = searchService;
         }
 
         [Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
@@ -86,35 +88,35 @@ namespace DFC.Api.JobProfiles.Functions
             }
         }
 
-      /*  [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
-        [Function("job-profiles-detail")]
-        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
-        public async Task<IActionResult> GetJobProfileDetail(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
-            string canonicalName)
-        {
-            request.LogRequestHeaders(logService);
+        /*  [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
+          [Function("job-profiles-detail")]
+          [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+          [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
+          [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
+          [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+          [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+          [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+          public async Task<IActionResult> GetJobProfileDetail(
+              [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
+              string canonicalName)
+          {
+              request.LogRequestHeaders(logService);
 
-            var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
-            if (jobProfile is null)
-            {
-                logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
-                return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
-            }
+              var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
+              if (jobProfile is null)
+              {
+                  logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
+                  return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
+              }
 
-            jobProfile.RelatedCareers?.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
-            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
+              jobProfile.RelatedCareers?.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
+              jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
-            return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
-        }*/
-/*
+              return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
+          }*/
+
         [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
-        [FunctionName("job-profiles-search")]
+        [Function("job-profiles-search")]
         [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
@@ -123,7 +125,6 @@ namespace DFC.Api.JobProfiles.Functions
         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public async Task<IActionResult> GetJobProfileSearchResults(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}")] HttpRequest request,
-            [Inject] ISearchService searchService,
             string searchTerm)
         {
             request.LogRequestHeaders(logService);
@@ -143,7 +144,7 @@ namespace DFC.Api.JobProfiles.Functions
             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
-        }*/
+        }
 
         [Display(Name = "Ping job profile API", Description = "Pings job profile API")]
         [Function("job-profiles-ping")]
