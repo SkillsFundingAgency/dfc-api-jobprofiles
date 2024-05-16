@@ -51,9 +51,8 @@ namespace DFC.Api.JobProfiles.Functions
             this.summaryService = summaryService;
         }
 
-        //[Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
+        [Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
         [Function("summary")]
-        //[Function("job-profiles")]
         [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "List of all published job profiles summary data.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No published job profiles available at this time.", ShowSchema = false)]
@@ -82,106 +81,106 @@ namespace DFC.Api.JobProfiles.Functions
             }
         }
 
-        /* [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
-         [Function("job-profiles-detail")]
-         [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
-         public async Task<IActionResult> GetJobProfileDetail(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
-             string canonicalName)
-         {
-             request.LogRequestHeaders(logService);
+      /*  [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
+        [Function("job-profiles-detail")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> GetJobProfileDetail(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
+            string canonicalName)
+        {
+            request.LogRequestHeaders(logService);
 
-             var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
-             if (jobProfile is null)
-             {
-                 logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
-                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
-             }
+            var jobProfile = await dataService.GetJobProfile(canonicalName).ConfigureAwait(false);
+            if (jobProfile is null)
+            {
+                logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
+                return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
+            }
 
-             jobProfile.RelatedCareers?.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
-             jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
+            jobProfile.RelatedCareers?.ForEach(r => r.Url = request.GetAbsoluteUrlForRelativePath(r.Url.TrimStart('/')));
+            jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
-             return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
-         }
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
+        }*/
+/*
+        [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
+        [FunctionName("job-profiles-search")]
+        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> GetJobProfileSearchResults(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}")] HttpRequest request,
+            [Inject] ISearchService searchService,
+            string searchTerm)
+        {
+            request.LogRequestHeaders(logService);
 
-         [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
-         [FunctionName("job-profiles-search")]
-         [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
-         public async Task<IActionResult> GetJobProfileSearchResults(
-             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}")] HttpRequest request,
-             [Inject] ISearchService searchService,
-             string searchTerm)
-         {
-             request.LogRequestHeaders(logService);
+            int page = int.TryParse(request.Query[nameof(page)].ToString(), out var outPage) ? outPage : 1;
+            int pageSize = int.TryParse(request.Query[nameof(pageSize)].ToString(), out var outPageSize) ? outPageSize : 10;
 
-             int page = int.TryParse(request.Query[nameof(page)].ToString(), out var outPage) ? outPage : 1;
-             int pageSize = int.TryParse(request.Query[nameof(pageSize)].ToString(), out var outPageSize) ? outPageSize : 10;
+            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize}", SeverityLevel.Warning);
 
-             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize}", SeverityLevel.Warning);
+            var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
+            if (apiModel?.Results is null || !apiModel.Results.Any())
+            {
+                logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
+                return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
+            }
 
-             var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
-             if (apiModel?.Results is null || !apiModel.Results.Any())
-             {
-                 logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
-                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
-             }
+            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
 
-             logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
+        }*/
 
-             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
-         }
+        [Display(Name = "Ping job profile API", Description = "Pings job profile API")]
+        [Function("job-profiles-ping")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile Ping.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/ping")] HttpRequest request)
+        {
+            request.LogRequestHeaders(logService);
+            logService.LogMessage($"{nameof(Ping)} has been called", SeverityLevel.Information);
+            return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
+        }
 
-         [Display(Name = "Ping job profile API", Description = "Pings job profile API")]
-         [FunctionName("job-profiles-ping")]
-         [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile Ping.", ShowSchema = true)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
-         public IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/ping")] HttpRequest request)
-         {
-             request.LogRequestHeaders(logService);
-             logService.LogMessage($"{nameof(Ping)} has been called", SeverityLevel.Information);
-             return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
-         }
+       /* [Display(Name = "Job profile API Health Check", Description = "Job profile API Health Check")]
+        [FunctionName("job-profiles-healthcheck")]
+        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile API Health Check.", ShowSchema = true)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.ServiceUnavailable, Description = "Job profile API Health failed", ShowSchema = false)]
+        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        public async Task<IActionResult> HealthCheck([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/healthcheck")] HttpRequest request, [Inject] IProfileDataService dataService)
+        {
+            request.LogRequestHeaders(logService);
+            logService.LogMessage($"{nameof(HealthCheck)} has been called", SeverityLevel.Information);
+            try
+            {
+                var isHealthy = !(dataService is null) && await dataService.PingAsync().ConfigureAwait(false);
+                if (isHealthy)
+                {
+                    logService.LogMessage($"{nameof(HealthCheck)} responded with: {resourceName} - {SuccessMessage}", SeverityLevel.Information);
+                    return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
+                }
 
-         [Display(Name = "Job profile API Health Check", Description = "Job profile API Health Check")]
-         [FunctionName("job-profiles-healthcheck")]
-         [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile API Health Check.", ShowSchema = true)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-         [Response(HttpStatusCode = (int)HttpStatusCode.ServiceUnavailable, Description = "Job profile API Health failed", ShowSchema = false)]
-         [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
-         public async Task<IActionResult> HealthCheck([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/healthcheck")] HttpRequest request, [Inject] IProfileDataService dataService)
-         {
-             request.LogRequestHeaders(logService);
-             logService.LogMessage($"{nameof(HealthCheck)} has been called", SeverityLevel.Information);
-             try
-             {
-                 var isHealthy = !(dataService is null) && await dataService.PingAsync().ConfigureAwait(false);
-                 if (isHealthy)
-                 {
-                     logService.LogMessage($"{nameof(HealthCheck)} responded with: {resourceName} - {SuccessMessage}", SeverityLevel.Information);
-                     return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
-                 }
+                logService.LogMessage($"{nameof(HealthCheck)}: Ping to {resourceName} has failed", SeverityLevel.Error);
+            }
+            catch (HttpRequestException ex)
+            {
+                logService.LogMessage($"{nameof(HealthCheck)}: {resourceName} exception: {ex.Message}", SeverityLevel.Error);
+            }
 
-                 logService.LogMessage($"{nameof(HealthCheck)}: Ping to {resourceName} has failed", SeverityLevel.Error);
-             }
-             catch (HttpRequestException ex)
-             {
-                 logService.LogMessage($"{nameof(HealthCheck)}: {resourceName} exception: {ex.Message}", SeverityLevel.Error);
-             }
-
-             return new StatusCodeResult((int)HttpStatusCode.ServiceUnavailable);
-         }*/
+            return new StatusCodeResult((int)HttpStatusCode.ServiceUnavailable);
+        }*/
     }
 }
