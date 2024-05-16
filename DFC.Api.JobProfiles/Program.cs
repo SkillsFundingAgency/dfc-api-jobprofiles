@@ -36,6 +36,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using StackExchange.Redis;
 
 const string CosmosDbConfigAppSettings = "Configuration:CosmosDbConnections:JobProfileSegment";
 const string AzureSearchConfigAppSettings = "JobProfileSearchIndexConfig";
@@ -52,6 +53,8 @@ var cosmosDbConnection = configuration.GetSection(CosmosDbConfigAppSettings).Get
 var searchIndexSettings = configuration.GetSection(AzureSearchConfigAppSettings).Get<SearchIndexSettings>() ?? throw new ArgumentException("SearchIndexSettings are invalid.");
 var cosmosClientOptions = new CosmosClientOptions { MaxRetryAttemptsOnRateLimitedRequests = 20, MaxRetryWaitTimeOnRateLimitedRequests = TimeSpan.FromSeconds(60) };
 var searchServiceName = searchIndexSettings.SearchServiceName;
+var redisCacheConnectionString = ConfigurationOptions.Parse(configuration.GetSection(RedisCacheConnectionStringAppSettings).Get<string>() ??
+               throw new ArgumentNullException($"{nameof(RedisCacheConnectionStringAppSettings)} is missing or has an invalid value."));
 
 UriBuilder uriBuilder = new()
 {
@@ -133,6 +136,17 @@ var host = new HostBuilder()
 
         services.AddScoped<ISharedContentRedisInterface, SharedContentRedis>();
         services.AddSingleton<IFunctionContextAccessor, FunctionContextAccessor>();
+
+
+        services.AddSingleton<IConnectionMultiplexer>(option =>
+            ConnectionMultiplexer.Connect(new ConfigurationOptions
+            {
+                EndPoints = { redisCacheConnectionString.EndPoints[0] },
+                AbortOnConnectFail = false,
+                Ssl = true,
+                Password = redisCacheConnectionString.Password,
+            }));
+        services.AddHealthChecks().AddCheck<HealthCheck>("GraphQlRedisConnectionCheck");
     })
     .Build();
 
