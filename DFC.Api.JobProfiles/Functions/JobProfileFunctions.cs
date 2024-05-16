@@ -2,6 +2,7 @@ using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.Health;
+using DFC.Api.JobProfiles.Data.ApiModels.OpenAPI;
 using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
@@ -16,6 +17,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -36,6 +38,7 @@ namespace DFC.Api.JobProfiles.Functions
     {
         private const string SuccessMessage = "Document store is available";
         private readonly ILogService logService;
+        private static int test = 200;
         private readonly IResponseWithCorrelation responseWithCorrelation;
         private readonly IMapper mapper;
         private readonly ISharedContentRedisInterface sharedContentRedisInterface;
@@ -58,14 +61,13 @@ namespace DFC.Api.JobProfiles.Functions
             this.searchService = searchService;
         }
 
-        [Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
+        [OpenApiOperation("Summary-spec", "Summary",Summary = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
         [Function("summary")]
-        [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "List of all published job profiles summary data.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No published job profiles available at this time.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        [OpenApiResponseWithBody(HttpStatusCode.OK, "application/json", typeof(SummaryApiModel), Description = "List of all published job profiles summary data.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NoContent, Description = "No published job profiles available at this time.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
         public async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request)
         {
@@ -115,14 +117,14 @@ namespace DFC.Api.JobProfiles.Functions
               return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
           }*/
 
-        [Display(Name = "Get job profile search results", Description = "Gets search results from job profiles")]
+        [OpenApiOperation("JPsearch-spec", "Job-Profiles-Search", Summary = "Get job profile search results", Description = "Gets search results from job profiles")]
         [Function("job-profiles-search")]
-        [ProducesResponseType(typeof(SearchApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile search results.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        [OpenApiParameter("searchTerm")]
+        [OpenApiResponseWithBody(HttpStatusCode.OK, "application/json", typeof(SearchApiModel), Description = "Job profile search results.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NoContent, Description = "No Job profiles meet search criteria")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
         public async Task<IActionResult> GetJobProfileSearchResults(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "search/{searchTerm}")] HttpRequest request,
             string searchTerm)
@@ -146,12 +148,11 @@ namespace DFC.Api.JobProfiles.Functions
             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
         }
 
-        [Display(Name = "Ping job profile API", Description = "Pings job profile API")]
+        [OpenApiOperation("job-profiles-ping-spec", "Job-Profiles-Ping", Summary = "Ping job profile API", Description = "Pings job profile API")]
         [Function("job-profiles-ping")]
-        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile Ping.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        [OpenApiResponseWithBody(HttpStatusCode.OK, "application/json", typeof(PingExample), Description = "Job Profile Ping.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
         public IActionResult Ping([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/ping")] HttpRequest request)
         {
             request.LogRequestHeaders(logService);
@@ -159,13 +160,12 @@ namespace DFC.Api.JobProfiles.Functions
             return responseWithCorrelation.ResponseObjectWithCorrelationId(HttpStatusCode.OK);
         }
 
-        [Display(Name = "Job profile API Health Check", Description = "Job profile API Health Check")]
+        [OpenApiOperation("job-profiles-healthcheck-spec", "Job-Profiles-HealthCheck", Summary = "Job profile API Health Check", Description = "Job profile API Health Check")]
         [Function("job-profiles-healthcheck")]
-        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile API Health Check.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.ServiceUnavailable, Description = "Job profile API Health failed", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        [OpenApiResponseWithBody(HttpStatusCode.OK, "application/json", typeof(PingExample), Description = "Job profile API Health Check.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.ServiceUnavailable, Description = "Job profile API Health failed.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
         public async Task<IActionResult> HealthCheck([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health/healthcheck")] HttpRequest request)
         {
             request.LogRequestHeaders(logService);
