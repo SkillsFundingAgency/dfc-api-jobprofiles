@@ -85,11 +85,15 @@ var host = new HostBuilder()
 
             options.Serializer = new NewtonsoftJsonObjectSerializer(settings);
         });
-        worker.UseMiddleware<FunctionContextAccessorMiddleware>();
-        
+        worker.UseMiddleware<FunctionContextAccessorMiddleware>();        
     })
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
+        services.AddControllers()
+        .AddNewtonsoftJson(options =>
+        {
+            options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+        });
         services.ConfigureFunctionsApplicationInsights();
         services.AddAutoMapper(typeof(Program).Assembly);
         services.AddSingleton(cosmosDbConnection);

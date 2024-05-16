@@ -49,15 +49,15 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Url, o => o.MapFrom(s => s.PageLocation.UrlName))
                 .ForMember(d => d.LastUpdated, o => o.MapFrom(s => DateTime.Parse(s.PublishedUtc)));
 
-           /* CreateMap<JArray, SummaryApiModel>()
+            CreateMap<JArray, SummaryApiModel>()
                 .ForMember(d => d.Title, o => o.MapFrom(s => s["Title"]))
                 .ForMember(d => d.Url, o => o.MapFrom(s => s["Url"]))
-                .ForMember(d => d.LastUpdated, o => o.MapFrom(s => s["LastUpdated"]));*/
+                .ForMember(d => d.LastUpdated, o => o.MapFrom(s => s["LastUpdated"]));
 
-          /*  CreateMap<JobProfileOverview, SummaryDataModel>()
-                .ForMember(d => d.BreadcrumbTitle, o => o.MapFrom(s => s.DisplayText))
-                .ForMember(d => d.CanonicalName, o => o.MapFrom(s => s.PageLocation.UrlName))
-                .ForMember(d => d.LastReviewed, d => d.Ignore());*/
+            /*  CreateMap<JobProfileOverview, SummaryDataModel>()
+                  .ForMember(d => d.BreadcrumbTitle, o => o.MapFrom(s => s.DisplayText))
+                  .ForMember(d => d.CanonicalName, o => o.MapFrom(s => s.PageLocation.UrlName))
+                  .ForMember(d => d.LastReviewed, d => d.Ignore());*/
         }
     }
 }

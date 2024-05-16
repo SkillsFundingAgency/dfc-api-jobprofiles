@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -23,6 +24,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Runtime.CompilerServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Functions
@@ -78,13 +80,13 @@ namespace DFC.Api.JobProfiles.Functions
                 }
 
                 //var mappedSummary = mapper.Map<List<SummaryApiModel>>(listData);
-
+              
                 var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
-                var orderedModel = JsonConvert.SerializeObject(viewModels, typeof(object), settings);
-                var test = JsonConvert.DeserializeObject(orderedModel, settings);
+                var orderedModel = JsonConvert.SerializeObject(viewModels);
+                var test = JsonConvert.DeserializeObject(orderedModel);
                 var r = test.GetType();
 
-                return new OkObjectResult(orderedModel);
+                return new OkObjectResult(test);
                 //return responseWithCorrelation.ResponseObjectWithCorrelationId(viewModels.OrderBy(jp => jp.Title));
             }
             catch (Exception ex)
@@ -95,6 +97,7 @@ namespace DFC.Api.JobProfiles.Functions
            
         }
 
+       
         /* [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
          [Function("job-profiles-detail")]
          [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
