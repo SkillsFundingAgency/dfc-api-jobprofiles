@@ -13,15 +13,11 @@ namespace DFC.Api.JobProfiles.Extensions
             request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var apimUrl).ToString();
 
             var trimmedRelativePath = relativePath?.TrimStart('/');
-            trimmedRelativePath = "";
-            apimUrl = "test";
 
-            if (apimUrl == "test")
+            if (string.IsNullOrWhiteSpace(apimUrl))
             {
-                var test = $"{request.Scheme}://{request.Host}/{trimmedRelativePath}";
                 return $"{request.Scheme}://{request.Host}/{trimmedRelativePath}";
             }
-            
 
             return $"{apimUrl.ToString().TrimEnd('/')}/{trimmedRelativePath}";
         }

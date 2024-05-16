@@ -52,7 +52,7 @@ namespace DFC.Api.JobProfiles.Functions
         }
 
         //[Display(Name = "Get job profiles summary", Description = "Gets a list of all published job profiles summary data, you can use this to determine updates to job profiles. This call does not support paging at this time.")]
-        [Function("job-profiles")]
+        [Function("summary")]
         //[Function("job-profiles")]
         [ProducesResponseType(typeof(SummaryApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "List of all published job profiles summary data.", ShowSchema = true)]
@@ -63,41 +63,25 @@ namespace DFC.Api.JobProfiles.Functions
         public async Task<IActionResult> GetSummaryList(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "summary")] HttpRequest request)
         {
-            //var test = functionContextAccessor.FunctionContext.GetHttpContext().Request;
-            //var context = functionContextAccessor.FunctionContext.GetHttpContext().Request.Headers;
-            
-
             request.LogRequestHeaders(logService);
-            /*var data = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(ApplicationKeys.JobProfilesOverview + "/hnandra", "PUBLISHED");
-            var listData = data.JobProfileOverview.ToList();*/
+
             try
             {
-                var stringTest = request.GetAbsoluteUrlForRelativePath();
-                var viewModels = await summaryService.GetSummaryList(stringTest);
+                var viewModels = await summaryService.GetSummaryList(request.GetAbsoluteUrlForRelativePath());
                 if (viewModels == null)
                 {
                     return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
                 }
 
-                //var mappedSummary = mapper.Map<List<SummaryApiModel>>(listData);
-              
-                var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
-                var orderedModel = JsonConvert.SerializeObject(viewModels);
-                var test = JsonConvert.DeserializeObject(orderedModel);
-                var r = test.GetType();
-
-                return new OkObjectResult(test);
-                //return responseWithCorrelation.ResponseObjectWithCorrelationId(viewModels.OrderBy(jp => jp.Title));
+                return responseWithCorrelation.ResponseObjectWithCorrelationId(viewModels.OrderBy(jp => jp.Title));
             }
             catch (Exception ex)
             {
                 logService.LogMessage(ex.Message, SeverityLevel.Information);
                 throw;
             }
-           
         }
 
-       
         /* [Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
          [Function("job-profiles-detail")]
          [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]

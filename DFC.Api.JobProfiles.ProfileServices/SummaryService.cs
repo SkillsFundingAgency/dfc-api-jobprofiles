@@ -26,43 +26,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<IList<SummaryApiModel>> GetSummaryList(string requestUrl)
         {
-            JobProfilesOverviewResponse responseTest = new JobProfilesOverviewResponse()
-            {
-                JobProfileOverview = new()
-                {
-                    new()
-                    {
-                        DisplayText = "Test1",
-                        PageLocation = new()
-                        {
-                            UrlName = "TestUrl1",
-                        },
-                    },
-                    new()
-                    {
-                        DisplayText = "Test2",
-                        PageLocation = new()
-                        {
-                            UrlName = "TestUrl2",
-                        },
-                    },
-                },
-            };
             var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileApiSummaryResponse>(ApplicationKeys.JobProfileApiSummaryAll, "PUBLISHED");
             var listResponse = response.JobProfileSummary.ToList();
-            var viewModels1 = mapper.Map<List<SummaryApiModel>>(listResponse);
-            //var data = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(ApplicationKeys.JobProfilesOverview + "/hnandra", "PUBLISHED");
-            //var listData = responseTest.JobProfileOverview.ToList();
-
-           /* var dataModels = await repository.GetData(
-                    s => new SummaryDataModel
-                    {
-                        CanonicalName = s.CanonicalName,
-                        BreadcrumbTitle = s.BreadcrumbTitle,
-                        LastReviewed = s.LastReviewed,
-                    },
-                    s => s.IncludeInSitemap.HasValue && s.IncludeInSitemap.Value)
-                .ConfigureAwait(false);*/
+            var viewModels = mapper.Map<List<SummaryApiModel>>(listResponse);
 
             if (listResponse is null)
             {
@@ -70,9 +36,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
             }
 
             //var viewModels = mapper.Map<List<SummaryApiModel>>(listData);
-            viewModels1.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
+            viewModels.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
 
-            return viewModels1;
+            return viewModels;
         }
     }
 }

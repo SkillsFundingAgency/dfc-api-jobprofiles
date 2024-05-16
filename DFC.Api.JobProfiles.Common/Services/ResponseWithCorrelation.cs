@@ -36,15 +36,12 @@ namespace DFC.Api.JobProfiles.Common.Services
 
             AddCorrelationId();
 
-            var test = JsonConvert.DeserializeObject(orderedModel);
-
-            return new OkObjectResult(test);
+            return new OkObjectResult(JsonConvert.DeserializeObject(orderedModel));
         }
 
         private void AddCorrelationId()
         {
             functionContextAccessor.FunctionContext.GetHttpContext().Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.CorrelationId);
-            //httpContextAccessor.HttpContext.Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.CorrelationId);
         }
     }
 }
