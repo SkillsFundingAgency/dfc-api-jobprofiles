@@ -118,9 +118,9 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Skills, d => d.Ignore())
                 .ForMember(d => d.RestrictionsAndRequirements, d => d.Ignore());
 
-            /* CreateMap<JobSkills, Skills>()
-                .ForMember(d => d.OnetSkill, s => s.MapFrom(a => a.Skills))
-                .ForMember(d => d.ContextualisedSkill, s => s.MapFrom(a => a.JobProfileContextualisedSkills));*/
+            CreateMap<JobProfileApiSkills, Skills>()
+               .ForMember(d => d.OnetSkill, s => s.MapFrom(a => a.Skills))
+               .ForMember(d => d.ContextualisedSkill, s => s.MapFrom(a => a.JobProfileContextualisedSkills));
 
             CreateMap<RelatedSkill, ContextualisedSkill>()
                .ForMember(d => d.ONetRank, s => s.MapFrom(a => a.ONetRank))
@@ -134,6 +134,12 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Title, s => s.MapFrom(a => a.DisplayText))
                 .ForMember(d => d.Description, s => s.MapFrom(a => a.Description))
                 .ForMember(d => d.Id, s => s.MapFrom(a => a.GraphSync.NodeId.Substring(a.GraphSync.NodeId.LastIndexOf('/') + 1)));
+
+            CreateMap<JobProfileApiSkills, RelatedSkillsApiModel>()
+                .ForMember(d => d.Description, s => s.MapFrom(a => a.JobProfileContextualisedSkills.RelatedSkillDesc))
+                .ForMember(d => d.ONetElementId, s => s.MapFrom(a => a.Skills.ONetElementId))
+                .ForMember(d => d.ONetRank, s => s.MapFrom(a => a.JobProfileContextualisedSkills.ONetRank))
+                .ForMember(d => d.ONetAttributeType, s => s.MapFrom(a => a.JobProfileContextualisedSkills.ONetAttributeType));
         }
     }
 }

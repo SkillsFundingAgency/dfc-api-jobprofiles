@@ -92,7 +92,7 @@ namespace DFC.Api.JobProfiles.Functions
             }
         }
 
-       /* //[Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
+        //[Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
         [Function("job-profiles-detail")]
         [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
         [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
@@ -117,7 +117,7 @@ namespace DFC.Api.JobProfiles.Functions
             jobProfile.Url = request.GetAbsoluteUrlForRelativePath(jobProfile.Url?.TrimStart('/'));
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(jobProfile);
-        }*/
+        }
 
         [OpenApiOperation("JPsearch-spec", "Job-Profiles-Search", Summary = "Get job profile search results", Description = "Gets search results from job profiles")]
         [Function("job-profiles-search")]

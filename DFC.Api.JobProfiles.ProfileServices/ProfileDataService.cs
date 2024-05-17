@@ -12,14 +12,16 @@ using DFC.Common.SharedContent.Pkg.Netcore.Constant;
 using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.Api.JobProfiles;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using JobProfSkills = DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes.Skills;
+using JobProfileApiSkills = DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes.Skills;
 using Skills = DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles.Skills;
+using DFC.Api.JobProfiles.AutoMapperProfile;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
@@ -271,6 +273,11 @@ namespace DFC.Api.JobProfiles.ProfileServices
         private async Task<WhatItTakesApiModel> GetSkillSegmentAsync(string canonicalName, string status)
         {
             WhatItTakesApiModel skills = new WhatItTakesApiModel();
+            RestrictionsAndRequirementsApiModel restrictionsAndRequirements = new RestrictionsAndRequirementsApiModel()
+            {
+                OtherRequirements = new List<string>(),
+                RelatedRestrictions = new List<string>(),
+            };
 
             try
             {
@@ -282,7 +289,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     SkillsResponse jobProfileSkillsResponse = new SkillsResponse();
                     List<Skills> jobProfileSkillsList = new List<Skills>();
 
-                    var filteredSkills = response.JobProfileSkills.SelectMany(d => d.Relatedskills.ContentItems).ToList();
+                    List<RelatedSkill> filteredSkills = response.JobProfileSkills.SelectMany(d => d.Relatedskills.ContentItems).ToList();
 
                     foreach (var skill in skillsResponse.Skill)
                     {
@@ -293,24 +300,46 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     }
 
                     jobProfileSkillsResponse.Skill = jobProfileSkillsList;
+                    
+                    skills = mapper.Map<WhatItTakesApiModel>(response);
 
-                    var mappedResponse = mapper.Map<WhatItTakesApiModel>(response);
-                    List<JobProfSkills> sortedSkills = new List<JobProfSkills>();
+                    List<JobProfileApiSkills> sortedSkills = new List<JobProfileApiSkills>();
+                    List<RelatedSkillsApiModel> relatedSkillsApiModels = new List<RelatedSkillsApiModel>();
                     var mappedSkillsResponse = mapper.Map<List<OnetSkill>>(jobProfileSkillsResponse.Skill);
                     var mappedContextualSkills = mapper.Map<List<ContextualisedSkill>>(filteredSkills);
 
                     foreach (var skill in filteredSkills)
                     {
-                        sortedSkills.Add(new JobProfSkills
+                        sortedSkills.Add(new JobProfileApiSkills
                         {
                             ContextualisedSkill = mappedContextualSkills.Single(s => s.Description == skill.RelatedSkillDesc),
                             OnetSkill = mappedSkillsResponse.Single(s => s.Title == skill.RelatedSkillDesc),
                         });
                     }
-                    var mappedSkills2 = mapper.Map<List<RelatedSkillsApiModel>>(sortedSkills);
 
-                    mappedResponse.Skills = mappedSkills2;
+                    foreach (var ski in sortedSkills)
+                    {
+                        relatedSkillsApiModels.Add(new RelatedSkillsApiModel
+                        {
+                            Description = ski.OnetSkill.Description,
+                            ONetAttributeType = ski.ContextualisedSkill.ONetAttributeType,
+                            ONetElementId = ski.OnetSkill.ONetElementId,
+                            ONetRank = ski.ContextualisedSkill.ONetRank.ToString(),
+                        });
+                    }
 
+                    restrictionsAndRequirements.OtherRequirements.Add(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html);
+
+                    var restrictions = response.JobProfileSkills.SelectMany(d => d.Relatedrestrictions.ContentItems).ToList();
+                    foreach (var res in restrictions)
+                    {
+                        restrictionsAndRequirements.RelatedRestrictions.Add(res.Info.Html);
+                    }
+
+                    skills.Skills = relatedSkillsApiModels;
+                    skills.RestrictionsAndRequirements = restrictionsAndRequirements;
+
+                    return skills;
                 }
             }
             catch (Exception ex)
