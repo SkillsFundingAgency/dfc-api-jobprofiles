@@ -1,18 +1,26 @@
+using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Functions;
+using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
+using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
+using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -23,6 +31,7 @@ namespace DFC.Api.JobProfiles.UnitTests
         private readonly HttpRequest httpRequest;
         private readonly ISearchService searchService;
         private readonly JobProfileFunctions functionApp;
+        private readonly IFunctionContextAccessor functionContextAccessor;
 
         public JobProfileFunctionsGetJobProfileSearchResults()
         {
@@ -32,14 +41,19 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest.HttpContext.Request.Scheme = "http";
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
 
-            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
-            var correlationProvider = new RequestHeaderCorrelationIdProvider(httpContextAccessor);
+            //var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
+            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
+            var summaryService = A.Fake<ISummaryService>();
+            var healthCheckService = A.Fake<HealthCheckService>();
+            var fakeSearchService = A.Fake<ISearchService>();
+            var mapper = A.Fake<IMapper>();
+            var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
             using var telemetryConfig = new TelemetryConfiguration();
             var telemetryClient = new TelemetryClient(telemetryConfig);
             var logger = new LogService(correlationProvider, telemetryClient);
-            var correlationResponse = new ResponseWithCorrelation(correlationProvider, httpContextAccessor);
+            var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse);
+            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService);
             searchService = A.Fake<ISearchService>();
         }
 
@@ -47,17 +61,27 @@ namespace DFC.Api.JobProfiles.UnitTests
         public async Task GetJobProfileSearchResultsTestsReturnsOKAndViewModelWhenReturnedFromProfileDataService()
         {
             // Arrange
+
             const string searchTerm = "nurse";
+            /* FunctionContextAccessor func = new FunctionContextAccessor();
+             var con = A.Fake<HttpContext>();
+             HttpContext.Current.Session
+             var context = A.Fake<FunctionContext>();
+             func.FunctionContext = context;
+             var t = func.FunctionContext.GetHttpContext();*/
+            //var t = func.FunctionContext.GetHttpContext();
             const int page = 2;
             const int pageSize = 3;
+
             var expectedResult = GetJobProfileSearchApiModel();
             A.CallTo(() => searchService.GetResultsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns(expectedResult);
+
 
             expectedResult.CurrentPage = page;
             expectedResult.PageSize = pageSize;
 
             // Act
-            var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchService, searchTerm).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchTerm).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => searchService.GetResultsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).MustHaveHappenedOnceExactly();
@@ -76,7 +100,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => searchService.GetResultsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).Returns((SearchApiModel)null);
 
             // Act
-            var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchService, searchTerm).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileSearchResults(httpRequest, searchTerm).ConfigureAwait(false);
 
             // Assert
             A.CallTo(() => searchService.GetResultsList(A<string>.Ignored, A<string>.Ignored, A<int>.Ignored, A<int>.Ignored)).MustHaveHappenedOnceExactly();
@@ -84,6 +108,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             var noContentResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
         }
+
 
         private SearchApiModel GetJobProfileSearchApiModel()
         {

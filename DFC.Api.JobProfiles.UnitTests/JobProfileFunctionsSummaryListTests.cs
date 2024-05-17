@@ -1,13 +1,18 @@
+using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
+using DFC.Api.JobProfiles.SearchServices.Interfaces;
+using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
+using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -27,14 +32,19 @@ namespace DFC.Api.JobProfiles.UnitTests
         {
             httpRequest = A.Fake<HttpRequest>();
             fakeSummaryService = A.Fake<ISummaryService>();
-            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
-            var correlationProvider = new RequestHeaderCorrelationIdProvider(httpContextAccessor);
+            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
+            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
+            var summaryService = A.Fake<ISummaryService>();
+            var healthCheckService = A.Fake<HealthCheckService>();
+            var fakeSearchService = A.Fake<ISearchService>();
+            var mapper = A.Fake<IMapper>();
+            var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
             using var telemetryConfig = new TelemetryConfiguration();
             var telemetryClient = new TelemetryClient(telemetryConfig);
             var logger = new LogService(correlationProvider, telemetryClient);
-            var correlationResponse = new ResponseWithCorrelation(correlationProvider, httpContextAccessor);
+            var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse);
+            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService);
         }
 
         [Fact]
@@ -45,7 +55,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns(expectedModels);
 
             // Act
-            var result = await functionApp.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
+            var result = await functionApp.GetSummaryList(httpRequest).ConfigureAwait(false);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -61,7 +71,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             A.CallTo(() => fakeSummaryService.GetSummaryList(A<string>.Ignored)).Returns((IList<SummaryApiModel>)null);
 
             // Act
-            var result = await functionApp.GetSummaryList(httpRequest, fakeSummaryService).ConfigureAwait(false);
+            var result = await functionApp.GetSummaryList(httpRequest).ConfigureAwait(false);
 
             // Assert
             var noContentResult = Assert.IsType<StatusCodeResult>(result);

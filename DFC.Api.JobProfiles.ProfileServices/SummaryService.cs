@@ -13,13 +13,11 @@ namespace DFC.Api.JobProfiles.ProfileServices
 {
     public class SummaryService : ISummaryService
     {
-        private readonly ICosmosRepository<SummaryDataModel> repository;
         private readonly IMapper mapper;
         private readonly ISharedContentRedisInterface sharedContentRedisInterface;
 
-        public SummaryService(ICosmosRepository<SummaryDataModel> repository, IMapper mapper, ISharedContentRedisInterface sharedContentRedisInterface)
+        public SummaryService(IMapper mapper, ISharedContentRedisInterface sharedContentRedisInterface)
         {
-            this.repository = repository;
             this.mapper = mapper;
             this.sharedContentRedisInterface = sharedContentRedisInterface;
         }
@@ -27,18 +25,19 @@ namespace DFC.Api.JobProfiles.ProfileServices
         public async Task<IList<SummaryApiModel>> GetSummaryList(string requestUrl)
         {
             var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileApiSummaryResponse>(ApplicationKeys.JobProfileApiSummaryAll, "PUBLISHED");
-            var listResponse = response.JobProfileSummary.ToList();
-            var viewModels = mapper.Map<List<SummaryApiModel>>(listResponse);
+            if (response.JobProfileSummary != null)
+            {
+                var listResponse = response.JobProfileSummary.ToList();
+                var viewModels = mapper.Map<List<SummaryApiModel>>(listResponse);
 
-            if (listResponse is null)
+                viewModels.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
+
+                return viewModels;
+            }
+            else
             {
                 return null;
             }
-
-            //var viewModels = mapper.Map<List<SummaryApiModel>>(listData);
-            viewModels.ForEach(v => v.Url = $"{requestUrl}{v.Url.TrimStart('/')}");
-
-            return viewModels;
         }
     }
 }

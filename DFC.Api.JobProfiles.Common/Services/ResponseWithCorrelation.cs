@@ -12,14 +12,12 @@ namespace DFC.Api.JobProfiles.Common.Services
     public class ResponseWithCorrelation : IResponseWithCorrelation
     {
         private readonly ICorrelationIdProvider correlationIdProvider;
-        private readonly IHttpContextAccessor httpContextAccessor;
         private readonly IFunctionContextAccessor functionContextAccessor;
 
 
-        public ResponseWithCorrelation(ICorrelationIdProvider correlationIdProvider, IHttpContextAccessor httpContextAccessor, IFunctionContextAccessor functionContextAccessor)
+        public ResponseWithCorrelation(ICorrelationIdProvider correlationIdProvider, IFunctionContextAccessor functionContextAccessor)
         {
             this.correlationIdProvider = correlationIdProvider;
-            this.httpContextAccessor = httpContextAccessor;
             this.functionContextAccessor = functionContextAccessor;
         }
 
