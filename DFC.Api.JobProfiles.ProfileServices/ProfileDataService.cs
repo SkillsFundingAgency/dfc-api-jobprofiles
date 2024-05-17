@@ -59,7 +59,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
             var careersPath = await GetCareerPathSegmentAsync(profileName, Published);
             var skills = await GetSkillSegmentAsync(profileName, Published);
             //var video = await GetSocialProofVideoSegment(profileName, Published);
-            //var tasks = await GetTasksSegmentAsync(profileName, Published);
+            var tasks = await GetTasksSegmentAsync(profileName, Published);
             //var currentOpportunity = await GetCurrentOpportunities(profileName);
 
 
@@ -352,26 +352,37 @@ namespace DFC.Api.JobProfiles.ProfileServices
         }
 
 
-        /*private async Task<SegmentModel> GetTasksSegmentAsync(string canonicalName, string filter)
+        private async Task<WhatYouWillDoApiModel> GetTasksSegmentAsync(string canonicalName, string filter)
         {
-            var tasks = new SegmentModel();
+            var tasks = new WhatYouWillDoApiModel()
+            {
+                WYDDayToDayTasks = new List<string>(),
+            };
 
             try
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter);
 
-                var mappedResponse = mapper.Map<TasksSegmentDataModel>(response);
+                if (response.JobProfileWhatYoullDo != null)
+                {
+                    var mappedResponse = mapper.Map<WorkingEnvironmentApiModel>(response);
+                    tasks.WorkingEnvironment = mappedResponse;
+                    tasks.WYDDayToDayTasks.Add(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html);
+
+                    return tasks;
+                }
 
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
+                throw;
             }
 
             return tasks;
         }
 
-        private async Task<SegmentModel> GetCurrentOpportunities(string canonicalName)
+        /*private async Task<SegmentModel> GetCurrentOpportunities(string canonicalName)
         {
             var currentOpportunities = new SegmentModel() { Segment = JobProfileSegment.CurrentOpportunities };
             var currentOpportunitiesSegmentModel = new CurrentOpportunitiesSegmentModel();

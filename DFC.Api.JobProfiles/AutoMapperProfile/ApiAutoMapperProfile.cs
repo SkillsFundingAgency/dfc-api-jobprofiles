@@ -1,10 +1,12 @@
 ﻿using AutoMapper;
+using DFC.Api.JobProfiles.AutoMapperProfile.Resolvers;
 using DFC.Api.JobProfiles.AutoMapperProfile.ValueConverters;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
+using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems;
@@ -140,6 +142,14 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.ONetElementId, s => s.MapFrom(a => a.Skills.ONetElementId))
                 .ForMember(d => d.ONetRank, s => s.MapFrom(a => a.JobProfileContextualisedSkills.ONetRank))
                 .ForMember(d => d.ONetAttributeType, s => s.MapFrom(a => a.JobProfileContextualisedSkills.ONetAttributeType));
+
+            CreateMap<JobProfileWhatYoullDoResponse, WorkingEnvironmentApiModel>()
+                .ForMember(d => d.Location, s => s.MapFrom<LocationResolver>())
+                .ForMember(d => d.Environment, s => s.MapFrom<EnvironmentResolver>())
+                .ForMember(d => d.Uniform, s => s.MapFrom<UniformResolver>());
+                
+
+
         }
     }
 }
