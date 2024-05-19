@@ -25,6 +25,8 @@ using Skills = DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfil
 using DFC.Api.JobProfiles.AutoMapperProfile;
 using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow;
+using Newtonsoft.Json.Serialization;
+using HtmlAgilityPack;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
@@ -60,83 +62,11 @@ namespace DFC.Api.JobProfiles.ProfileServices
             var skills = await GetSkillSegmentAsync(profileName, Published);
             var tasks = await GetTasksSegmentAsync(profileName, Published);
 
-            //segment.Segments.Add(related);
-
-            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(segment.)
-
             overview.HowToBecome = howToBecome;
             overview.RelatedCareers = relatedCareers;
             overview.CareerPathAndProgression = careersPath;
             overview.WhatYouWillDo = tasks;
             overview.WhatItTakes = skills;
-
-
-
-            /*var segmentDetailModels = await repository.GetData(
-                    s => new SegmentDataModel { Segments = s.Segments, CanonicalName = s.CanonicalName },
-                    model => model.CanonicalName == profileName.ToLowerInvariant())
-                 .ConfigureAwait(false);*/
-
-           /* if (segmentDetailModels is null || !segmentDetailModels.Any())
-            {
-                return null;
-            }
-
-            var overviewDataModel = segmentDetailModels.FirstOrDefault()?.Segments?.FirstOrDefault(s => s.Segment == JobProfileSegment.Overview);
-            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewDataModel?.Json ?? string.Empty) ?? new JobProfileApiModel();
-
-            var otherSegmentDataModels = segmentDetailModels.FirstOrDefault()?.Segments?.Where(s => s.Segment != JobProfileSegment.Overview).ToList();
-            if (otherSegmentDataModels == null || !otherSegmentDataModels.Any())
-            {
-                return result;
-            }
-
-            foreach (var segmentDetailModel in otherSegmentDataModels)
-            {
-                switch (segmentDetailModel.Segment)
-                {
-                    //case JobProfileSegment.HowToBecome:
-                    //    {
-                    //        var howToBecomeApiModel = JsonConvert.DeserializeObject<HowToBecomeApiModel>(howToBecome);
-                    //        result.HowToBecome = howToBecomeApiModel;
-                    //        break;
-                    //    }
-
-                    //case JobProfileSegment.CareerPathsAndProgression:
-                    //    {
-                    //        var careerPathAndProgressionApiModel = JsonConvert.DeserializeObject<CareerPathAndProgressionApiModel>(howToBecome);
-                    //        result.CareerPathAndProgression = careerPathAndProgressionApiModel;
-                    //        break;
-                    //    }
-
-                    //case JobProfileSegment.RelatedCareers:
-                    //    {
-                    //        var relatedCareerApiModels = JsonConvert.DeserializeObject<List<RelatedCareerApiModel>>(segmentDetailModel.Json);
-                    //        result.RelatedCareers = relatedCareerApiModels;
-                    //        break;
-                    //    }
-
-                    //case JobProfileSegment.WhatItTakes:
-                    //    {
-                    //        var whatItTakesApiModel = JsonConvert.DeserializeObject<WhatItTakesApiModel>(segmentDetailModel.Json);
-                    //        result.WhatItTakes = whatItTakesApiModel;
-                    //        break;
-                    //    }
-
-                    //case JobProfileSegment.WhatYouWillDo:
-                    //    {
-                    //        var whatYouWillDoApiModel = JsonConvert.DeserializeObject<WhatYouWillDoApiModel>(segmentDetailModel.Json);
-                    //        result.WhatYouWillDo = whatYouWillDoApiModel;
-                    //        break;
-                    //    }
-
-                    default:
-                        {
-                            log.LogWarning($"Unknown Segment Name ('{segmentDetailModel.Segment}') retrieved for Job Profile with name {profileName}");
-                            break;
-                        }
-                }
-            }*/
 
             return overview;
         }
@@ -154,6 +84,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(string.Concat(ApplicationKeys.JobProfileOverview, "/", canonicalName), filter);
                 overview = mapper.Map<JobProfileApiModel>(response);
+                var overviewObject = JsonConvert.SerializeObject(overview, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewObject ?? string.Empty) ?? new JobProfileApiModel();
+                return result;
             }
             catch (Exception exception)
             {
@@ -163,10 +96,8 @@ namespace DFC.Api.JobProfiles.ProfileServices
             return overview;
         }
 
-        //private async Task<SegmentModel> GetHowToBecomeSegmentAsync(string canonicalName, string filter)
         private async Task<HowToBecomeApiModel> GetHowToBecomeSegmentAsync(string canonicalName, string filter)
         {
-            //var howToBecome = new SegmentModel();
             var howToBecome = new HowToBecomeApiModel();
 
             try
@@ -174,48 +105,72 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 //Get the response from GraphQl
                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileHowToBecomeResponse>(ApplicationKeys.JobProfileHowToBecome + "/" + canonicalName, filter);
 
-                //howToBecome = mapper.Map<HowToBecomeApiModel>(response);
 
-                // Map the response to a HowToBecomeSegmentDataModel
-                //var mappedResponse = mapper.Map<HowToBecomeSegmentDataModel>(response);
 
                 // Map CommonRoutes for College
-                var collegeCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.College);
+               var collegeCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.College);
 
                 // Map CommonRoutes for University
-                var universityCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.University);
+               var universityCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.University);
 
                 // Map CommonRoutes for Apprenticeship
-                var apprenticeshipCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.Apprenticeship);
+               var apprenticeshipCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.Apprenticeship);
 
-                var mappedMoreInfo = mapper.Map<MoreInformationApiModel>(response);
+               var mappedMoreInfo = mapper.Map<MoreInformationApiModel>(response);
 
-                howToBecome.EntryRouteSummary = new List<string> { response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html };
+               howToBecome.EntryRouteSummary = new List<string> { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html) };
 
-                howToBecome.EntryRoutes = new EntryRoutesApiModel()
+               howToBecome.EntryRoutes = new EntryRoutesApiModel()
                 {
                     University = universityCommonRoutes,
                     Apprenticeship = apprenticeshipCommonRoutes,
                     College = collegeCommonRoutes,
-                    DirectApplication = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html },
-                    OtherRoutes = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html },
-                    Volunteering = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html },
-                    Work = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Work.Html },
+                    DirectApplication = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html) },
+                    OtherRoutes = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html) },
+                    Volunteering = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html) },
+                    Work = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().Work.Html) },
                 };
 
-               mappedMoreInfo.CareerTips = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().CareerTips.Html };
-               mappedMoreInfo.FurtherInformation = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html };
-               mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html };
+               mappedMoreInfo.CareerTips = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().CareerTips.Html) };
+               mappedMoreInfo.FurtherInformation = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html) };
+               mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html) };
 
-                howToBecome.MoreInformation = mappedMoreInfo;
+               howToBecome.MoreInformation = mappedMoreInfo;
+               var howToBecomeObject = JsonConvert.SerializeObject(howToBecome, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+               var result = JsonConvert.DeserializeObject<HowToBecomeApiModel>(howToBecomeObject ?? string.Empty) ?? new HowToBecomeApiModel();
 
-                return howToBecome;
+               return result;
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
                 throw;
             }
+        }
+
+        private static string HtmltoText(string html)
+        {
+            var doc = new HtmlDocument();
+            string result = string.Empty;
+            doc.LoadHtml(html);
+            List<string> strings = new List<string>();
+            HtmlNodeCollection textNodes = doc.DocumentNode.SelectNodes("//text()");
+
+            if (textNodes != null)
+            {
+                foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//text()"))
+                {
+                    strings.Add(node.InnerText);
+                    result = string.Join("", strings);
+                    Console.WriteLine("text=" + node.InnerText);
+                }
+                return result;
+            }
+            else
+            {
+                return html;
+            }
+
         }
 
         private async Task<List<RelatedCareerApiModel>> GetRelatedCareersSegmentAsync(string canonicalName, string status)
@@ -231,6 +186,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     var relatedCareersItems = response.JobProfileRelatedCareers.SelectMany(c => c.RelatedCareerProfiles.ContentItems).ToList();
                     var viewModel = mapper.Map<List<RelatedCareerApiModel>>(relatedCareersItems);
                     relatedCareers = viewModel;
+                    var relatedCareersObject = JsonConvert.SerializeObject(relatedCareers, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                    var result = JsonConvert.DeserializeObject<List<RelatedCareerApiModel>>(relatedCareersObject ?? string.Empty) ?? new List<RelatedCareerApiModel>();
+                    return result;
                 }
 
                 return relatedCareers;
@@ -244,7 +202,6 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         private async Task<CareerPathAndProgressionApiModel> GetCareerPathSegmentAsync(string canonicalName, string status)
         {
-            //var careersPath = await GetCareerPathSegmentAsync(canonicalName, status);
             CareerPathAndProgressionApiModel careerPath = new();
 
             try
@@ -254,6 +211,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 if (response.JobProileCareerPath != null)
                 {
                     var mappedResponse = mapper.Map<CareerPathAndProgressionApiModel>(response);
+                    var careerPathObject = JsonConvert.SerializeObject(mappedResponse, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                    var result = JsonConvert.DeserializeObject<CareerPathAndProgressionApiModel>(careerPathObject ?? string.Empty) ?? new CareerPathAndProgressionApiModel();
+                    return result;
                 }
 
                 return careerPath;
@@ -297,7 +257,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     }
 
                     jobProfileSkillsResponse.Skill = jobProfileSkillsList;
-                    
+
                     skills = mapper.Map<WhatItTakesApiModel>(response);
 
                     List<JobProfileApiSkills> sortedSkills = new List<JobProfileApiSkills>();
@@ -325,18 +285,21 @@ namespace DFC.Api.JobProfiles.ProfileServices
                         });
                     }
 
-                    restrictionsAndRequirements.OtherRequirements.Add(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html);
+                    restrictionsAndRequirements.OtherRequirements.Add(HtmltoText(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html));
 
                     var restrictions = response.JobProfileSkills.SelectMany(d => d.Relatedrestrictions.ContentItems).ToList();
                     foreach (var res in restrictions)
                     {
-                        restrictionsAndRequirements.RelatedRestrictions.Add(res.Info.Html);
+                        restrictionsAndRequirements.RelatedRestrictions.Add(HtmltoText(res.Info.Html));
                     }
 
                     skills.Skills = relatedSkillsApiModels;
                     skills.RestrictionsAndRequirements = restrictionsAndRequirements;
 
-                    return skills;
+                    var skillsObject = JsonConvert.SerializeObject(skills, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                    var result = JsonConvert.DeserializeObject<WhatItTakesApiModel>(skillsObject ?? string.Empty) ?? new WhatItTakesApiModel();
+
+                    return result;
                 }
             }
             catch (Exception ex)
@@ -359,14 +322,16 @@ namespace DFC.Api.JobProfiles.ProfileServices
             try
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter);
-                string test = Regex.Replace(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html, @"<[^>]+>| ", " ").Trim();
                 if (response.JobProfileWhatYoullDo != null)
                 {
                     var mappedResponse = mapper.Map<WorkingEnvironmentApiModel>(response);
                     tasks.WorkingEnvironment = mappedResponse;
-                    tasks.WYDDayToDayTasks.Add(test);
+                    tasks.WYDDayToDayTasks.Add(HtmltoText(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html));
 
-                    return tasks;
+                    var tasksObject = JsonConvert.SerializeObject(tasks, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                    var result = JsonConvert.DeserializeObject<WhatYouWillDoApiModel>(tasksObject ?? string.Empty) ?? new WhatYouWillDoApiModel();
+
+                    return result;
                 }
 
             }
