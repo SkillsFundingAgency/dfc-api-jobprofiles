@@ -3,6 +3,7 @@ using DFC.Api.JobProfiles.AutoMapperProfile.Resolvers;
 using DFC.Api.JobProfiles.AutoMapperProfile.ValueConverters;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
+using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.Search;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
@@ -63,16 +64,6 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Url, o => o.MapFrom(s => s["Url"]))
                 .ForMember(d => d.LastUpdated, o => o.MapFrom(s => s["LastUpdated"]));
 
-            /*  CreateMap<JobProfileOverview, SummaryDataModel>()
-                  .ForMember(d => d.BreadcrumbTitle, o => o.MapFrom(s => s.DisplayText))
-                  .ForMember(d => d.CanonicalName, o => o.MapFrom(s => s.PageLocation.UrlName))
-                  .ForMember(d => d.LastReviewed, d => d.Ignore());*/
-
-            //CreateMap<JobProfileHowToBecomeResponse, HowToBecomeApiModel>()
-            //    .ForMember(d => d.EntryRouteSummary, s => s.MapFrom(a => a.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html))
-            //    .ForMember(d => d.EntryRoutes, s => s.MapFrom(a => a.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html))
-            //    .ForMember(d => d.EntryRouteSummary, s => s.MapFrom(a => a.JobProfileHowToBecome.FirstOrDefault().EntryRoutes));
-
             CreateMap<JobProfilesOverviewResponse, JobProfileApiModel>()
             .ForMember(d => d.Title, s => s.MapFrom(a => a.JobProfileOverview.FirstOrDefault().DisplayText))
             .ForMember(d => d.LastUpdatedDate, option => option.Ignore())
@@ -96,17 +87,6 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
             .ForMember(d => d.CareerPathAndProgression, option => option.Ignore())
             .ForMember(d => d.LastUpdatedDate, option => option.Ignore())
             .ForMember(d => d.RelatedCareers, option => option.Ignore());
-
-            //CreateMap<JobProfileRelatedCareers, RelatedCareerApiModel>()
-            //    .ForMember(d => d.Title, s => s.MapFrom(a => a.DisplayText))
-            //    .ForMember(d => d.Url, s => s.MapFrom(a => a.PageLocation.FullUrl));
-
-            //CreateMap<List<JobProfileRelatedCareers>, List<JobProfileApiModel>>()
-            //.ForMember(d => d. ..RelatedCareers, s => s.MapFrom<RelatedCareerResolver>())
-            //.ForMember(d => d.LastReviewed, s => s.Ignore())
-
-            /* CreateMap<JobProfileRelatedCareers, JobProfileApiModel>()
-             .ForMember(d => d.RelatedCareers, s => s.MapFrom<RelatedCareerResolver>());*/
 
             CreateMap<RelatedCareersContentItems, RelatedCareerApiModel>()
                 .ForMember(d => d.Title, s => s.MapFrom(a => a.DisplayText))
@@ -147,8 +127,19 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Location, s => s.MapFrom<LocationResolver>())
                 .ForMember(d => d.Environment, s => s.MapFrom<EnvironmentResolver>())
                 .ForMember(d => d.Uniform, s => s.MapFrom<UniformResolver>());
-                
 
+            CreateMap<JobProfileHowToBecomeResponse, MoreInformationApiModel>()
+                .ForMember(d => d.Registrations, s => s.MapFrom<RegistrationResolver>())
+                .ForMember(d => d.CareerTips, s => s.Ignore())
+                .ForMember(d => d.ProfessionalAndIndustryBodies, s => s.Ignore())
+                .ForMember(d => d.FurtherInformation, s => s.Ignore());
+
+            CreateMap<JobProfileHowToBecomeResponse, CommonRouteApiModel>()
+                .ForMember(d => d.EntryRequirementPreface, s => s.MapFrom<EntryRequirementsPrefaceResolver>())
+                .ForMember(d => d.EntryRequirements, s => s.MapFrom<EntryRequirementsResolver>())
+                .ForMember(d => d.FurtherInformation, s => s.MapFrom<FurtherRouteInfoResolver>())
+                .ForMember(d => d.AdditionalInformation, s => s.MapFrom<AdditionalInfoResolver>())
+                .ForMember(d => d.RelevantSubjects, s => s.MapFrom<RelevantSubjectsResolver>());
 
         }
     }

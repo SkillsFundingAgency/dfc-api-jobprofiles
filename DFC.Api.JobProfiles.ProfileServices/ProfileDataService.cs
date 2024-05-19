@@ -13,6 +13,7 @@ using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
 using DFC.Api.JobProfiles;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using System;
@@ -22,6 +23,8 @@ using System.Threading.Tasks;
 using JobProfileApiSkills = DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes.Skills;
 using Skills = DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles.Skills;
 using DFC.Api.JobProfiles.AutoMapperProfile;
+using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
+using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
@@ -49,26 +52,32 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<JobProfileApiModel> GetJobProfile(string profileName)
         {
+            var segment = new SegmentDataModel();
             var overview = await GetOverviewSegment(profileName, Published);
-            //var howToBecome = await GetHowToBecomeSegmentAsync(profileName, Published);
+            var howToBecome = await GetHowToBecomeSegmentAsync(profileName, Published);
             var relatedCareers = await GetRelatedCareersSegmentAsync(profileName, Published);
-
-            //overview.HowToBecome = howToBecome;
-            //overview.RelatedCareers = relatedCareers;
-
             var careersPath = await GetCareerPathSegmentAsync(profileName, Published);
             var skills = await GetSkillSegmentAsync(profileName, Published);
-            //var video = await GetSocialProofVideoSegment(profileName, Published);
             var tasks = await GetTasksSegmentAsync(profileName, Published);
-            //var currentOpportunity = await GetCurrentOpportunities(profileName);
+
+            //segment.Segments.Add(related);
+
+            var result = JsonConvert.DeserializeObject<JobProfileApiModel>(segment.)
+
+            overview.HowToBecome = howToBecome;
+            overview.RelatedCareers = relatedCareers;
+            overview.CareerPathAndProgression = careersPath;
+            overview.WhatYouWillDo = tasks;
+            overview.WhatItTakes = skills;
 
 
-            var segmentDetailModels = await repository.GetData(
+
+            /*var segmentDetailModels = await repository.GetData(
                     s => new SegmentDataModel { Segments = s.Segments, CanonicalName = s.CanonicalName },
                     model => model.CanonicalName == profileName.ToLowerInvariant())
-                 .ConfigureAwait(false);
+                 .ConfigureAwait(false);*/
 
-            if (segmentDetailModels is null || !segmentDetailModels.Any())
+           /* if (segmentDetailModels is null || !segmentDetailModels.Any())
             {
                 return null;
             }
@@ -127,9 +136,9 @@ namespace DFC.Api.JobProfiles.ProfileServices
                             break;
                         }
                 }
-            }
+            }*/
 
-            return result;
+            return overview;
         }
 
         public async Task<bool> PingAsync()
@@ -162,55 +171,43 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             try
             {
-                // Get the response from GraphQl
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileHowToBecomeResponse>(ApplicationKeys.JobProfileHowToBecome + "/" + canonicalName, filter);
+                //Get the response from GraphQl
+               var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileHowToBecomeResponse>(ApplicationKeys.JobProfileHowToBecome + "/" + canonicalName, filter);
 
                 //howToBecome = mapper.Map<HowToBecomeApiModel>(response);
 
-                //// Map the response to a HowToBecomeSegmentDataModel
+                // Map the response to a HowToBecomeSegmentDataModel
                 //var mappedResponse = mapper.Map<HowToBecomeSegmentDataModel>(response);
 
-                //// Map CommonRoutes for College
-                //var collegeCommonRoutes = mapper.Map<CommonRoutes>(response, opt => opt.Items["RouteName"] = RouteName.College);
+                // Map CommonRoutes for College
+                var collegeCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.College);
 
-                //// Map CommonRoutes for University
-                //var universityCommonRoutes = mapper.Map<CommonRoutes>(response, opt => opt.Items["RouteName"] = RouteName.University);
+                // Map CommonRoutes for University
+                var universityCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.University);
 
-                //// Map CommonRoutes for Apprenticeship
-                //var apprenticeshipCommonRoutes = mapper.Map<CommonRoutes>(response, opt => opt.Items["RouteName"] = RouteName.Apprenticeship);
+                // Map CommonRoutes for Apprenticeship
+                var apprenticeshipCommonRoutes = mapper.Map<CommonRouteApiModel>(response, opt => opt.Items["RouteName"] = RouteName.Apprenticeship);
 
-                //// Combine CommonRoutes into a list
-                //var allCommonRoutes = new List<CommonRoutes>
-                //{
-                //    collegeCommonRoutes,
-                //    universityCommonRoutes,
-                //    apprenticeshipCommonRoutes,
-                //};
+                var mappedMoreInfo = mapper.Map<MoreInformationApiModel>(response);
 
-                //// Combine the CommonRoutes with the mapped response
-                //if (mappedResponse.EntryRoutes != null)
-                //{
-                //    mappedResponse.EntryRoutes.CommonRoutes = allCommonRoutes;
-                //}
+                howToBecome.EntryRouteSummary = new List<string> { response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html };
 
-                //// Serialize the mapped response into an object
-                //var howToBecomeObject = JsonConvert.SerializeObject(mappedResponse, new JsonSerializerSettings
-                //{
-                //    ContractResolver = new DefaultContractResolver
-                //    {
-                //        NamingStrategy = new CamelCaseNamingStrategy(),
-                //    },
-                //});
+                howToBecome.EntryRoutes = new EntryRoutesApiModel()
+                {
+                    University = universityCommonRoutes,
+                    Apprenticeship = apprenticeshipCommonRoutes,
+                    College = collegeCommonRoutes,
+                    DirectApplication = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html },
+                    OtherRoutes = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html },
+                    Volunteering = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html },
+                    Work = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Work.Html },
+                };
 
+               mappedMoreInfo.CareerTips = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().CareerTips.Html };
+               mappedMoreInfo.FurtherInformation = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html };
+               mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html };
 
-                // Build the SegmentModel
-                //howToBecome = new SegmentModel
-                //{
-                //    Segment = Data.JobProfileSegment.HowToBecome,
-                //    //Markup = new HtmlString(html),
-                //    JsonV1 = howToBecomeObject,
-                //    RefreshStatus = RefreshStatus.Success,
-                //};
+                howToBecome.MoreInformation = mappedMoreInfo;
 
                 return howToBecome;
             }
@@ -362,12 +359,12 @@ namespace DFC.Api.JobProfiles.ProfileServices
             try
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter);
-
+                string test = Regex.Replace(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html, @"<[^>]+>| ", " ").Trim();
                 if (response.JobProfileWhatYoullDo != null)
                 {
                     var mappedResponse = mapper.Map<WorkingEnvironmentApiModel>(response);
                     tasks.WorkingEnvironment = mappedResponse;
-                    tasks.WYDDayToDayTasks.Add(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html);
+                    tasks.WYDDayToDayTasks.Add(test);
 
                     return tasks;
                 }
@@ -381,57 +378,5 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             return tasks;
         }
-
-        /*private async Task<SegmentModel> GetCurrentOpportunities(string canonicalName)
-        {
-            var currentOpportunities = new SegmentModel() { Segment = JobProfileSegment.CurrentOpportunities };
-            var currentOpportunitiesSegmentModel = new CurrentOpportunitiesSegmentModel();
-            currentOpportunitiesSegmentModel.Data = new CurrentOpportunitiesSegmentDataModel();
-            currentOpportunitiesSegmentModel.Data.Courses = new Courses();
-            currentOpportunitiesSegmentModel.CanonicalName = canonicalName;
-
-            //Get job profile course keyword and lars code
-            var jobProfile = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileCurrentOpportunitiesGetbyUrlReponse>(string.Concat(ApplicationKeys.JobProfileCurrentOpportunitiesCoursesPrefix, "/", canonicalName), "PUBLISHED");
-
-            //get courses by course key words
-            if (jobProfile.JobProfileCurrentOpportunitiesGetByUrl != null && jobProfile.JobProfileCurrentOpportunitiesGetByUrl.Any())
-            {
-                string coursekeywords = jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].Coursekeywords;
-                string jobTitle = jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].DisplayText;
-                var results = await GetCourses(coursekeywords, canonicalName);
-                var courseSearchResults = results.Courses?.ToList();
-
-                var opportunities = new List<Opportunity>();
-                if (courseSearchResults != null)
-                {
-                    opportunities = MapCourses(courseSearchResults, opportunities);
-                }
-
-                currentOpportunitiesSegmentModel.Data.TitlePrefix = AddPrefix(jobTitle);
-                currentOpportunitiesSegmentModel.Data.Courses.CourseKeywords = coursekeywords;
-                currentOpportunitiesSegmentModel.Data.Courses.Opportunities = opportunities;
-                currentOpportunitiesSegmentModel.Data.Apprenticeships = new Apprenticeships();
-
-                //get apprenticeship by lars code.
-                if (jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].SOCCode?.ContentItems.Length > 0 &&
-                    jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].SOCCode?.ContentItems?[0].ApprenticeshipStandards.ContentItems.Length > 0)
-                {
-                    if (!string.IsNullOrEmpty(jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].SOCCode?.ContentItems?[0].ApprenticeshipStandards.ContentItems?[0].LARScode))
-                    {
-                        var larsCodes = jobProfile.JobProfileCurrentOpportunitiesGetByUrl[0].SOCCode.ContentItems
-                            .SelectMany(socCode => socCode.ApprenticeshipStandards.ContentItems
-                            .Select(standard => standard.LARScode)).ToList();
-                        var apprenticeshipVacancies = await GetApprenticeshipVacanciesAsync(larsCodes, canonicalName);
-                        currentOpportunitiesSegmentModel.Data.Apprenticeships.Vacancies = apprenticeshipVacancies;
-                    }
-                }
-
-                currentOpportunitiesSegmentModel.Data.JobTitle = jobTitle;
-
-            }
-
-            return currentOpportunities;
-        }*/
-
     }
 }

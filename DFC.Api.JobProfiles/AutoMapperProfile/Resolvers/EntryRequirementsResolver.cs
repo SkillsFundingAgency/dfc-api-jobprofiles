@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
+using FluentNHibernate.Conventions;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
-using Microsoft.AspNetCore.Routing;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
-    public class AdditionalInfoResolver : IValueResolver<JobProfileHowToBecomeResponse, CommonRouteApiModel, List<string>>
+    public class EntryRequirementsResolver : IValueResolver<JobProfileHowToBecomeResponse, CommonRouteApiModel, List<string>>
     {
         public List<string> Resolve(
             JobProfileHowToBecomeResponse source,
@@ -21,7 +21,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             ResolutionContext context)
         {
             RouteName routeName = (RouteName)context.Items["RouteName"];
-            var additionalInfo = new List<string>();
+            var entryRequirements = new List<string>();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
@@ -30,34 +30,36 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                 switch (routeName)
                 {
                     case RouteName.Apprenticeship:
-                        if (responseData.RelatedApprenticeshipLinks.ContentItems.IsAny() &&
-                            responseData.RelatedApprenticeshipRequirements.ContentItems.IsAny())
+                        if (responseData.RelatedApprenticeshipRequirements.ContentItems.IsAny() &&
+                            responseData.RelatedApprenticeshipRequirements.ContentItems.FirstOrDefault().Info.IsAny())
                         {
-                            foreach (var item in responseData.RelatedApprenticeshipLinks.ContentItems)
+                            foreach (var item in responseData.RelatedApprenticeshipRequirements.ContentItems)
                             {
-                                additionalInfo.Add(string.Concat(item.Text, "|", item.URL));
+                                entryRequirements.Add(item.Info.Html);
                             }
                         }
 
                         break;
                     case RouteName.College:
-                        if (responseData.RelatedCollegeLinks.ContentItems.IsAny() &&
-                            responseData.RelatedCollegeRequirements.ContentItems.IsAny())
+                        if (responseData.RelatedCollegeRequirements.ContentItems.IsAny() &&
+                            responseData.RelatedCollegeRequirements.ContentItems.FirstOrDefault().Info.IsAny())
                         {
-                            foreach (var item in responseData.RelatedCollegeLinks.ContentItems)
+                            foreach (var item in responseData.RelatedCollegeRequirements.ContentItems)
                             {
-                                additionalInfo.Add(string.Concat(item.Text, "|", item.URL));
+                                entryRequirements.Add(item.Info.Html);
+
                             }
                         }
 
                         break;
                     case RouteName.University:
-                        if (responseData.RelatedUniversityLinks.ContentItems.IsAny() &&
-                            responseData.RelatedApprenticeshipRequirements.ContentItems.IsAny())
+                        if (responseData.RelatedUniversityRequirements.ContentItems.IsAny() &&
+                            responseData.RelatedUniversityRequirements.ContentItems.FirstOrDefault().Info.IsAny())
                         {
-                            foreach (var item in responseData.RelatedUniversityLinks.ContentItems)
+                            foreach (var item in responseData.RelatedUniversityRequirements.ContentItems)
                             {
-                                additionalInfo.Add(string.Concat(item.Text, "|", item.URL));
+                                entryRequirements.Add(item.Info.Html);
+
                             }
                         }
 
@@ -65,7 +67,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                 }
             }
 
-            return additionalInfo;
+            return entryRequirements;
         }
     }
 }
