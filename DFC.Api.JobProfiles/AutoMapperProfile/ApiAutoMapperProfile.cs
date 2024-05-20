@@ -93,7 +93,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Url, s => s.MapFrom(a => a.PageLocation.FullUrl));
 
             CreateMap<JobProfileCareerPathAndProgressionResponse, CareerPathAndProgressionApiModel>()
-                .ForMember(d => d.CareerPathAndProgression, s => s.MapFrom(a => a.JobProileCareerPath.FirstOrDefault().Content.Html));
+                .ForMember(d => d.CareerPathAndProgression, s => s.MapFrom<CareerPathResolver>());
 
             CreateMap<JobProfileSkillsResponse, WhatItTakesApiModel>()
                 .ForMember(d => d.DigitalSkillsLevel, s => s.MapFrom(a => a.JobProfileSkills.FirstOrDefault().DigitalSkills.ContentItems.FirstOrDefault().DisplayText))
@@ -130,9 +130,9 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
 
             CreateMap<JobProfileHowToBecomeResponse, MoreInformationApiModel>()
                 .ForMember(d => d.Registrations, s => s.MapFrom<RegistrationResolver>())
-                .ForMember(d => d.CareerTips, s => s.Ignore())
+                .ForMember(d => d.CareerTips, s => s.MapFrom<CareerTipsResolver>())
                 .ForMember(d => d.ProfessionalAndIndustryBodies, s => s.Ignore())
-                .ForMember(d => d.FurtherInformation, s => s.Ignore());
+                .ForMember(d => d.FurtherInformation, s => s.MapFrom<FurtherInformationResolver>());
 
             CreateMap<JobProfileHowToBecomeResponse, CommonRouteApiModel>()
                 .ForMember(d => d.EntryRequirementPreface, s => s.MapFrom<EntryRequirementsPrefaceResolver>())

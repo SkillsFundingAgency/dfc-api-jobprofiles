@@ -30,9 +30,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles", "DFC.Api.JobProfiles\DFC.Api.JobProfiles.csproj", "{ADC6F28A-3F83-4EEB-A48E-A119691F911F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{6A118A2C-35C6-49BF-A889-892EB0C6CCBF}"
-	ProjectSection(SolutionItems) = preProject
-		DFC.Api.JobProfiles.ProfileServices\ProfileDataService.cs = DFC.Api.JobProfiles.ProfileServices\ProfileDataService.cs
-	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UnitTests", "UnitTests", "{49566F71-68DE-4171-B780-085B49BC87FD}"
 EndProject

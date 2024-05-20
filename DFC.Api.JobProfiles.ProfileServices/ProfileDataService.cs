@@ -27,6 +27,7 @@ using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using Microsoft.Azure.Cosmos.Serialization.HybridRow;
 using Newtonsoft.Json.Serialization;
 using HtmlAgilityPack;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
@@ -56,6 +57,12 @@ namespace DFC.Api.JobProfiles.ProfileServices
         {
             var segment = new SegmentDataModel();
             var overview = await GetOverviewSegment(profileName, Published);
+
+            if (overview == null)
+            {
+                return null;
+            }
+
             var howToBecome = await GetHowToBecomeSegmentAsync(profileName, Published);
             var relatedCareers = await GetRelatedCareersSegmentAsync(profileName, Published);
             var careersPath = await GetCareerPathSegmentAsync(profileName, Published);
@@ -83,6 +90,10 @@ namespace DFC.Api.JobProfiles.ProfileServices
             try
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(string.Concat(ApplicationKeys.JobProfileOverview, "/", canonicalName), filter);
+                if (response.JobProfileOverview.Count == 0)
+                {
+                    return null;
+                }
                 overview = mapper.Map<JobProfileApiModel>(response);
                 var overviewObject = JsonConvert.SerializeObject(overview, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                 var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewObject ?? string.Empty) ?? new JobProfileApiModel();
@@ -125,15 +136,22 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     University = universityCommonRoutes,
                     Apprenticeship = apprenticeshipCommonRoutes,
                     College = collegeCommonRoutes,
-                    DirectApplication = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html) },
-                    OtherRoutes = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html) },
-                    Volunteering = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html) },
-                    Work = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().Work.Html) },
+                    DirectApplication = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html },
+                    OtherRoutes = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html },
+                    Volunteering = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html },
+                    Work = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Work.Html },
                 };
 
-               mappedMoreInfo.CareerTips = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().CareerTips.Html) };
-               mappedMoreInfo.FurtherInformation = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html) };
-               mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html) };
+                /*  var htmlDoc = new HtmlDocument();
+                  htmlDoc.LoadHtml(response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html);
+                  var htmlAnchor = htmlDoc.DocumentNode.SelectSingleNode("//a");
+                  var htmlBr = htmlDoc.DocumentNode.SelectSingleNode("//p");
+                  string hrefValue = htmlAnchor.Attributes["href"].Value;
+                  Console.WriteLine(htmlBr.InnerText + " " + hrefValue);*/
+
+                //mappedMoreInfo.CareerTips = HtmltoList(response.JobProfileHowToBecome.FirstOrDefault().CareerTips.Html);
+                //mappedMoreInfo.FurtherInformation = HtmltoList(response.JobProfileHowToBecome.FirstOrDefault().FurtherInformation.Html);
+                mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html };
 
                howToBecome.MoreInformation = mappedMoreInfo;
                var howToBecomeObject = JsonConvert.SerializeObject(howToBecome, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
@@ -148,17 +166,37 @@ namespace DFC.Api.JobProfiles.ProfileServices
             }
         }
 
+        private static List<string> HtmltoList(string html)
+        {
+            List<string> HtmlList = new List<string>();
+            var prefix = html.Substring(0, html.IndexOf(":") + 1);
+            HtmlList.Add(prefix);
+            var matches = Regex.Matches(html, @"<li>(.*)</li>").ToList();
+
+
+            var items = matches.Select(m => m.Groups[1].ToString()).ToList();
+            HtmlList.AddRange(items);
+
+            for (int i =0; i < HtmlList.Count; i++)
+            {
+                HtmlList[i] = HtmltoText(HtmlList[i]);
+            }
+
+            return HtmlList;
+        }
+
+
         private static string HtmltoText(string html)
         {
             var doc = new HtmlDocument();
             string result = string.Empty;
             doc.LoadHtml(html);
             List<string> strings = new List<string>();
-            HtmlNodeCollection textNodes = doc.DocumentNode.SelectNodes("//text()");
+            HtmlNodeCollection textNodes = doc.DocumentNode.SelectNodes("//a");
 
             if (textNodes != null)
             {
-                foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//text()"))
+                foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//a"))
                 {
                     strings.Add(node.InnerText);
                     result = string.Join("", strings);
@@ -202,7 +240,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         private async Task<CareerPathAndProgressionApiModel> GetCareerPathSegmentAsync(string canonicalName, string status)
         {
-            CareerPathAndProgressionApiModel careerPath = new();
+            CareerPathAndProgressionApiModel careerPath = new ();
 
             try
             {
@@ -211,6 +249,10 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 if (response.JobProileCareerPath != null)
                 {
                     var mappedResponse = mapper.Map<CareerPathAndProgressionApiModel>(response);
+                    /*careerPath = new CareerPathAndProgressionApiModel()
+                    {
+                        CareerPathAndProgression = new List<string>() { response.JobProileCareerPath.FirstOrDefault().Content.Html },
+                    };*/
                     var careerPathObject = JsonConvert.SerializeObject(mappedResponse, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                     var result = JsonConvert.DeserializeObject<CareerPathAndProgressionApiModel>(careerPathObject ?? string.Empty) ?? new CareerPathAndProgressionApiModel();
                     return result;
@@ -285,7 +327,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                         });
                     }
 
-                    restrictionsAndRequirements.OtherRequirements.Add(HtmltoText(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html));
+                    restrictionsAndRequirements.OtherRequirements.Add(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html);
 
                     var restrictions = response.JobProfileSkills.SelectMany(d => d.Relatedrestrictions.ContentItems).ToList();
                     foreach (var res in restrictions)

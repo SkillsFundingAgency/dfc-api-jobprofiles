@@ -37,6 +37,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             var summaryService = A.Fake<ISummaryService>();
             var healthCheckService = A.Fake<HealthCheckService>();
             var fakeSearchService = A.Fake<ISearchService>();
+            var fakeDetailService = A.Fake<IProfileDataService>();
             var mapper = A.Fake<IMapper>();
             var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
             using var telemetryConfig = new TelemetryConfiguration();
@@ -44,7 +45,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             var logger = new LogService(correlationProvider, telemetryClient);
             var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService);
+            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);
         }
 
         [Fact]

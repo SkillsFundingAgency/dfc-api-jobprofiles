@@ -1,3 +1,4 @@
+using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
@@ -7,6 +8,7 @@ using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
 using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Api.JobProfiles.Data.Enums;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
+using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -23,10 +25,14 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
     {
         private const string JobProfileName = "jobName1";
         private readonly ILogger defaultLogger;
+        private IMapper mapper;
+        private readonly ISharedContentRedisInterface sharedContentRedisInterface;
 
         public ProfileDataServiceTests()
         {
             defaultLogger = A.Fake<ILogger>();
+            mapper = A.Fake<IMapper>();
+            sharedContentRedisInterface = A.Fake<ISharedContentRedisInterface>();
         }
 
         [Fact]
@@ -35,7 +41,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             // Arrange
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns((IList<SegmentDataModel>)null);
-            var dataService = new ProfileDataService(repository, defaultLogger);
+            var dataService = new ProfileDataService(repository, defaultLogger, mapper, sharedContentRedisInterface);
 
             // Act
             var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
@@ -52,7 +58,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             var expectedOverview = GetOverviewApiModel();
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(onlyOverviewSegmentDataModel);
-            var dataService = new ProfileDataService(repository, defaultLogger);
+            var dataService = new ProfileDataService(repository, defaultLogger, mapper, sharedContentRedisInterface);
 
             // Act
             var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
@@ -78,7 +84,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(dataModels);
 
-            var dataService = new ProfileDataService(repository, defaultLogger);
+            var dataService = new ProfileDataService(repository, defaultLogger, mapper, sharedContentRedisInterface);
             var expectedOverview = GetOverviewApiModel();
 
             // Act
@@ -104,7 +110,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             var noSegmentsDataModel = GetWithMissingSegmentsDataModel();
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
             A.CallTo(() => repository.GetData(A<Expression<Func<SegmentDataModel, SegmentDataModel>>>.Ignored, A<Expression<Func<SegmentDataModel, bool>>>.Ignored)).Returns(noSegmentsDataModel);
-            var dataService = new ProfileDataService(repository, defaultLogger);
+            var dataService = new ProfileDataService(repository, defaultLogger, mapper, sharedContentRedisInterface);
 
             // Act
             var result = await dataService.GetJobProfile(JobProfileName).ConfigureAwait(false);
@@ -129,7 +135,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         {
             // Arrange
             var repository = A.Fake<ICosmosRepository<SegmentDataModel>>();
-            var dataService = new ProfileDataService(repository, defaultLogger);
+            var dataService = new ProfileDataService(repository, defaultLogger, mapper, sharedContentRedisInterface);
             A.CallTo(() => repository.PingAsync()).Returns(repositoryPingSuccessful);
 
             // Act
