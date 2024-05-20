@@ -38,7 +38,6 @@ namespace DFC.Api.JobProfiles.Functions
     {
         private const string SuccessMessage = "Document store is available";
         private readonly ILogService logService;
-        private static int test = 200;
         private readonly IResponseWithCorrelation responseWithCorrelation;
         private readonly IMapper mapper;
         private readonly ISharedContentRedisInterface sharedContentRedisInterface;
@@ -93,13 +92,20 @@ namespace DFC.Api.JobProfiles.Functions
         }
 
         //[Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
-        [Function("job-profiles-detail")]
-        [ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
+        [OpenApiOperation("JPDetail-spec", "Job-Profiles-Detail", Summary = "Get job profiles detail", Description = "Gets details of a specific job profile.")]
+        [OpenApiParameter("canonicalName")]
+        [Function("Zjob-profiles-detail")]
+        [OpenApiResponseWithBody(HttpStatusCode.OK, "application/json", typeof(JobProfileApiModel), Description = "Job profile details.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NoContent, Description = "Job profile does not exist.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.")]
+        [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
+        //[ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
+       /* [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
         [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
         [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]
-        [Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
+        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]*/
+        //[Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public async Task<IActionResult> GetJobProfileDetail(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName)
