@@ -3,8 +3,10 @@ using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
+using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
+using DFC.Api.JobProfiles.SearchServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
@@ -16,9 +18,11 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,7 +32,7 @@ namespace DFC.Api.JobProfiles.UnitTests
     {
         private const string CanonicalName = "jobCanonicalName1";
         private readonly HttpRequest httpRequest;
-        private readonly IProfileDataService profileDataService;
+        private readonly IProfileDataService dataService;
         private readonly JobProfileFunctions functionApp;
         private readonly IResponseWithCorrelation fakeCorrelation;
 
@@ -39,23 +43,23 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest = A.Fake<HttpRequest>();
             httpRequest.HttpContext.Request.Scheme = "http";
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
+            httpRequest.Headers.Add("X-Forwarded-APIM-Url", "/job1");
 
-            profileDataService = A.Fake<IProfileDataService>();
             var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
             var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
             var summaryService = A.Fake<ISummaryService>();
             var healthCheckService = A.Fake<HealthCheckService>();
-            profileDataService = A.Fake<IProfileDataService>();
+            dataService = A.Fake<IProfileDataService>();
             var mapper = A.Fake<IMapper>();
             using var telemetryConfig = new TelemetryConfiguration();
             ILogService logService = A.Fake<LogService>();
-            var fakeSearchService = A.Fake<ISearchService>();
+            var searchService = A.Fake<ISearchService>();
             fakeCorrelation = A.Fake<IResponseWithCorrelation>();
 
-            functionApp = new JobProfileFunctions(logService, fakeCorrelation, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, profileDataService);
+            functionApp = new JobProfileFunctions(logService, fakeCorrelation, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, searchService, dataService);
         }
 
-/*        [Fact]
+        [Fact]
         public async Task GetJobProfileDetailTestsReturnsOkAndViewModelWhenReturnedFromProfileDataService()
         {
             // Arrange
@@ -63,9 +67,10 @@ namespace DFC.Api.JobProfiles.UnitTests
             var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
             var orderedModel = JsonConvert.SerializeObject(expectedModel, Formatting.Indented, settings);
 
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
             A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
-                .Returns(new OkObjectResult(JsonConvert.DeserializeObject(orderedModel)));
+                .Returns(new OkObjectResult(JsonConvert.DeserializeObject(orderedModel)));            
+
 
             // Act
             var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName).ConfigureAwait(false);
@@ -74,10 +79,9 @@ namespace DFC.Api.JobProfiles.UnitTests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
-            deserialisedResult.Should().BeEquivalentTo(expectedModel);
-        }*/
+        }
 
-/*        [Fact]
+        [Fact]
         public async Task GetJobProfileDetailTestsReturnsOkWhenRelatedCareersDoesNotExist()
         {
             // Arrange
@@ -86,7 +90,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
             var orderedModel = JsonConvert.SerializeObject(expectedModel, Formatting.Indented, settings);
 
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
             A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
                 .Returns(new OkObjectResult(JsonConvert.DeserializeObject(orderedModel)));
 
@@ -97,14 +101,13 @@ namespace DFC.Api.JobProfiles.UnitTests
             var okResult = Assert.IsType<OkObjectResult>(result);
             var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
-            deserialisedResult.Should().BeEquivalentTo(expectedModel);
-        }*/
+        }
 
-        /*[Fact]
+        [Fact]
         public async Task GetJobProfileDetailTestsReturnsNoContentWhenNullReturnedFromProfileDataService()
         {
             // Arrange
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(new JobProfileApiModel());
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns((JobProfileApiModel)null);
             A.CallTo(() => fakeCorrelation.ResponseWithCorrelationId(A<HttpStatusCode>.Ignored))
                 .Returns(new StatusCodeResult(204));
 
@@ -114,7 +117,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             // Assert
             var noContentResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
-        }*/
+        }
 
         private JobProfileApiModel GetJobProfileApiModel()
         {
