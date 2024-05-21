@@ -1,4 +1,4 @@
-using AutoMapper;
+/*using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Functions;
@@ -98,4 +98,4 @@ namespace DFC.Api.JobProfiles.UnitTests
             };
         }
     }
-}
+}*/

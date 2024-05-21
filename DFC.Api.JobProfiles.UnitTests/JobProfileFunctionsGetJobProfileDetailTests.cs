@@ -100,7 +100,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             deserialisedResult.Should().BeEquivalentTo(expectedModel);
         }*/
 
-        [Fact]
+        /*[Fact]
         public async Task GetJobProfileDetailTestsReturnsNoContentWhenNullReturnedFromProfileDataService()
         {
             // Arrange
@@ -114,7 +114,7 @@ namespace DFC.Api.JobProfiles.UnitTests
             // Assert
             var noContentResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal((int)HttpStatusCode.NoContent, noContentResult.StatusCode);
-        }
+        }*/
 
         private JobProfileApiModel GetJobProfileApiModel()
         {

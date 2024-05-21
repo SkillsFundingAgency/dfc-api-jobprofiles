@@ -39,9 +39,9 @@ namespace DFC.Api.JobProfiles.Functions
             return Task.FromResult(swashBuckleClient.CreateSwaggerUIResponse(req, SwaggerJsonRoute));
         }*/
 
-        /*[SwaggerIgnore]
+        [SwaggerIgnore]
         [Function("SwaggerJson")]
-        public async Task<IActionResult> SwaggerJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerJsonRoute)]HttpRequest req)
+        public async Task<IActionResult> SwaggerJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerJsonRoute)] HttpRequest req)
         {
             var swaggerDoc = await Task.FromResult(swaggerDocumentGenerator.GenerateSwaggerDocument(
                 req,
@@ -56,6 +56,6 @@ namespace DFC.Api.JobProfiles.Functions
                 .ConfigureAwait(false);
 
             return new OkObjectResult(swaggerDoc);
-        }*/
+        }
     }
 }
