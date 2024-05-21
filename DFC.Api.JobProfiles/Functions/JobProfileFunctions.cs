@@ -107,7 +107,7 @@ namespace DFC.Api.JobProfiles.Functions
             request.LogRequestHeaders(logService);
 
             var jobProfile = await profileDataService.GetJobProfile(canonicalName).ConfigureAwait(false);
-            if (jobProfile.Title == null)
+            if (jobProfile is null || jobProfile.Title == null)
             {
                 logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
