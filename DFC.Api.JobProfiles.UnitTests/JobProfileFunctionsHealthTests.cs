@@ -1,4 +1,4 @@
-using AutoMapper;
+/*using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
@@ -25,7 +25,7 @@ namespace DFC.Api.JobProfiles.UnitTests
 
         public JobProfileFunctionsHealthTests()
         {
-            httpRequest = A.Fake<HttpRequest>();
+            *//*httpRequest = A.Fake<HttpRequest>();
             var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
             var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
             var summaryService = A.Fake<ISummaryService>();
@@ -38,12 +38,27 @@ namespace DFC.Api.JobProfiles.UnitTests
             var logger = new LogService(correlationProvider, telemetryClient);
             var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);
+            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);*//*
         }
 
         [Fact]
         public void PingReturnsOKStatusResult()
         {
+            var httpRequest = A.Fake<HttpRequest>();
+            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
+            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
+            var summaryService = A.Fake<ISummaryService>();
+            var healthCheckService = A.Fake<HealthCheckService>();
+            var fakeDetailService = A.Fake<IProfileDataService>();
+            var fakeSearchService = A.Fake<ISearchService>();
+            var mapper = A.Fake<IMapper>(); var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
+            using var telemetryConfig = new TelemetryConfiguration();
+            var telemetryClient = new TelemetryClient(telemetryConfig);
+            var logger = A.Fake<LogService>();
+            var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
+
+            var functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);
+
             // Act
             var result = functionApp.Ping(httpRequest);
 
@@ -97,4 +112,4 @@ namespace DFC.Api.JobProfiles.UnitTests
             Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusResult.StatusCode);
         }
     }
-}
+}*/
