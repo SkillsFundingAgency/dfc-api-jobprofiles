@@ -88,6 +88,7 @@ var host = new HostBuilder()
 
             options.Serializer = new NewtonsoftJsonObjectSerializer(settings);
         });
+        
         worker.UseMiddleware<FunctionContextAccessorMiddleware>();        
     })
     .ConfigureServices(services => {
