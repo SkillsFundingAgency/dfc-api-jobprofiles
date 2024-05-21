@@ -67,19 +67,6 @@ var host = new HostBuilder()
     .ConfigureFunctionsWebApplication(worker =>
     {
         worker.UseNewtonsoftJson();
-        worker.Services.AddHttpClient();
-        worker.Services.AddStackExchangeRedisCache(options => { options.Configuration = configuration.GetSection(RedisCacheConnectionStringAppSettings).Get<string>(); });
-        worker.Services.AddSingleton<IGraphQLClient>(s =>
-        {
-            var option = new GraphQLHttpClientOptions()
-            {
-                EndPoint = new Uri(configuration.GetSection(StaxGraphApiUrlAppSettings).Get<string>() ?? throw new ArgumentNullException()),
-
-                HttpMessageHandler = new CmsRequestHandler(s.GetService<IHttpClientFactory>(), s.GetService<IConfiguration>(), s.GetService<IHttpContextAccessor>() ?? throw new ArgumentNullException()),
-            };
-            var client = new GraphQLHttpClient(option, new NewtonsoftJsonSerializer());
-            return client;
-        });
         worker.Services.Configure<WorkerOptions>(options =>
         {
             var settings = NewtonsoftJsonObjectSerializer.CreateJsonSerializerSettings();
@@ -88,8 +75,7 @@ var host = new HostBuilder()
 
             options.Serializer = new NewtonsoftJsonObjectSerializer(settings);
         });
-        
-        worker.UseMiddleware<FunctionContextAccessorMiddleware>();        
+        worker.UseMiddleware<FunctionContextAccessorMiddleware>();
     })
     .ConfigureServices(services => {
         services.AddApplicationInsightsTelemetryWorkerService();
@@ -124,6 +110,19 @@ var host = new HostBuilder()
         services.AddScoped<ILogService, LogService>();
         services.AddScoped<IResponseWithCorrelation, ResponseWithCorrelation>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+        services.AddHttpClient();
+        services.AddStackExchangeRedisCache(options => { options.Configuration = configuration.GetSection(RedisCacheConnectionStringAppSettings).Get<string>(); });
+        services.AddSingleton<IGraphQLClient>(s =>
+        {
+            var option = new GraphQLHttpClientOptions()
+            {
+                EndPoint = new Uri(configuration.GetSection(StaxGraphApiUrlAppSettings).Get<string>() ?? throw new ArgumentNullException()),
+
+                HttpMessageHandler = new CmsRequestHandler(s.GetService<IHttpClientFactory>(), s.GetService<IConfiguration>(), s.GetService<IHttpContextAccessor>() ?? throw new ArgumentNullException()),
+            };
+            var client = new GraphQLHttpClient(option, new NewtonsoftJsonSerializer());
+            return client;
+        });
         services.AddSingleton<ISharedContentRedisInterfaceStrategyWithRedisExpiry<JobProfilesOverviewResponse>, JobProfileOverviewProfileSpecificQueryStrategy>();
         services.AddSingleton<ISharedContentRedisInterfaceStrategyWithRedisExpiry<JobProfileVideoResponse>, JobProfileVideoQueryStrategy>();
         services.AddSingleton<ISharedContentRedisInterfaceStrategy<SharedHtml>, SharedHtmlQueryStrategy>();
