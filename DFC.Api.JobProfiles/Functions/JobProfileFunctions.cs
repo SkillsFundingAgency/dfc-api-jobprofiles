@@ -107,7 +107,7 @@ namespace DFC.Api.JobProfiles.Functions
             request.LogRequestHeaders(logService);
 
             var jobProfile = await profileDataService.GetJobProfile(canonicalName).ConfigureAwait(false);
-            if (jobProfile is null)
+            if (jobProfile.Title == null)
             {
                 logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
@@ -141,11 +141,11 @@ namespace DFC.Api.JobProfiles.Functions
             var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
             if (apiModel?.Results is null || !apiModel.Results.Any())
             {
-                //logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
+                logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
             }
 
-            //logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
+            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
         }
