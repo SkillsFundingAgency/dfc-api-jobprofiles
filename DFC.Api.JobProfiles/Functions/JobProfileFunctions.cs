@@ -17,6 +17,7 @@ using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
@@ -91,7 +92,6 @@ namespace DFC.Api.JobProfiles.Functions
             }
         }
 
-        //[Display(Name = "Get job profile detail", Description = "Gets details of a specific job profile")]
         [OpenApiOperation("JPDetail-spec", "Job-Profiles-Detail", Summary = "Get job profiles detail", Description = "Gets details of a specific job profile.")]
         [OpenApiParameter("canonicalName")]
         [Function("Zjob-profiles-detail")]
@@ -100,12 +100,6 @@ namespace DFC.Api.JobProfiles.Functions
         [OpenApiResponseWithoutBody(HttpStatusCode.Unauthorized, Description = "API key is invalid.")]
         [OpenApiResponseWithoutBody(HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.")]
         [OpenApiResponseWithoutBody(HttpStatusCode.TooManyRequests, Description = "Too many requests being sent, by default the API supports 150 per minute.")]
-        //[ProducesResponseType(typeof(JobProfileApiModel), (int)HttpStatusCode.OK)]
-       /* [Response(HttpStatusCode = (int)HttpStatusCode.OK, Description = "Job profile details.", ShowSchema = true)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NoContent, Description = "Job profile does not exist", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.Unauthorized, Description = "API key is invalid.", ShowSchema = false)]
-        [Response(HttpStatusCode = (int)HttpStatusCode.NotFound, Description = "Version header has invalid value, must be set to 'v1'.", ShowSchema = false)]*/
-        //[Response(HttpStatusCode = 429, Description = "Too many requests being sent, by default the API supports 150 per minute.", ShowSchema = false)]
         public async Task<IActionResult> GetJobProfileDetail(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "{canonicalName}")] HttpRequest request,
             string canonicalName)
@@ -147,11 +141,11 @@ namespace DFC.Api.JobProfiles.Functions
             var apiModel = await searchService.GetResultsList(request.GetAbsoluteUrlForRelativePath(), searchTerm, page, pageSize).ConfigureAwait(false);
             if (apiModel?.Results is null || !apiModel.Results.Any())
             {
-                logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
+                //logService.LogMessage($"Job Profile search returned no data for '{searchTerm}'", SeverityLevel.Warning);
                 return responseWithCorrelation.ResponseWithCorrelationId(HttpStatusCode.NoContent);
             }
 
-            logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
+            //logService.LogMessage($"Job Profile search using '{searchTerm}' for page = {page}, page size = {pageSize} returned {apiModel.Count} results", SeverityLevel.Warning);
 
             return responseWithCorrelation.ResponseObjectWithCorrelationId(apiModel);
         }

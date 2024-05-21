@@ -15,8 +15,11 @@ namespace DFC.Api.JobProfiles.Common.Services
             this.functionContextAccessor = functionContextAccessor;
         }
 
-        public string CorrelationId => !string.IsNullOrWhiteSpace(functionContextAccessor.FunctionContext.GetHttpContext().Request.Headers[HeaderName.RequestId].ToString())
+        public string GetCorrelationId()
+        {
+            return !string.IsNullOrWhiteSpace(functionContextAccessor.FunctionContext.GetHttpContext().Request.Headers[HeaderName.RequestId].ToString())
             ? functionContextAccessor.FunctionContext.GetHttpContext().Request.Headers[HeaderName.RequestId].ToString()
             : Guid.NewGuid().ToString();
+        }
     }
 }

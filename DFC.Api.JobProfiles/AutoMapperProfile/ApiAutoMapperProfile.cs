@@ -128,6 +128,10 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.Environment, s => s.MapFrom<EnvironmentResolver>())
                 .ForMember(d => d.Uniform, s => s.MapFrom<UniformResolver>());
 
+            CreateMap<JobProfileWhatYoullDoResponse, WhatYouWillDoApiModel>()
+                .ForMember(d => d.WYDDayToDayTasks, s => s.MapFrom<DayToDayResolver>())
+                .ForMember(d => d.WorkingEnvironment, s => s.Ignore());
+
             CreateMap<JobProfileHowToBecomeResponse, MoreInformationApiModel>()
                 .ForMember(d => d.Registrations, s => s.MapFrom<RegistrationResolver>())
                 .ForMember(d => d.CareerTips, s => s.MapFrom<CareerTipsResolver>())

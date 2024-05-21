@@ -39,7 +39,7 @@ namespace DFC.Api.JobProfiles.Common.Services
 
         private void AddCorrelationId()
         {
-            functionContextAccessor.FunctionContext.GetHttpContext().Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.CorrelationId);
+            functionContextAccessor.FunctionContext.GetHttpContext().Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.GetCorrelationId());
         }
     }
 }

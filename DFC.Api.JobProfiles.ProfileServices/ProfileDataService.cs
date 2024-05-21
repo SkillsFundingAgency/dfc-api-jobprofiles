@@ -55,7 +55,6 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<JobProfileApiModel> GetJobProfile(string profileName)
         {
-            var segment = new SegmentDataModel();
             var overview = await GetOverviewSegment(profileName, Published);
 
             if (overview == null)
@@ -354,21 +353,18 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<WhatYouWillDoApiModel> GetTasksSegmentAsync(string canonicalName, string filter)
         {
-            var tasks = new WhatYouWillDoApiModel()
-            {
-                WYDDayToDayTasks = new List<string>(),
-            };
+            var tasks = new WhatYouWillDoApiModel();
 
             try
             {
                 var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter);
                 if (response.JobProfileWhatYoullDo != null)
                 {
-                    var mappedResponse = mapper.Map<WorkingEnvironmentApiModel>(response);
-                    tasks.WorkingEnvironment = mappedResponse;
-                    tasks.WYDDayToDayTasks.Add(HtmltoText(response.JobProfileWhatYoullDo.FirstOrDefault().Daytodaytasks.Html));
+                    var mappedResponse = mapper.Map<WhatYouWillDoApiModel>(response);
+                    var mappedEnvironment = mapper.Map<WorkingEnvironmentApiModel>(response);
+                    mappedResponse.WorkingEnvironment = mappedEnvironment;
 
-                    var tasksObject = JsonConvert.SerializeObject(tasks, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
+                    var tasksObject = JsonConvert.SerializeObject(mappedResponse, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                     var result = JsonConvert.DeserializeObject<WhatYouWillDoApiModel>(tasksObject ?? string.Empty) ?? new WhatYouWillDoApiModel();
 
                     return result;
