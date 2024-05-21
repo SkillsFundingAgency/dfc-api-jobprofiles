@@ -1,7 +1,6 @@
 ﻿using DFC.Api.JobProfiles.Common.Constants;
 using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Newtonsoft.Json;

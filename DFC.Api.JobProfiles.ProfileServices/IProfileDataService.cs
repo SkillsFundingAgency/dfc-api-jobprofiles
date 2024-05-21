@@ -6,7 +6,5 @@ namespace DFC.Api.JobProfiles.ProfileServices
     public interface IProfileDataService
     {
         Task<JobProfileApiModel> GetJobProfile(string profileName);
-
-        Task<bool> PingAsync();
     }
 }

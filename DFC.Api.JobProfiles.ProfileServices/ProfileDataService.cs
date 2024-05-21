@@ -1,53 +1,39 @@
 ﻿using AutoMapper;
+using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
-using DFC.Api.JobProfiles.Data.DataModels;
-using DFC.Api.JobProfiles.Data.Enums;
-using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Common.SharedContent.Pkg.Netcore.Constant;
 using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
-using DFC.Api.JobProfiles;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using JobProfileApiSkills = DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes.Skills;
 using Skills = DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems.JobProfiles.Skills;
-using DFC.Api.JobProfiles.AutoMapperProfile;
-using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
-using Microsoft.Azure.Cosmos.Serialization.HybridRow;
-using Newtonsoft.Json.Serialization;
-using HtmlAgilityPack;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace DFC.Api.JobProfiles.ProfileServices
 {
     public class ProfileDataService : IProfileDataService
     {
         private const string Published = "PUBLISHED";
-
-        private readonly ICosmosRepository<SegmentDataModel> repository;
         private readonly ILogger log;
-
         private readonly IMapper mapper;
         private readonly ISharedContentRedisInterface sharedContentRedisInterface;
 
         public ProfileDataService(
-            ICosmosRepository<SegmentDataModel> repository,
             ILogger log,
             IMapper mapper,
             ISharedContentRedisInterface sharedContentRedisInterface)
         {
-            this.repository = repository;
             this.log = log;
             this.mapper = mapper;
             this.sharedContentRedisInterface = sharedContentRedisInterface;
@@ -77,11 +63,6 @@ namespace DFC.Api.JobProfiles.ProfileServices
             return overview;
         }
 
-        public async Task<bool> PingAsync()
-        {
-            return await repository.PingAsync().ConfigureAwait(false);
-        }
-
         public async Task<JobProfileApiModel> GetOverviewSegment(string canonicalName, string filter)
         {
             var overview = new JobProfileApiModel();
@@ -93,6 +74,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 {
                     return null;
                 }
+
                 overview = mapper.Map<JobProfileApiModel>(response);
                 var overviewObject = JsonConvert.SerializeObject(overview, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                 var result = JsonConvert.DeserializeObject<JobProfileApiModel>(overviewObject ?? string.Empty) ?? new JobProfileApiModel();
@@ -128,7 +110,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
                     var mappedMoreInfo = mapper.Map<MoreInformationApiModel>(response);
 
-                    howToBecome.EntryRouteSummary = new List<string> { HtmltoText(response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html) };
+                    howToBecome.EntryRouteSummary = new List<string> { response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html };
 
                     howToBecome.EntryRoutes = new EntryRoutesApiModel()
                     {
@@ -153,59 +135,12 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 {
                     return howToBecome;
                 }
-
-              
             }
             catch (Exception e)
             {
                 log.LogError(e.ToString());
                 throw;
             }
-        }
-
-        private static List<string> HtmltoList(string html)
-        {
-            List<string> HtmlList = new List<string>();
-            var prefix = html.Substring(0, html.IndexOf(":") + 1);
-            HtmlList.Add(prefix);
-            var matches = Regex.Matches(html, @"<li>(.*)</li>").ToList();
-
-
-            var items = matches.Select(m => m.Groups[1].ToString()).ToList();
-            HtmlList.AddRange(items);
-
-            for (int i =0; i < HtmlList.Count; i++)
-            {
-                HtmlList[i] = HtmltoText(HtmlList[i]);
-            }
-
-            return HtmlList;
-        }
-
-
-        private static string HtmltoText(string html)
-        {
-            var doc = new HtmlDocument();
-            string result = string.Empty;
-            doc.LoadHtml(html);
-            List<string> strings = new List<string>();
-            HtmlNodeCollection textNodes = doc.DocumentNode.SelectNodes("//a");
-
-            if (textNodes != null)
-            {
-                foreach (HtmlNode node in doc.DocumentNode.SelectNodes("//a"))
-                {
-                    strings.Add(node.InnerText);
-                    result = string.Join("", strings);
-                    Console.WriteLine("text=" + node.InnerText);
-                }
-                return result;
-            }
-            else
-            {
-                return html;
-            }
-
         }
 
         public async Task<List<RelatedCareerApiModel>> GetRelatedCareersSegmentAsync(string canonicalName, string status)
@@ -246,10 +181,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                 if (response.JobProileCareerPath != null)
                 {
                     var mappedResponse = mapper.Map<CareerPathAndProgressionApiModel>(response);
-                    /*careerPath = new CareerPathAndProgressionApiModel()
-                    {
-                        CareerPathAndProgression = new List<string>() { response.JobProileCareerPath.FirstOrDefault().Content.Html },
-                    };*/
+
                     var careerPathObject = JsonConvert.SerializeObject(mappedResponse, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                     var result = JsonConvert.DeserializeObject<CareerPathAndProgressionApiModel>(careerPathObject ?? string.Empty) ?? new CareerPathAndProgressionApiModel();
                     return result;
@@ -329,7 +261,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
                     var restrictions = response.JobProfileSkills.SelectMany(d => d.Relatedrestrictions.ContentItems).ToList();
                     foreach (var res in restrictions)
                     {
-                        restrictionsAndRequirements.RelatedRestrictions.Add(HtmltoText(res.Info.Html));
+                        restrictionsAndRequirements.RelatedRestrictions.Add(res.Info.Html);
                     }
 
                     skills.Skills = relatedSkillsApiModels;

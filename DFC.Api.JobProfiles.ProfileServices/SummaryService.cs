@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
-using DFC.Api.JobProfiles.Data.DataModels;
-using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Common.SharedContent.Pkg.Netcore.Constant;
 using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;

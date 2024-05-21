@@ -1,4 +1,3 @@
-using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.Search;
@@ -6,8 +5,6 @@ using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using FakeItEasy;
 using FluentAssertions;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -38,18 +35,15 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest.HttpContext.Request.Scheme = "http";
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
 
-            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
-            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
             var summaryService = A.Fake<ISummaryService>();
             var healthCheckService = A.Fake<HealthCheckService>();
             var fakeDetailService = A.Fake<IProfileDataService>();
-            var mapper = A.Fake<IMapper>();
             using var telemetryConfig = new TelemetryConfiguration();
             ILogService logService = A.Fake<LogService>();
             searchService = A.Fake<ISearchService>();
             fakeCorrelation = A.Fake<IResponseWithCorrelation>();
 
-            functionApp = new JobProfileFunctions(logService, fakeCorrelation, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, searchService, fakeDetailService);
+            functionApp = new JobProfileFunctions(logService, fakeCorrelation, summaryService, healthCheckService, searchService, fakeDetailService);
         }
 
         [Fact]

@@ -1,4 +1,3 @@
-using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
@@ -6,23 +5,16 @@ using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
 using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
-using DFC.Api.JobProfiles.SearchServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using FakeItEasy;
-using FluentAssertions;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -45,18 +37,15 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
             httpRequest.Headers.Add("X-Forwarded-APIM-Url", "/job1");
 
-            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
-            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
             var summaryService = A.Fake<ISummaryService>();
             var healthCheckService = A.Fake<HealthCheckService>();
             dataService = A.Fake<IProfileDataService>();
-            var mapper = A.Fake<IMapper>();
             using var telemetryConfig = new TelemetryConfiguration();
             ILogService logService = A.Fake<LogService>();
             var searchService = A.Fake<ISearchService>();
             fakeCorrelation = A.Fake<IResponseWithCorrelation>();
 
-            functionApp = new JobProfileFunctions(logService, fakeCorrelation, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, searchService, dataService);
+            functionApp = new JobProfileFunctions(logService, fakeCorrelation, summaryService, healthCheckService, searchService, dataService);
         }
 
         [Fact]

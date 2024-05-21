@@ -1,36 +1,18 @@
-using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
-using DFC.Api.JobProfiles.Data.ApiModels.Health;
 using DFC.Api.JobProfiles.Data.ApiModels.OpenAPI;
-using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Extensions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Constant;
-using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
-using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
-using DFC.Functions.DI.Standard.Attributes;
-using DFC.Swagger.Standard.Annotations;
 using Microsoft.ApplicationInsights.DataContracts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
-using Microsoft.Azure.Functions.Worker.Http;
 using Microsoft.Azure.WebJobs.Extensions.OpenApi.Core.Attributes;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Net;
-using System.Net.Http;
-using System.Runtime.CompilerServices;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace DFC.Api.JobProfiles.Functions
@@ -40,23 +22,17 @@ namespace DFC.Api.JobProfiles.Functions
         private const string SuccessMessage = "Document store is available";
         private readonly ILogService logService;
         private readonly IResponseWithCorrelation responseWithCorrelation;
-        private readonly IMapper mapper;
-        private readonly ISharedContentRedisInterface sharedContentRedisInterface;
         private readonly string resourceName;
         private readonly HealthCheckService healthCheckService;
         private readonly ISearchService searchService;
         private readonly ISummaryService summaryService;
-        private readonly IFunctionContextAccessor functionContextAccessor;
         private readonly IProfileDataService profileDataService;
 
-        public JobProfileFunctions(ILogService logService, IResponseWithCorrelation responseWithCorrelation, ISharedContentRedisInterface sharedContentRedisInterface, IMapper mapper, IFunctionContextAccessor functionContextAccessor, ISummaryService summaryService, HealthCheckService healthCheckService, ISearchService searchService, IProfileDataService profileDataService)
+        public JobProfileFunctions(ILogService logService, IResponseWithCorrelation responseWithCorrelation, ISummaryService summaryService, HealthCheckService healthCheckService, ISearchService searchService, IProfileDataService profileDataService)
         {
             this.logService = logService;
             this.responseWithCorrelation = responseWithCorrelation;
             resourceName = typeof(JobProfileFunctions).Namespace;
-            this.sharedContentRedisInterface = sharedContentRedisInterface;
-            this.functionContextAccessor = functionContextAccessor;
-            this.mapper = mapper;
             this.summaryService = summaryService;
             this.healthCheckService = healthCheckService;
             this.searchService = searchService;

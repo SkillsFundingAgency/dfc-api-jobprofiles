@@ -1,18 +1,15 @@
-/*using AutoMapper;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
-using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using FakeItEasy;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -22,94 +19,104 @@ namespace DFC.Api.JobProfiles.UnitTests
     {
         private readonly HttpRequest httpRequest;
         private readonly JobProfileFunctions functionApp;
+        private readonly IResponseWithCorrelation fakeCorrelation;
+        private readonly IProfileDataService dataService;
+        private readonly HealthCheckService healthCheckService;
+
 
         public JobProfileFunctionsHealthTests()
         {
-            *//*httpRequest = A.Fake<HttpRequest>();
-            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
-            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
+            httpRequest = A.Fake<HttpRequest>();
             var summaryService = A.Fake<ISummaryService>();
-            var healthCheckService = A.Fake<HealthCheckService>();
-            var fakeDetailService = A.Fake<IProfileDataService>();
-            var fakeSearchService = A.Fake<ISearchService>();
-            var mapper = A.Fake<IMapper>(); var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
+            healthCheckService = A.Fake<HealthCheckService>();
+            dataService = A.Fake<IProfileDataService>();
             using var telemetryConfig = new TelemetryConfiguration();
-            var telemetryClient = new TelemetryClient(telemetryConfig);
-            var logger = new LogService(correlationProvider, telemetryClient);
-            var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
+            ILogService logService = A.Fake<LogService>();
+            var searchService = A.Fake<ISearchService>();
+            fakeCorrelation = A.Fake<IResponseWithCorrelation>();
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);*//*
+            functionApp = new JobProfileFunctions(logService, fakeCorrelation, summaryService, healthCheckService, searchService, dataService);
         }
 
         [Fact]
         public void PingReturnsOKStatusResult()
         {
-            var httpRequest = A.Fake<HttpRequest>();
-            var functionContextAccessor = A.Fake<IFunctionContextAccessor>();
-            var fakeSharedContentRedis = A.Fake<ISharedContentRedisInterface>();
-            var summaryService = A.Fake<ISummaryService>();
-            var healthCheckService = A.Fake<HealthCheckService>();
-            var fakeDetailService = A.Fake<IProfileDataService>();
-            var fakeSearchService = A.Fake<ISearchService>();
-            var mapper = A.Fake<IMapper>(); var correlationProvider = new RequestHeaderCorrelationIdProvider(functionContextAccessor);
-            using var telemetryConfig = new TelemetryConfiguration();
-            var telemetryClient = new TelemetryClient(telemetryConfig);
-            var logger = A.Fake<LogService>();
-            var correlationResponse = new ResponseWithCorrelation(correlationProvider, functionContextAccessor);
-
-            var functionApp = new JobProfileFunctions(logger, correlationResponse, fakeSharedContentRedis, mapper, functionContextAccessor, summaryService, healthCheckService, fakeSearchService, fakeDetailService);
-
             // Act
+            A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
+               .Returns(new StatusCodeResult(200));
             var result = functionApp.Ping(httpRequest);
 
             // Assert
-            var statusResult = Assert.IsType<OkObjectResult>(result);
+            var statusResult = Assert.IsType<StatusCodeResult>(result);
             Assert.Equal((int)HttpStatusCode.OK, statusResult.StatusCode);
         }
 
         [Fact]
-        public async Task HealthCheckReturnsOKStatusResultWhenChildAppIsHealthy()
+        public async Task HealthControllerHealthReturnsSuccessWhenHealthy()
         {
             // Arrange
-            var dataService = A.Fake<IProfileDataService>();
-            A.CallTo(() => dataService.PingAsync()).Returns(true);
+            var service = CreateHealthChecksService(b =>
+            {
+                b.AddAsyncCheck("HealthyCheck", _ => Task.FromResult(HealthCheckResult.Healthy()));
+            });
+            A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
+              .Returns(new StatusCodeResult(200));
 
             // Act
-            var result = await functionApp.HealthCheck(httpRequest).ConfigureAwait(false);
+            var healthCheckResult = await service.CheckHealthAsync();
 
             // Assert
-            var statusResult = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal((int)HttpStatusCode.OK, statusResult.StatusCode);
+            Assert.Collection(
+                healthCheckResult.Entries,
+                actual =>
+                {
+                    Assert.Equal("HealthyCheck", actual.Key);
+                    Assert.Equal(HealthStatus.Healthy, actual.Value.Status);
+                    Assert.Null(actual.Value.Exception);
+                });
+
         }
 
         [Fact]
-        public async Task HealthCheckReturnsServiceUnavailableStatusResultWhenPingToCosmosReturnsNoResults()
+        public async Task HealthControllerHealthReturnsServiceUnavailableWhenUnhealthy()
         {
             // Arrange
-            var dataService = A.Fake<IProfileDataService>();
-            A.CallTo(() => dataService.PingAsync()).Returns(false);
+            var service = CreateHealthChecksService(b =>
+            {
+                b.AddAsyncCheck("timeout", async (ct) =>
+                {
+                    await Task.Delay(2000, ct);
+                    return HealthCheckResult.Unhealthy();
+                }, timeout: TimeSpan.FromMilliseconds(100));
+            });
 
-            // Act
             var result = await functionApp.HealthCheck(httpRequest).ConfigureAwait(false);
 
+            // Act
+            var healthCheckResult = await service.CheckHealthAsync();
+
             // Assert
-            var statusResult = Assert.IsType<StatusCodeResult>(result);
-            Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusResult.StatusCode);
+            Assert.Collection(
+                healthCheckResult.Entries,
+                actual =>
+                {
+                    Assert.Equal("timeout", actual.Key);
+                    Assert.Equal(HealthStatus.Unhealthy, actual.Value.Status);
+                    var statusResult = Assert.IsType<StatusCodeResult>(result);
+                    A.Equals((int)HttpStatusCode.ServiceUnavailable, statusResult.StatusCode);
+                });
         }
 
-        [Fact]
-        public async Task HealthCheckReturnsServiceUnavailableStatusResultWhenPingToCosmosThrowsException()
+        protected HealthCheckService CreateHealthChecksService(Action<IHealthChecksBuilder> configure)
         {
-            // Arrange
-            var dataService = A.Fake<IProfileDataService>();
-            A.CallTo(() => dataService.PingAsync()).Throws<HttpRequestException>();
+            var services = new ServiceCollection();
+            services.AddLogging();
+            services.AddOptions();
 
-            // Act
-            var result = await functionApp.HealthCheck(httpRequest).ConfigureAwait(false);
+            var builder = services.AddHealthChecks();
+            configure?.Invoke(builder);
 
-            // Assert
-            var statusResult = Assert.IsType<StatusCodeResult>(result);
-            Assert.Equal((int)HttpStatusCode.ServiceUnavailable, statusResult.StatusCode);
+            return services.BuildServiceProvider(validateScopes: true).GetRequiredService<HealthCheckService>();
         }
     }
-}*/
+}

@@ -30,7 +30,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests.DetailSegmentTests
             var logger = A.Fake<ILogger>();
             var sharedContentRedisInterface = A.Fake<ISharedContentRedisInterface>();
 
-            var profileDataService = new ProfileDataService(repository, logger, mapper, sharedContentRedisInterface);
+            var profileDataService = new ProfileDataService(logger, mapper, sharedContentRedisInterface);
             var expectedResult = GetExpectedData();
             var expectedSkillsResult = GetSkillsData();
 
@@ -60,7 +60,7 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests.DetailSegmentTests
             var logger = A.Fake<ILogger>();
             var sharedContentRedisInterface = A.Fake<ISharedContentRedisInterface>();
 
-            var profileDataService = new ProfileDataService(repository, logger, mapper, sharedContentRedisInterface);
+            var profileDataService = new ProfileDataService(logger, mapper, sharedContentRedisInterface);
 
             var canonicalName = "biochemist";
             var filter = "PUBLISHED";

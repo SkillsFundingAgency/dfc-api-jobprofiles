@@ -1,6 +1,5 @@
 ﻿using DFC.Api.JobProfiles.Common.Constants;
 using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Functions.Worker;
 using System;
 
