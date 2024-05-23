@@ -16,8 +16,8 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
     {
         public string Resolve(
             JobProfileHowToBecomeResponse source,
-        CommonRouteApiModel destination,
-        string destMember,
+            CommonRouteApiModel destination,
+            string destMember,
             ResolutionContext context)
         {
             RouteName routeName = (RouteName)context.Items["RouteName"];

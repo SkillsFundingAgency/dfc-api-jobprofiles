@@ -12,34 +12,6 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
     public class RelatedCareerResolver : IValueResolver<JobProfileRelatedCareers, JobProfileApiModel, List<RelatedCareerApiModel>>
     {
-        //public List<RelatedCareerApiModel> Resolve(
-        //    JobProfileRelatedCareers source,
-        //    RelatedCareerApiModel destination,
-        //    List<RelatedCareerApiModel> destMember,
-        //    ResolutionContext context)
-        //{
-        //    var segmentData = new List<RelatedCareerApiModel>();
-
-        //    if (source.RelatedCareerProfiles.ContentItems?.Count() > 0)
-        //    {
-        //        var responseData = source.RelatedCareerProfiles;
-
-        //        //if (responseData.ContentItems.Any())
-        //        //{
-        //        foreach (var career in responseData.ContentItems)
-        //        {
-        //            segmentData.Add(new RelatedCareerApiModel
-        //            {
-        //                Url = career.PageLocation.FullUrl,
-        //                Title = career.DisplayText,
-        //            });
-        //        }
-        //        //}
-        //    }
-
-        //    return segmentData;
-        //}
-
         public List<RelatedCareerApiModel> Resolve(
             JobProfileRelatedCareers source,
             JobProfileApiModel destination,
@@ -52,8 +24,6 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             {
                 var responseData = source.RelatedCareerProfiles;
 
-                //if (responseData.ContentItems.Any())
-                //{
                 foreach (var career in responseData.ContentItems)
                 {
                     segmentData.Add(new RelatedCareerApiModel
@@ -62,7 +32,6 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                         Title = career.DisplayText,
                     });
                 }
-                //}
             }
 
             return segmentData;

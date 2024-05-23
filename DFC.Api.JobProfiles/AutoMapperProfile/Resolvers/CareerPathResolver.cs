@@ -4,6 +4,7 @@ using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.CareerPathAndProgression;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
@@ -16,6 +17,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             ResolutionContext context)
         {
             var careerPath = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProileCareerPath.IsAny())
             {
@@ -23,7 +25,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 
                 if (responseData.Content.Html != null)
                 {
-                    careerPath.Add(responseData.Content.Html);
+                    careerPath = dataTranslator.Translate(responseData.Content.Html);
                     return careerPath;
                 }
             }

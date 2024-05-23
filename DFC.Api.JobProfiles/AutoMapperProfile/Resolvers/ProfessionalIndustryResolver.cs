@@ -11,7 +11,7 @@ using DFC.HtmlToDataTranslator.Services;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
-    public class RegistrationResolver : IValueResolver<JobProfileHowToBecomeResponse, MoreInformationApiModel, List<string>>
+    internal class ProfessionalIndustryResolver : IValueResolver<JobProfileHowToBecomeResponse, MoreInformationApiModel, List<string>>
     {
         public List<string> Resolve(
             JobProfileHowToBecomeResponse source,
@@ -19,23 +19,21 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             List<string> destMember,
             ResolutionContext context)
         {
-            var registrations = new List<string>();
+            var professionalAndIndustry = new List<string>();
             HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
                 var responseData = source.JobProfileHowToBecome.FirstOrDefault();
 
-                if (responseData.RelatedRegistrations.ContentItems.IsAny())
+                if (responseData.ProfessionalAndIndustryBodies.Html != null)
                 {
-                    foreach (var item in responseData.RelatedRegistrations.ContentItems)
-                    {
-                        registrations.AddRange(dataTranslator.Translate(item.Info.Html));
-                    }
+                    professionalAndIndustry = dataTranslator.Translate(responseData.ProfessionalAndIndustryBodies.Html);
+                    return professionalAndIndustry;
                 }
             }
 
-            return registrations;
+            return professionalAndIndustry;
         }
     }
 }

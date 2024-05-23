@@ -134,7 +134,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
             CreateMap<JobProfileHowToBecomeResponse, MoreInformationApiModel>()
                 .ForMember(d => d.Registrations, s => s.MapFrom<RegistrationResolver>())
                 .ForMember(d => d.CareerTips, s => s.MapFrom<CareerTipsResolver>())
-                .ForMember(d => d.ProfessionalAndIndustryBodies, s => s.Ignore())
+                .ForMember(d => d.ProfessionalAndIndustryBodies, s => s.MapFrom<ProfessionalIndustryResolver>())
                 .ForMember(d => d.FurtherInformation, s => s.MapFrom<FurtherInformationResolver>());
 
             CreateMap<JobProfileHowToBecomeResponse, CommonRouteApiModel>()
@@ -143,6 +143,24 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile
                 .ForMember(d => d.FurtherInformation, s => s.MapFrom<FurtherRouteInfoResolver>())
                 .ForMember(d => d.AdditionalInformation, s => s.MapFrom<AdditionalInfoResolver>())
                 .ForMember(d => d.RelevantSubjects, s => s.MapFrom<RelevantSubjectsResolver>());
+
+            CreateMap<JobProfileHowToBecomeResponse, HowToBecomeApiModel>()
+                .ForMember(d => d.EntryRouteSummary, s => s.MapFrom<EntryRouteSummaryResolver>())
+                .ForMember(d => d.EntryRoutes, s => s.Ignore())
+                .ForMember(d => d.MoreInformation, s => s.Ignore());
+
+            CreateMap<JobProfileHowToBecomeResponse, EntryRoutesApiModel>()
+                .ForMember(d => d.DirectApplication, s => s.MapFrom<DirectApplicationResolver>())
+                .ForMember(d => d.OtherRoutes, s => s.MapFrom<OtherRouteResolver>())
+                .ForMember(d => d.Volunteering, s => s.MapFrom<VolunteeringResolver>())
+                .ForMember(d => d.Work, s => s.MapFrom<WorkResolver>())
+                .ForMember(d => d.University, s => s.Ignore())
+                .ForMember(d => d.Apprenticeship, s => s.Ignore())
+                .ForMember(d => d.College, s => s.Ignore());
+
+            CreateMap<JobProfileSkillsResponse, RestrictionsAndRequirementsApiModel>()
+                .ForMember(d => d.OtherRequirements, s => s.MapFrom<OtherRequirementsResolver>())
+                .ForMember(d => d.RelatedRestrictions, s => s.MapFrom<RelatedRestrictionsResolver>());
 
         }
     }

@@ -1,9 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
@@ -16,6 +17,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             ResolutionContext context)
         {
             var daytoDay = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileWhatYoullDo.IsAny())
             {
@@ -23,10 +25,11 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 
                 if (responseData.Daytodaytasks.Html != null)
                 {
-                    daytoDay.Add(responseData.Daytodaytasks.Html);
+                    daytoDay = dataTranslator.Translate(responseData.Daytodaytasks.Html);
                     return daytoDay;
                 }
             }
+
             return daytoDay;
         }
     }

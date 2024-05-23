@@ -11,31 +11,29 @@ using DFC.HtmlToDataTranslator.Services;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
-    public class RegistrationResolver : IValueResolver<JobProfileHowToBecomeResponse, MoreInformationApiModel, List<string>>
+    public class OtherRouteResolver : IValueResolver<JobProfileHowToBecomeResponse, EntryRoutesApiModel, List<string>>
     {
         public List<string> Resolve(
             JobProfileHowToBecomeResponse source,
-            MoreInformationApiModel destination,
+            EntryRoutesApiModel destination,
             List<string> destMember,
             ResolutionContext context)
         {
-            var registrations = new List<string>();
+            var otherRoute = new List<string>();
             HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
                 var responseData = source.JobProfileHowToBecome.FirstOrDefault();
 
-                if (responseData.RelatedRegistrations.ContentItems.IsAny())
+                if (responseData.OtherRoutes.Html != null)
                 {
-                    foreach (var item in responseData.RelatedRegistrations.ContentItems)
-                    {
-                        registrations.AddRange(dataTranslator.Translate(item.Info.Html));
-                    }
+                    otherRoute = dataTranslator.Translate(responseData.OtherRoutes.Html);
+                    return otherRoute;
                 }
             }
 
-            return registrations;
+            return otherRoute;
         }
     }
 }

@@ -2,6 +2,7 @@
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,6 +17,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             ResolutionContext context)
         {
             var furtherInformation = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
@@ -23,7 +25,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 
                 if (responseData.FurtherInformation.Html != null)
                 {
-                    furtherInformation.Add(responseData.FurtherInformation.Html);
+                    furtherInformation = dataTranslator.Translate(responseData.FurtherInformation.Html);
                     return furtherInformation;
                 }
             }

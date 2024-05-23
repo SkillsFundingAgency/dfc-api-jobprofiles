@@ -1,14 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
-using FluentNHibernate.Conventions;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
@@ -22,6 +19,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
         {
             RouteName routeName = (RouteName)context.Items["RouteName"];
             var entryRequirements = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
@@ -31,22 +29,23 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                 {
                     case RouteName.Apprenticeship:
                         if (responseData.RelatedApprenticeshipRequirements.ContentItems.IsAny() &&
-                            responseData.RelatedApprenticeshipRequirements.ContentItems.FirstOrDefault().Info.IsAny())
+                            responseData.RelatedApprenticeshipRequirements.ContentItems.FirstOrDefault().Info != null)
                         {
                             foreach (var item in responseData.RelatedApprenticeshipRequirements.ContentItems)
                             {
-                                entryRequirements.Add(item.Info.Html);
+                                entryRequirements.AddRange(dataTranslator.Translate(item.Info.Html));
+
                             }
                         }
 
                         break;
                     case RouteName.College:
                         if (responseData.RelatedCollegeRequirements.ContentItems.IsAny() &&
-                            responseData.RelatedCollegeRequirements.ContentItems.FirstOrDefault().Info.IsAny())
+                            responseData.RelatedCollegeRequirements.ContentItems.FirstOrDefault().Info != null)
                         {
                             foreach (var item in responseData.RelatedCollegeRequirements.ContentItems)
                             {
-                                entryRequirements.Add(item.Info.Html);
+                                entryRequirements.AddRange(dataTranslator.Translate(item.Info.Html));
 
                             }
                         }
@@ -54,11 +53,11 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                         break;
                     case RouteName.University:
                         if (responseData.RelatedUniversityRequirements.ContentItems.IsAny() &&
-                            responseData.RelatedUniversityRequirements.ContentItems.FirstOrDefault().Info.IsAny())
+                            responseData.RelatedUniversityRequirements.ContentItems.FirstOrDefault()?.Info != null)
                         {
                             foreach (var item in responseData.RelatedUniversityRequirements.ContentItems)
                             {
-                                entryRequirements.Add(item.Info.Html);
+                                entryRequirements.AddRange(dataTranslator.Translate(item.Info.Html));
 
                             }
                         }

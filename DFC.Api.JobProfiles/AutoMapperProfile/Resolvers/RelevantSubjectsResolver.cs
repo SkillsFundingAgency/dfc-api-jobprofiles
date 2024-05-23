@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AutoMapper;
+﻿using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Enums;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
@@ -21,6 +19,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
         {
             RouteName routeName = (RouteName)context.Items["RouteName"];
             List<string> relevantSubjects = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
@@ -29,13 +28,13 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
                 switch (routeName)
                 {
                     case RouteName.Apprenticeship:
-                        relevantSubjects.Add(responseData.ApprenticeshipRelevantSubjects.Html);
+                        relevantSubjects.AddRange(dataTranslator.Translate(responseData.ApprenticeshipRelevantSubjects.Html));
                         break;
                     case RouteName.College:
-                        relevantSubjects.Add(responseData.CollegeRelevantSubjects.Html);
+                        relevantSubjects.AddRange(dataTranslator.Translate(responseData.CollegeRelevantSubjects.Html));
                         break;
                     case RouteName.University:
-                        relevantSubjects.Add(responseData.UniversityRelevantSubjects.Html);
+                        relevantSubjects.AddRange(dataTranslator.Translate(responseData.UniversityRelevantSubjects.Html));
                         break;
                 }
             }

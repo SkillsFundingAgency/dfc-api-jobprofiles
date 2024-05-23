@@ -110,20 +110,18 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
                     var mappedMoreInfo = mapper.Map<MoreInformationApiModel>(response);
 
-                    howToBecome.EntryRouteSummary = new List<string> { response.JobProfileHowToBecome.FirstOrDefault().EntryRoutes.Html };
+                    howToBecome = mapper.Map<HowToBecomeApiModel>(response);
 
-                    howToBecome.EntryRoutes = new EntryRoutesApiModel()
+                    var mappedEntryRoutes = mapper.Map<EntryRoutesApiModel>(response);
+
+                    if (mappedEntryRoutes != null)
                     {
-                        University = universityCommonRoutes,
-                        Apprenticeship = apprenticeshipCommonRoutes,
-                        College = collegeCommonRoutes,
-                        DirectApplication = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().DirectApplication.Html },
-                        OtherRoutes = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().OtherRoutes.Html },
-                        Volunteering = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Volunteering.Html },
-                        Work = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().Work.Html },
-                    };
+                        mappedEntryRoutes.University = universityCommonRoutes;
+                        mappedEntryRoutes.Apprenticeship = apprenticeshipCommonRoutes;
+                        mappedEntryRoutes.College = collegeCommonRoutes;
+                    }
 
-                    mappedMoreInfo.ProfessionalAndIndustryBodies = new List<string>() { response.JobProfileHowToBecome.FirstOrDefault().ProfessionalAndIndustryBodies.Html };
+                    howToBecome.EntryRoutes = mappedEntryRoutes;
 
                     howToBecome.MoreInformation = mappedMoreInfo;
                     var howToBecomeObject = JsonConvert.SerializeObject(howToBecome, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
@@ -201,11 +199,6 @@ namespace DFC.Api.JobProfiles.ProfileServices
         public async Task<WhatItTakesApiModel> GetSkillSegmentAsync(string canonicalName, string status)
         {
             WhatItTakesApiModel skills = new WhatItTakesApiModel();
-            RestrictionsAndRequirementsApiModel restrictionsAndRequirements = new RestrictionsAndRequirementsApiModel()
-            {
-                OtherRequirements = new List<string>(),
-                RelatedRestrictions = new List<string>(),
-            };
 
             try
             {
@@ -256,16 +249,10 @@ namespace DFC.Api.JobProfiles.ProfileServices
                         });
                     }
 
-                    restrictionsAndRequirements.OtherRequirements.Add(response.JobProfileSkills.FirstOrDefault().Otherrequirements.Html);
-
-                    var restrictions = response.JobProfileSkills.SelectMany(d => d.Relatedrestrictions.ContentItems).ToList();
-                    foreach (var res in restrictions)
-                    {
-                        restrictionsAndRequirements.RelatedRestrictions.Add(res.Info.Html);
-                    }
+                    var mappedRestriction = mapper.Map<RestrictionsAndRequirementsApiModel>(response);
 
                     skills.Skills = relatedSkillsApiModels;
-                    skills.RestrictionsAndRequirements = restrictionsAndRequirements;
+                    skills.RestrictionsAndRequirements = mappedRestriction;
 
                     var skillsObject = JsonConvert.SerializeObject(skills, new JsonSerializerSettings { ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() } });
                     var result = JsonConvert.DeserializeObject<WhatItTakesApiModel>(skillsObject ?? string.Empty) ?? new WhatItTakesApiModel();

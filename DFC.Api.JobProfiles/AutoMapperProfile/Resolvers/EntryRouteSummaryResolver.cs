@@ -6,36 +6,35 @@ using System.Threading.Tasks;
 using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
+using DFC.Api.JobProfiles.Data.ApiModels.WhatYouWillDo;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
 using DFC.HtmlToDataTranslator.Services;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
-    public class RegistrationResolver : IValueResolver<JobProfileHowToBecomeResponse, MoreInformationApiModel, List<string>>
+    internal class EntryRouteSummaryResolver : IValueResolver<JobProfileHowToBecomeResponse, HowToBecomeApiModel, List<string>>
     {
         public List<string> Resolve(
             JobProfileHowToBecomeResponse source,
-            MoreInformationApiModel destination,
+            HowToBecomeApiModel destination,
             List<string> destMember,
             ResolutionContext context)
         {
-            var registrations = new List<string>();
+            var entrySummary = new List<string>();
             HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
                 var responseData = source.JobProfileHowToBecome.FirstOrDefault();
 
-                if (responseData.RelatedRegistrations.ContentItems.IsAny())
+                if (responseData.EntryRoutes.Html != null)
                 {
-                    foreach (var item in responseData.RelatedRegistrations.ContentItems)
-                    {
-                        registrations.AddRange(dataTranslator.Translate(item.Info.Html));
-                    }
+                    entrySummary = dataTranslator.Translate(responseData.EntryRoutes.Html);
+                    return entrySummary;
                 }
             }
 
-            return registrations;
+            return entrySummary;
         }
     }
 }

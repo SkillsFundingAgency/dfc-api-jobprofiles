@@ -4,6 +4,7 @@ using AutoMapper;
 using DFC.Api.JobProfiles.AutoMapperProfile.Utilities;
 using DFC.Api.JobProfiles.Data.ApiModels.HowToBecome;
 using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
+using DFC.HtmlToDataTranslator.Services;
 
 namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 {
@@ -16,6 +17,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
             ResolutionContext context)
         {
             var careerTips = new List<string>();
+            HtmlAgilityPackDataTranslator dataTranslator = new HtmlAgilityPackDataTranslator();
 
             if (source != null && source.JobProfileHowToBecome.IsAny())
             {
@@ -23,7 +25,7 @@ namespace DFC.Api.JobProfiles.AutoMapperProfile.Resolvers
 
                 if (responseData.CareerTips.Html != null)
                 {
-                    careerTips.Add(responseData.CareerTips.Html);
+                    careerTips = dataTranslator.Translate(responseData.CareerTips.Html);
                     return careerTips;
                 }
             }
