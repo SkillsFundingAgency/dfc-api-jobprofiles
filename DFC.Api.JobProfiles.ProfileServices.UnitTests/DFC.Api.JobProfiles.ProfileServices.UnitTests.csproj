@@ -36,6 +36,7 @@
     <ProjectReference Include="..\DFC.Api.JobProfiles.Data\DFC.Api.JobProfiles.Data.csproj" />
     <ProjectReference Include="..\DFC.Api.JobProfiles.ProfileServices\DFC.Api.JobProfiles.ProfileServices.csproj" />
     <ProjectReference Include="..\DFC.Api.JobProfiles.Repository.CosmosDb\DFC.Api.JobProfiles.Repository.CosmosDb.csproj" />
+    <ProjectReference Include="..\DFC.Api.JobProfiles\DFC.Api.JobProfiles.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,7 +1,8 @@
 ﻿using DFC.Api.JobProfiles.Common.Constants;
 using DFC.Api.JobProfiles.Data.ContractResolver;
-using Microsoft.AspNetCore.Http;
+using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.Functions.Worker;
 using Newtonsoft.Json;
 using System.Net;
 
@@ -10,12 +11,13 @@ namespace DFC.Api.JobProfiles.Common.Services
     public class ResponseWithCorrelation : IResponseWithCorrelation
     {
         private readonly ICorrelationIdProvider correlationIdProvider;
-        private readonly IHttpContextAccessor httpContextAccessor;
+        private readonly IFunctionContextAccessor functionContextAccessor;
 
-        public ResponseWithCorrelation(ICorrelationIdProvider correlationIdProvider, IHttpContextAccessor httpContextAccessor)
+
+        public ResponseWithCorrelation(ICorrelationIdProvider correlationIdProvider, IFunctionContextAccessor functionContextAccessor)
         {
             this.correlationIdProvider = correlationIdProvider;
-            this.httpContextAccessor = httpContextAccessor;
+            this.functionContextAccessor = functionContextAccessor;
         }
 
         public IActionResult ResponseWithCorrelationId(HttpStatusCode statusCode)
@@ -36,7 +38,7 @@ namespace DFC.Api.JobProfiles.Common.Services
 
         private void AddCorrelationId()
         {
-            httpContextAccessor.HttpContext.Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.CorrelationId);
+            functionContextAccessor.FunctionContext.GetHttpContext().Response.Headers.Add(HeaderName.CorrelationId, correlationIdProvider.GetCorrelationId());
         }
     }
 }

@@ -108,6 +108,24 @@
         },
         "workspaceResourceGroup": {
             "type": "string"
+        },
+        "CmsTokenEndpointUrl": {
+            "type": "string"
+        },
+        "CmsGraphApiUrl": {
+            "type": "string"
+        },
+        "CmsClientId": {
+            "type": "string"
+        },
+        "CmsClientSecret": {
+            "type": "securestring"
+        },
+        "CmsRedisCacheConnectionString": {
+            "type": "securestring"
+        },
+        "CmsSqlApiUrl": {
+            "type": "string"
         }
     },
     "variables": {
@@ -214,7 +232,7 @@
                             },
                             {
                                 "name": "FUNCTIONS_WORKER_RUNTIME",
-                                "value": "dotnet"
+                                "value": "dotnet-isolated"
                             },
                             {
                                 "name": "MSDEPLOY_RENAME_LOCKED_FILES",
@@ -283,6 +301,26 @@
                             {
                                 "name": "SharedConfigSettings__InMemoryCacheTimeToLiveTimespan",
                                 "value": "[parameters('SharedConfigTTL')]"
+                            },
+                            {
+                                "name": "Cms__TokenEndPointUrl",
+                                "value": "[parameters('CmsTokenEndpointUrl')]"
+                            },
+                            {
+                                "name": "Cms__GraphApiUrl",
+                                "value": "[parameters('CmsGraphApiUrl')]"
+                            },
+                            {
+                                "name": "Cms__ClientId",
+                                "value": "[parameters('CmsClientId')]"
+                            },
+                            {
+                                "name": "Cms__ClientSecret",
+                                "value": "[parameters('CmsClientSecret')]"
+                            },
+                            {
+                                "name": "Cms__RedisCacheConnectionString",
+                                "value": "[parameters('CmsRedisCacheConnectionString')]"
                             }
                         ]
                     }

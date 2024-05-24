@@ -2,6 +2,6 @@
 {
     public interface ICorrelationIdProvider
     {
-        string CorrelationId { get; }
+        string GetCorrelationId();
     }
 }
