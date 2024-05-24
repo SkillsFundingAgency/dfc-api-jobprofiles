@@ -81,8 +81,8 @@ namespace DFC.Api.JobProfiles.Functions
             string canonicalName)
         {
             request.LogRequestHeaders(logService);
-
-            var jobProfile = await profileDataService.GetJobProfile(canonicalName).ConfigureAwait(false);
+            var lowerCanonicalName = canonicalName.ToLower();
+            var jobProfile = await profileDataService.GetJobProfile(lowerCanonicalName).ConfigureAwait(false);
             if (jobProfile is null)
             {
                 logService.LogMessage($"Job Profile with name {canonicalName} does not exist", SeverityLevel.Warning);
