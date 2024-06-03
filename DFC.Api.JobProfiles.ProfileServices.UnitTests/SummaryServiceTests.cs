@@ -2,6 +2,9 @@ using AutoMapper;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.DataModels;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
+using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
+using DFC.Common.SharedContent.Pkg.Netcore.Model.ContentItems;
+using DFC.Common.SharedContent.Pkg.Netcore.Model.Response;
 using FakeItEasy;
 using System;
 using System.Collections.Generic;
@@ -16,10 +19,12 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
     {
         private const string RequestUrl = "http://Something.com/";
         private readonly IMapper mapper;
+        private readonly ISharedContentRedisInterface sharedContentRedisInterface;
 
         public SummaryServiceTests()
         {
             mapper = A.Fake<IMapper>();
+            sharedContentRedisInterface = A.Fake<ISharedContentRedisInterface>();
             var apiModels = GetSummaryApiModels();
             A.CallTo(() => mapper.Map<List<SummaryApiModel>>(A<List<SummaryDataModel>>.Ignored)).Returns(apiModels);
         }
@@ -29,21 +34,20 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         {
             // Arrange
             var dataModels = GetSummaryDataModels();
-            var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
-            A.CallTo(() => repository.GetData(
-                A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored,
-                A<Expression<Func<SummaryDataModel, bool>>>.Ignored)).Returns(dataModels);
 
-            var summaryService = new SummaryService(repository, mapper);
+            A.CallTo(() => sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileApiSummaryResponse>(A<string>.Ignored, A<string>.Ignored, A<double>.Ignored)).Returns(dataModels);
+
+            var summaryService = new SummaryService(mapper, sharedContentRedisInterface);
 
             // Act
             var result = await summaryService.GetSummaryList(RequestUrl).ConfigureAwait(false);
 
             // Assert
             var resultArray = result.ToArray();
+
             for (var i = 0; i < resultArray.Length; i++)
             {
-                Assert.Equal($"{RequestUrl}{dataModels[i].CanonicalName}", resultArray[i].Url);
+                Assert.Equal($"{RequestUrl}{dataModels.JobProfileSummary[i].DisplayText}", resultArray[i].Url);
             }
         }
 
@@ -51,12 +55,10 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
         public async Task GetSummaryListReturnsNullWhenDataDoesntExist()
         {
             // Arrange
-            var repository = A.Fake<ICosmosRepository<SummaryDataModel>>();
-            A.CallTo(() => repository.GetData(
-                A<Expression<Func<SummaryDataModel, SummaryDataModel>>>.Ignored,
-                A<Expression<Func<SummaryDataModel, bool>>>.Ignored)).Returns((IList<SummaryDataModel>)null);
+            A.CallTo(() => sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileApiSummaryResponse>(A<string>.Ignored, A<string>.Ignored, A<double>.Ignored)).Returns(new JobProfileApiSummaryResponse());
 
-            var summaryService = new SummaryService(repository, mapper);
+
+            var summaryService = new SummaryService(mapper, sharedContentRedisInterface);
 
             // Act
             var result = await summaryService.GetSummaryList(RequestUrl).ConfigureAwait(false);
@@ -65,25 +67,35 @@ namespace DFC.Api.JobProfiles.ProfileServices.UnitTests
             Assert.Null(result);
         }
 
-        private IList<SummaryDataModel> GetSummaryDataModels()
+        private static JobProfileApiSummaryResponse GetSummaryDataModels()
         {
-            return new List<SummaryDataModel>
+            var expectedResult = new JobProfileApiSummaryResponse();
+
+            var list = new List<JobProfileSummary>
             {
-                new SummaryDataModel
+                new JobProfileSummary
                 {
-                    BreadcrumbTitle = "JobTitle1",
-                    CanonicalName = "job1",
-                    LastReviewed = DateTime.UtcNow,
-                    IncludeInSitemap = true,
+                   DisplayText = "Test1",
+                   PageLocation = new ()
+                    {
+                        UrlName = "TestUrlName",
+                        FullUrl = "TestFullUrl1",
+                    },
+                   PublishedUtc = "1992-01-01",
                 },
-                new SummaryDataModel
+                new JobProfileSummary
                 {
-                    BreadcrumbTitle = "JobTitle2",
-                    CanonicalName = "job2",
-                    LastReviewed = DateTime.UtcNow.AddDays(-1),
-                    IncludeInSitemap = true,
+                   DisplayText = "Test2",
+                   PageLocation = new ()
+                    {
+                        UrlName = "TestUrlName",
+                        FullUrl = "TestFullUrl2",
+                    },
+                   PublishedUtc = "1992-01-01",
                 },
             };
+            expectedResult.JobProfileSummary = list;
+            return expectedResult;
         }
 
         private List<SummaryApiModel> GetSummaryApiModels()

@@ -1,12 +1,8 @@
-using AzureFunctions.Extensions.Swashbuckle;
-using AzureFunctions.Extensions.Swashbuckle.Attribute;
 using DFC.Swagger.Standard;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
+using Microsoft.Azure.Functions.Worker;
 using System.Diagnostics.CodeAnalysis;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 using SwaggerIgnoreAttribute = DFC.Swagger.Standard.Annotations.SwaggerIgnoreAttribute;
@@ -30,18 +26,8 @@ namespace DFC.Api.JobProfiles.Functions
         }
 
         [SwaggerIgnore]
-        [FunctionName("SwaggerUI")]
-        public static Task<HttpResponseMessage> SwaggerUi(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerUiRoute)]
-            HttpRequestMessage req,
-            [SwashBuckleClient] ISwashBuckleClient swashBuckleClient)
-        {
-            return Task.FromResult(swashBuckleClient.CreateSwaggerUIResponse(req, SwaggerJsonRoute));
-        }
-
-        [SwaggerIgnore]
-        [FunctionName("SwaggerJson")]
-        public async Task<IActionResult> SwaggerJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerJsonRoute)]HttpRequest req)
+        [Function("SwaggerJson")]
+        public async Task<IActionResult> SwaggerJson([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = SwaggerJsonRoute)] HttpRequest req)
         {
             var swaggerDoc = await Task.FromResult(swaggerDocumentGenerator.GenerateSwaggerDocument(
                 req,

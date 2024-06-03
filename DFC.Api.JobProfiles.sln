@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29409.12
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34322.80
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "_Solution Items", "_Solution Items", "{109BA468-0881-434B-B2B8-7BD5A19CCA82}"
 	ProjectSection(SolutionItems) = preProject
@@ -47,7 +47,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.Common"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.SearchServices", "DFC.Api.JobProfiles.SearchServices\DFC.Api.JobProfiles.SearchServices.csproj", "{9EB60458-D082-44AA-A452-B5E7F283B095}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DFC.Api.JobProfiles.SearchServices.UnitTests", "DFC.Api.JobProfiles.SearchServices.UnitTests\DFC.Api.JobProfiles.SearchServices.UnitTests.csproj", "{AD9D16A8-F5D0-46BF-A779-FBA8DBFA4941}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DFC.Api.JobProfiles.SearchServices.UnitTests", "DFC.Api.JobProfiles.SearchServices.UnitTests\DFC.Api.JobProfiles.SearchServices.UnitTests.csproj", "{AD9D16A8-F5D0-46BF-A779-FBA8DBFA4941}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

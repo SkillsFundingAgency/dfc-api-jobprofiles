@@ -25,7 +25,7 @@ namespace DFC.Api.JobProfiles.Common.Services
         {
             var properties = new Dictionary<string, string>
             {
-                {HeaderName.CorrelationId, correlationIdProvider.CorrelationId}
+                {HeaderName.CorrelationId, correlationIdProvider.GetCorrelationId()}
             };
             telemetryClient.TrackTrace(message, severityLevel, properties);
         }

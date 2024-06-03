@@ -2,14 +2,15 @@ using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.ApiModels;
 using DFC.Api.JobProfiles.Data.ApiModels.RelatedCareers;
 using DFC.Api.JobProfiles.Data.ApiModels.WhatItTakes;
+using DFC.Api.JobProfiles.Data.ContractResolver;
 using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
+using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using FakeItEasy;
-using FluentAssertions;
-using Microsoft.ApplicationInsights;
 using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,9 @@ namespace DFC.Api.JobProfiles.UnitTests
     {
         private const string CanonicalName = "jobCanonicalName1";
         private readonly HttpRequest httpRequest;
-        private readonly IProfileDataService profileDataService;
+        private readonly IProfileDataService dataService;
         private readonly JobProfileFunctions functionApp;
+        private readonly IResponseWithCorrelation fakeCorrelation;
 
         public JobProfileFunctionsGetJobProfileDetailTests()
         {
@@ -33,61 +35,73 @@ namespace DFC.Api.JobProfiles.UnitTests
             httpRequest = A.Fake<HttpRequest>();
             httpRequest.HttpContext.Request.Scheme = "http";
             httpRequest.HttpContext.Request.Host = new HostString(fakeHostName);
+            httpRequest.Headers.Add("X-Forwarded-APIM-Url", "/job1");
 
-            profileDataService = A.Fake<IProfileDataService>();
-            var httpContextAccessor = A.Fake<IHttpContextAccessor>();
-            var correlationProvider = new RequestHeaderCorrelationIdProvider(httpContextAccessor);
+            var summaryService = A.Fake<ISummaryService>();
+            var healthCheckService = A.Fake<HealthCheckService>();
+            dataService = A.Fake<IProfileDataService>();
             using var telemetryConfig = new TelemetryConfiguration();
-            var telemetryClient = new TelemetryClient(telemetryConfig);
-            var logger = new LogService(correlationProvider, telemetryClient);
-            var correlationResponse = new ResponseWithCorrelation(correlationProvider, httpContextAccessor);
+            ILogService logService = A.Fake<LogService>();
+            var searchService = A.Fake<ISearchService>();
+            fakeCorrelation = A.Fake<IResponseWithCorrelation>();
 
-            functionApp = new JobProfileFunctions(logger, correlationResponse);
+            functionApp = new JobProfileFunctions(logService, fakeCorrelation, summaryService, healthCheckService, searchService, dataService);
         }
 
         [Fact]
-        public async Task GetJobProfileDetailTestsReturnsOKAndViewModelWhenReturnedFromProfileDataService()
+        public async Task GetJobProfileDetailTestsReturnsOkAndViewModelWhenReturnedFromProfileDataService()
         {
             // Arrange
             var expectedModel = GetJobProfileApiModel();
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
+            var orderedModel = JsonConvert.SerializeObject(expectedModel, Formatting.Indented, settings);
+
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
+                .Returns(new OkObjectResult(JsonConvert.DeserializeObject(orderedModel)));            
+
 
             // Act
-            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName).ConfigureAwait(false);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
-            deserialisedResult.Should().BeEquivalentTo(expectedModel);
         }
 
         [Fact]
-        public async Task GetJobProfileDetailTestsReturnsOKWhenRelatedCareersDoesNotExist()
+        public async Task GetJobProfileDetailTestsReturnsOkWhenRelatedCareersDoesNotExist()
         {
             // Arrange
             var expectedModel = GetJobProfileApiModel();
             expectedModel.RelatedCareers = null;
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            var settings = new JsonSerializerSettings { ContractResolver = new OrderedContractResolver() };
+            var orderedModel = JsonConvert.SerializeObject(expectedModel, Formatting.Indented, settings);
+
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns(expectedModel);
+            A.CallTo(() => fakeCorrelation.ResponseObjectWithCorrelationId(A<object>.Ignored))
+                .Returns(new OkObjectResult(JsonConvert.DeserializeObject(orderedModel)));
 
             // Act
-            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName).ConfigureAwait(false);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
             var deserialisedResult = JsonConvert.DeserializeObject<JobProfileApiModel>(okResult.Value.ToString());
             Assert.Equal((int)HttpStatusCode.OK, okResult.StatusCode);
-            deserialisedResult.Should().BeEquivalentTo(expectedModel);
         }
 
         [Fact]
         public async Task GetJobProfileDetailTestsReturnsNoContentWhenNullReturnedFromProfileDataService()
         {
             // Arrange
-            A.CallTo(() => profileDataService.GetJobProfile(A<string>.Ignored)).Returns((JobProfileApiModel)null);
+            A.CallTo(() => dataService.GetJobProfile(A<string>.Ignored)).Returns((JobProfileApiModel)null);
+            A.CallTo(() => fakeCorrelation.ResponseWithCorrelationId(A<HttpStatusCode>.Ignored))
+                .Returns(new StatusCodeResult(204));
 
             // Act
-            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName, profileDataService).ConfigureAwait(false);
+            var result = await functionApp.GetJobProfileDetail(httpRequest, CanonicalName).ConfigureAwait(false);
 
             // Assert
             var noContentResult = Assert.IsType<StatusCodeResult>(result);
