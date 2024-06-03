@@ -10,11 +10,11 @@ namespace DFC.Api.JobProfiles.Extensions
     {
         public static string GetAbsoluteUrlForRelativePath(this HttpRequest request, string relativePath = null)
         {
-            request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var apimUrl);
+            request.Headers.TryGetValue("X-Forwarded-APIM-Url", out var apimUrl).ToString();
 
             var trimmedRelativePath = relativePath?.TrimStart('/');
 
-            if (string.IsNullOrEmpty(apimUrl))
+            if (string.IsNullOrWhiteSpace(apimUrl))
             {
                 return $"{request.Scheme}://{request.Host}/{trimmedRelativePath}";
             }
