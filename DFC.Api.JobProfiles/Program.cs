@@ -1,13 +1,9 @@
-﻿using System;
-using System.Net.Http;
-using Autofac.Core;
-using Azure;
+﻿using Azure;
 using Azure.Core.Serialization;
 using Azure.Search.Documents;
 using DFC.Api.JobProfiles.Common.Services;
 using DFC.Api.JobProfiles.Data.AzureSearch.Models;
 using DFC.Api.JobProfiles.Data.DataModels;
-using DFC.Api.JobProfiles.Functions;
 using DFC.Api.JobProfiles.ProfileServices;
 using DFC.Api.JobProfiles.Repository.CosmosDb;
 using DFC.Api.JobProfiles.SearchServices;
@@ -29,7 +25,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Azure.Cosmos;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Azure.Functions.Worker.Extensions.OpenApi.Extensions;
-using Microsoft.Azure.Functions.Worker.Http;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -37,6 +33,8 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
+using System;
+using System.Net.Http;
 
 const string CosmosDbConfigAppSettings = "Configuration:CosmosDbConnections:JobProfileSegment";
 const string AzureSearchConfigAppSettings = "JobProfileSearchIndexConfig";
@@ -77,7 +75,8 @@ var host = new HostBuilder()
         });
         worker.UseMiddleware<FunctionContextAccessorMiddleware>();
     })
-    .ConfigureServices(services => {
+    .ConfigureServices(services =>
+    {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.AddControllers()
         .AddNewtonsoftJson(options =>
@@ -118,7 +117,11 @@ var host = new HostBuilder()
             {
                 EndPoint = new Uri(configuration.GetSection(StaxGraphApiUrlAppSettings).Get<string>() ?? throw new ArgumentNullException()),
 
-                HttpMessageHandler = new CmsRequestHandler(s.GetService<IHttpClientFactory>(), s.GetService<IConfiguration>(), s.GetService<IHttpContextAccessor>() ?? throw new ArgumentNullException()),
+                HttpMessageHandler = new CmsRequestHandler(
+                    s.GetService<IHttpClientFactory>(),
+                    s.GetService<IConfiguration>(),
+                    s.GetService<IHttpContextAccessor>() ?? throw new ArgumentNullException(),
+                    s.GetService<IMemoryCache>()),
             };
             var client = new GraphQLHttpClient(option, new NewtonsoftJsonSerializer());
             return client;
@@ -141,7 +144,6 @@ var host = new HostBuilder()
 
         services.AddScoped<ISharedContentRedisInterface, SharedContentRedis>();
         services.AddSingleton<IFunctionContextAccessor, FunctionContextAccessor>();
-
 
         services.AddSingleton<IConnectionMultiplexer>(option =>
             ConnectionMultiplexer.Connect(new ConfigurationOptions
