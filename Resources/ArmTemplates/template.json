@@ -8,26 +8,6 @@
         "appSharedStorageAccountName": {
             "type": "string"
         },
-        "aseHostingEnvironmentName": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "aseResourceGroup": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "aspInstances": {
-            "type": "int",
-            "defaultValue": 2
-        },
-        "aspSize": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "aspTier": {
-            "type": "string",
-            "defaultValue": ""
-        },
         "environment": {
             "type": "string"
         },
