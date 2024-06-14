@@ -94,6 +94,9 @@
         },
         "CmsSqlApiUrl": {
             "value": "http://url"
+        },
+        "CmsCacheKeyExpiry": {
+            "value": "some-value"
         }
     }
 }

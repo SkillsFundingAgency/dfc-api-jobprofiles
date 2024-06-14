@@ -106,6 +106,9 @@
         },
         "CmsSqlApiUrl": {
             "type": "string"
+        },
+        "CmsCacheKeyExpiry": {
+            "type": "string"
         }
     },
     "variables": {
@@ -297,6 +300,10 @@
                             {
                                 "name": "Cms__ClientSecret",
                                 "value": "[parameters('CmsClientSecret')]"
+                            },
+                            {
+                                "name": "Cms__CacheKeyExpiry",
+                                "value": "[parameters('CmsCacheKeyExpiry')]"
                             },
                             {
                                 "name": "Cms__RedisCacheConnectionString",
