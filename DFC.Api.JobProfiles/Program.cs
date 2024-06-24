@@ -11,6 +11,7 @@ using DFC.Api.JobProfiles.SearchServices.AzureSearch;
 using DFC.Api.JobProfiles.SearchServices.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore;
 using DFC.Common.SharedContent.Pkg.Netcore.Infrastructure;
+using DFC.Common.SharedContent.Pkg.Netcore.Infrastructure.CacheRepository;
 using DFC.Common.SharedContent.Pkg.Netcore.Infrastructure.Strategy;
 using DFC.Common.SharedContent.Pkg.Netcore.Interfaces;
 using DFC.Common.SharedContent.Pkg.Netcore.Middleware;
@@ -111,6 +112,8 @@ var host = new HostBuilder()
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddHttpClient();
         services.AddStackExchangeRedisCache(options => { options.Configuration = configuration.GetSection(RedisCacheConnectionStringAppSettings).Get<string>(); });
+        services.AddMemoryCache();
+        services.AddSingleton<ICacheRepository, CacheRepository>();
         services.AddSingleton<IGraphQLClient>(s =>
         {
             var option = new GraphQLHttpClientOptions()
