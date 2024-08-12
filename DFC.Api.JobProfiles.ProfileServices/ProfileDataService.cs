@@ -24,6 +24,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 {
     public class ProfileDataService : IProfileDataService
     {
+        private const double expiry = 24;
         private const string Published = "PUBLISHED";
         private readonly ILogger log;
         private readonly IMapper mapper;
@@ -69,7 +70,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             try
             {
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(string.Concat(ApplicationKeys.JobProfileOverview, "/", canonicalName), filter);
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfilesOverviewResponse>(string.Concat(ApplicationKeys.JobProfileOverview, "/", canonicalName), filter, expiry);
                 if (response.JobProfileOverview.Count == 0)
                 {
                     return null;
@@ -95,7 +96,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
             try
             {
                 //Get the response from GraphQl
-               var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileHowToBecomeResponse>(ApplicationKeys.JobProfileHowToBecome + "/" + canonicalName, filter);
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileHowToBecomeResponse>(ApplicationKeys.JobProfileHowToBecome + "/" + canonicalName, filter, expiry);
 
                 if (response.JobProfileHowToBecome != null)
                 {
@@ -147,7 +148,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             try
             {
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<RelatedCareersResponse>(ApplicationKeys.JobProfileRelatedCareersPrefix + "/" + canonicalName, status);
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<RelatedCareersResponse>(ApplicationKeys.JobProfileRelatedCareersPrefix + "/" + canonicalName, status, expiry);
 
                 if (response.JobProfileRelatedCareers != null)
                 {
@@ -170,11 +171,11 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
         public async Task<CareerPathAndProgressionApiModel> GetCareerPathSegmentAsync(string canonicalName, string status)
         {
-            CareerPathAndProgressionApiModel careerPath = new ();
+            CareerPathAndProgressionApiModel careerPath = new();
 
             try
             {
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileCareerPathAndProgressionResponse>(ApplicationKeys.JobProfileCareerPath + "/" + canonicalName, status);
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileCareerPathAndProgressionResponse>(ApplicationKeys.JobProfileCareerPath + "/" + canonicalName, status, expiry);
 
                 if (response.JobProileCareerPath != null)
                 {
@@ -202,8 +203,8 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             try
             {
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileSkillsResponse>(ApplicationKeys.JobProfileSkillsSuffix + "/" + canonicalName, status);
-                var skillsResponse = await sharedContentRedisInterface.GetDataAsyncWithExpiry<SkillsResponse>(ApplicationKeys.SkillsAll, "PUBLISHED");
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileSkillsResponse>(ApplicationKeys.JobProfileSkillsSuffix + "/" + canonicalName, status, expiry);
+                var skillsResponse = await sharedContentRedisInterface.GetDataAsyncWithExpiry<SkillsResponse>(ApplicationKeys.SkillsAll, status, expiry);
 
                 if (response.JobProfileSkills != null && skillsResponse.Skill != null)
                 {
@@ -276,7 +277,7 @@ namespace DFC.Api.JobProfiles.ProfileServices
 
             try
             {
-                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter);
+                var response = await sharedContentRedisInterface.GetDataAsyncWithExpiry<JobProfileWhatYoullDoResponse>(ApplicationKeys.JobProfileWhatYoullDo + "/" + canonicalName, filter, expiry);
                 if (response.JobProfileWhatYoullDo != null)
                 {
                     var mappedResponse = mapper.Map<WhatYouWillDoApiModel>(response);

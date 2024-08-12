@@ -15,7 +15,7 @@
   <ItemGroup>
 	<FrameworkReference Include="Microsoft.AspNetCore.App" />
 	<PackageReference Include="AngleSharp" Version="1.1.2" />
-	<PackageReference Include="DFC.Common.SharedContent.Pkg.Netcore" Version="0.1.109" />
+	<PackageReference Include="DFC.Common.SharedContent.Pkg.Netcore" Version="0.1.110" />
 	<PackageReference Include="DFC.HtmlToDataTranslator" Version="1.0.7" />
 	<PackageReference Include="FluentNHibernate" Version="3.3.0" />
 	<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="6.0.30" />
